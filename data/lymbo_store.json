@@ -1,0 +1,282 @@
+{
+  "users": [
+    {
+      "id": "usr_admin_root",
+      "email": "lymboventures0@gmail.com",
+      "username": "admin",
+      "name": "System Administrator",
+      "role": "admin",
+      "status": "active",
+      "passwordHash": "$2b$12$VqMFevRaT2HL3uveqK7a7./gtiImocco0XbL6vpGqXlRsYT4DwAaO",
+      "mfaRequired": true,
+      "mfaSecret": "OFGOF3HHJV2CXE37J6PW",
+      "mfaBackupCodes": [
+        "3708-3009",
+        "2218-9343",
+        "1167-6189",
+        "4317-9645",
+        "9053-3505"
+      ],
+      "createdAt": "2026-10-31T09:54:59.015Z",
+      "notes": "Primary System Administrator with root infrastructure governance"
+    },
+    {
+      "id": "usr_manager_01",
+      "email": "manager@lymboventures.co.ke",
+      "username": "manager_mombasa",
+      "name": "Operations Manager",
+      "role": "manager",
+      "status": "active",
+      "passwordHash": "$2b$12$2GUvdaqg6Bp36VI6xNMyJ.NUXtctofbTDUDdMiUb7Li5ofUAsi9n2",
+      "mfaRequired": true,
+      "mfaSecret": "3IEBASYG3R52LY44XQS4",
+      "mfaBackupCodes": [
+        "8523-3192",
+        "4198-5772",
+        "5011-4798",
+        "3426-2835",
+        "8038-5806"
+      ],
+      "createdAt": "2026-10-31T09:54:59.015Z",
+      "notes": "Supervises stock, orders, and sales reports"
+    },
+    {
+      "id": "usr_staff_01",
+      "email": "sales@lymboventures.co.ke",
+      "username": "sales_rep",
+      "name": "Junior Sales Staff",
+      "role": "staff",
+      "status": "active",
+      "passwordHash": "$2b$12$flHC7suq4VA9XAXOyvd4zOaWHkxSqwKEzVqRc8l/B9eHWwnGogrIq",
+      "mfaRequired": false,
+      "mfaSecret": "57LPDG7YXDCYIH5JDP5X",
+      "mfaBackupCodes": [
+        "5623-3239",
+        "9599-9478",
+        "7853-1674",
+        "1474-9234",
+        "9042-7571"
+      ],
+      "createdAt": "2026-10-31T09:54:59.015Z",
+      "notes": "Fulfills assigned orders with Data Minimization"
+    },
+    {
+      "id": "usr_pending_1793440512814",
+      "email": "wairimu.sales@gmail.com",
+      "username": "wairimu.sales",
+      "name": "Wairimu Njeri",
+      "role": "staff",
+      "status": "active",
+      "passwordHash": "$2b$12$t0daJ44lKhPWbN8xT9P3gO5IczyM1bGOcHV9xV8B6gCwr.aCzLBK.",
+      "mfaRequired": false,
+      "mfaSecret": "C2MAVPNES4PSXKQTR7OL",
+      "mfaBackupCodes": [
+        "9787-7304",
+        "3198-9724",
+        "3978-4028",
+        "3036-6722",
+        "5313-6580"
+      ],
+      "createdAt": "2026-10-31T09:55:12.814Z",
+      "requestedRole": "staff",
+      "notes": "Submitted via staff onboarding portal; awaiting Administrator review.",
+      "approvedBy": "lymboventures0@gmail.com",
+      "approvedAt": "2026-10-31T09:55:29.859Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORD-2026-1003",
+      "invoiceNumber": "INV-2026-0003",
+      "deliveryNoteNumber": "DN-2026-0003",
+      "customerName": "Fatma Said",
+      "customerPhone": "+254704967655",
+      "customerEmail": "fatma.said@gmail.com",
+      "deliveryArea": "Likoni",
+      "deliveryAddress": "Near Likoni Ferry Terminal",
+      "deliveryDate": "2026-10-31",
+      "deliveryTimeSlot": "Afternoon (1:00 PM - 5:00 PM)",
+      "eggTrays": 4,
+      "pricePerTray": 500,
+      "subtotal": 2000,
+      "deliveryFee": 150,
+      "discountAmount": 0,
+      "grandTotal": 2150,
+      "paymentMethod": "M-Pesa",
+      "paymentStatus": "unpaid",
+      "orderStatus": "pending",
+      "notes": "Fragile, deliver to front shop",
+      "createdAt": "2026-10-31T09:55:49.693Z",
+      "updatedAt": "2026-10-31T09:55:49.693Z"
+    },
+    {
+      "id": "ORD-2026-1001",
+      "invoiceNumber": "INV-2026-0001",
+      "deliveryNoteNumber": "DN-2026-0001",
+      "customerName": "Amina Mwangi",
+      "customerPhone": "+254712345678",
+      "customerEmail": "amina.mwangi@example.com",
+      "deliveryArea": "Nyali",
+      "deliveryAddress": "Links Road, near City Mall, Nyali",
+      "deliveryDate": "2026-10-31",
+      "deliveryTimeSlot": "Morning (8:00 AM - 12:00 PM)",
+      "eggTrays": 2,
+      "pricePerTray": 500,
+      "subtotal": 1000,
+      "deliveryFee": 100,
+      "discountAmount": 0,
+      "grandTotal": 1100,
+      "paymentMethod": "M-Pesa",
+      "paymentStatus": "paid",
+      "orderStatus": "delivered",
+      "mpesaTransactionCode": "SKH8921827",
+      "assignedStaffName": "Junior Sales Staff",
+      "createdAt": "2026-10-31T05:54:59.016Z",
+      "updatedAt": "2026-10-31T09:54:59.015Z"
+    },
+    {
+      "id": "ORD-2026-1002",
+      "invoiceNumber": "INV-2026-0002",
+      "deliveryNoteNumber": "DN-2026-0002",
+      "customerName": "Hassan Omar",
+      "customerPhone": "+254722998877",
+      "customerEmail": "hassan.omar@example.com",
+      "deliveryArea": "Bamburi",
+      "deliveryAddress": "Vescon Estate 2, Gate 4",
+      "deliveryDate": "2026-10-31",
+      "deliveryTimeSlot": "Afternoon (1:00 PM - 5:00 PM)",
+      "eggTrays": 3,
+      "pricePerTray": 500,
+      "subtotal": 1500,
+      "deliveryFee": 150,
+      "discountAmount": 0,
+      "grandTotal": 1650,
+      "paymentMethod": "M-Pesa",
+      "paymentStatus": "paid",
+      "orderStatus": "processing",
+      "mpesaTransactionCode": "SKH9041284",
+      "assignedStaffName": "Junior Sales Staff",
+      "createdAt": "2026-10-31T07:54:59.016Z",
+      "updatedAt": "2026-10-31T09:54:59.015Z"
+    }
+  ],
+  "inventoryLedger": [
+    {
+      "id": "GRN-2026-01",
+      "batchRef": "BATCH-MBS-01",
+      "date": "2026-10-31",
+      "trays": 500,
+      "supplier": "Lymbo Coastal Hatchery Hub",
+      "notes": "Grade A fresh egg trays arrived, crates inspected and clean.",
+      "recordedBy": "System Administrator",
+      "recordedAt": "2026-10-31T09:54:59.015Z"
+    }
+  ],
+  "dailyPhotos": [
+    {
+      "id": "photo_01",
+      "url": "/src/assets/images/fresh_egg_trays_mombasa_1792259392211.jpg",
+      "caption": "Fresh Grade A egg crates sorted for morning dispatch in Nyali & Bamburi.",
+      "tag": "Daily Stock",
+      "date": "Today · Fresh Morning Arrival",
+      "uploadedBy": "System Administrator"
+    },
+    {
+      "id": "photo_02",
+      "url": "/src/assets/images/egg_crates_dispatch_1792259392528.jpg",
+      "caption": "Dispatch van loading stacked trays for Mombasa Island restaurants & homes.",
+      "tag": "Van Dispatch",
+      "date": "Today · Mombasa Island Route",
+      "uploadedBy": "System Administrator"
+    },
+    {
+      "id": "photo_03",
+      "url": "/src/assets/images/egg_quality_inspection_1792259393279.jpg",
+      "caption": "Strict quality control: checking shell thickness, zero cracks, clean trays.",
+      "tag": "Quality Check",
+      "date": "Today · Batch QC Station",
+      "uploadedBy": "System Administrator"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "AUDIT-1793440549693-342",
+      "timestamp": "2026-10-31T09:55:49.693Z",
+      "userId": "customer_portal",
+      "userEmail": "+254704967655",
+      "userRole": "customer",
+      "clientIp": "127.0.0.1",
+      "action": "ORDER_CREATED",
+      "details": "New order ORD-2026-1003 (INV-2026-0003) placed: 4 trays to Likoni. KES 2150",
+      "targetEntityId": "ORD-2026-1003"
+    },
+    {
+      "id": "AUDIT-1793440539269-652",
+      "timestamp": "2026-10-31T09:55:39.269Z",
+      "userId": "usr_pending_1793440512814",
+      "userEmail": "wairimu.sales@gmail.com",
+      "userRole": "staff",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User wairimu.sales@gmail.com signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793440535189-574",
+      "timestamp": "2026-10-31T09:55:35.189Z",
+      "userId": "usr_pending_1793440512814",
+      "userEmail": "wairimu.sales@gmail.com",
+      "userRole": "staff",
+      "clientIp": "127.0.0.1",
+      "action": "ACCOUNT_ACTIVATED",
+      "details": "User wairimu.sales@gmail.com successfully completed onboarding and set 12+ char password. Access granted for role: staff.",
+      "targetEntityId": "usr_pending_1793440512814"
+    },
+    {
+      "id": "AUDIT-1793440529859-166",
+      "timestamp": "2026-10-31T09:55:29.859Z",
+      "userId": "ce7a8ad3baf34bac02b710da2974326975632c3476823a41d330bed88c46b42b1eea54d9",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "USER_ACCOUNT_APPROVED",
+      "details": "User account for wairimu.sales@gmail.com approved by Admin. Assigned Role: 'staff'. Secure one-time activation token generated (15m expiry).",
+      "targetEntityId": "usr_pending_1793440512814"
+    },
+    {
+      "id": "AUDIT-1793440524917-908",
+      "timestamp": "2026-10-31T09:55:24.917Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "MFA_VERIFIED",
+      "details": "User lymboventures0@gmail.com completed MFA verification."
+    },
+    {
+      "id": "AUDIT-1793440512815-185",
+      "timestamp": "2026-10-31T09:55:12.815Z",
+      "userId": "usr_pending_1793440512814",
+      "userEmail": "wairimu.sales@gmail.com",
+      "userRole": "staff",
+      "clientIp": "client_onboarding",
+      "action": "ACCOUNT_ONBOARDING_SUBMITTED",
+      "details": "New onboarding request submitted for email wairimu.sales@gmail.com. Assigned status: pending_approval. Requested Role: staff.",
+      "targetEntityId": "usr_pending_1793440512814"
+    },
+    {
+      "id": "AUDIT-001",
+      "timestamp": "2026-10-31T09:54:59.015Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "SYSTEM_BOOTSTRAP",
+      "details": "Lymbo Ventures persistent storage initialized with Kenyan Data Protection Act 2019 compliance & 4-tier RBAC."
+    }
+  ],
+  "initialStock": 500,
+  "nextOrderSeq": 1004,
+  "nextInvoiceSeq": 4,
+  "nextDeliveryNoteSeq": 4,
+  "lastUpdated": "2026-10-31T09:55:49.693Z"
+}

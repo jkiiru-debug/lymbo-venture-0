@@ -1,0 +1,8 @@
+{
+  "name": "Remix Lymbo Ventures - Fresh Eggs \u0026 General Supplies Mombasa",
+  "description": "Mobile-first online ordering portal for farm-fresh eggs and general supplies delivered across Mombasa, Kenya with WhatsApp ordering and M-Pesa integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
