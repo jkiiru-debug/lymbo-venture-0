@@ -32,9 +32,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Built-in Standalone M-Pesa QR Code Generator Script -->
-  <script src="/src/assets/qr.js"></script>
+  <script src="/assets/qr.js"></script>
   <!-- Browser Camera QR Code Scanner Engine (jsQR) -->
-  <script src="/src/assets/jsQR.js"></script>
+  <script src="/assets/jsQR.js"></script>
 
   <!-- Schema.org LocalBusiness Structured Data (JSON-LD) -->
   <script type="application/ld+json">
@@ -6370,6 +6370,9 @@
             </div>
           </div>
 
+          <!-- Recharts Daily Egg Orders & Demand Trends Line Chart -->
+          <div id="adminSalesChartRoot" style="margin-bottom: 1.5rem; min-height: 400px;"></div>
+
           <!-- Zone Breakdown & Financial Health -->
           <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1rem;">
             <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.125rem;">
@@ -7380,6 +7383,8 @@
       activeActivationToken: null,
       realtimeSyncConnected: false
     };
+    window.state = state;
+    window.lymboState = state;
 
     function getDefaultInventory() {
       return {
@@ -10276,6 +10281,8 @@
       if (staffBtn) staffBtn.classList.toggle("active", tabName === "staff");
       if (reportsBtn) reportsBtn.classList.toggle("active", tabName === "reports");
       if (settingsBtn) settingsBtn.classList.toggle("active", tabName === "settings");
+
+      window.dispatchEvent(new CustomEvent('lymbo:tab-changed', { detail: { tab: tabName } }));
 
       if (tabName === "inventory") {
         updateCustomerStockUI();
@@ -15448,6 +15455,12 @@
           </div>
         `).join('') || '<div style="color: var(--text-muted);">No orders recorded yet.</div>';
       }
+
+      // Notify and refresh Recharts Daily Egg Orders line chart
+      if (typeof window.refreshLymboChart === 'function') {
+        window.refreshLymboChart(orders);
+      }
+      window.dispatchEvent(new CustomEvent('lymbo:reports-rendered', { detail: { orders } }));
     }
 
     /* ==========================================================================
@@ -15497,5 +15510,7 @@
       });
     }
   </script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

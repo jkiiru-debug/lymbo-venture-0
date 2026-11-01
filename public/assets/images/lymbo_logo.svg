@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="lvGreenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#145A32"/>
+      <stop offset="50%" stop-color="#1F7A4D"/>
+      <stop offset="100%" stop-color="#0E4424"/>
+    </linearGradient>
+
+    <linearGradient id="lvYellowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFA800"/>
+      <stop offset="50%" stop-color="#F5B700"/>
+      <stop offset="100%" stop-color="#E29200"/>
+    </linearGradient>
+
+    <linearGradient id="eggGrad1" x1="20%" y1="20%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#FFF0D6"/>
+      <stop offset="50%" stop-color="#E8B584"/>
+      <stop offset="100%" stop-color="#C28956"/>
+    </linearGradient>
+
+    <linearGradient id="eggGrad2" x1="20%" y1="20%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#FFECD0"/>
+      <stop offset="60%" stop-color="#DC9F69"/>
+      <stop offset="100%" stop-color="#B07542"/>
+    </linearGradient>
+
+    <linearGradient id="basketGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#C57D3E"/>
+      <stop offset="50%" stop-color="#9C5921"/>
+      <stop offset="100%" stop-color="#723A0B"/>
+    </linearGradient>
+
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22C55E"/>
+      <stop offset="100%" stop-color="#15803D"/>
+    </linearGradient>
+
+    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.18" flood-color="#000000"/>
+    </filter>
+  </defs>
+
+  <g id="emblemGroup" filter="url(#subtleShadow)">
+    <!-- Outer Circular Accent Ring -->
+    <circle cx="250" cy="190" r="150" fill="none" stroke="url(#lvGreenGrad)" stroke-width="12" stroke-dasharray="840 100" stroke-linecap="round" />
+    <path d="M 380 190 A 130 130 0 0 1 250 320" fill="none" stroke="url(#lvYellowGrad)" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+
+    <!-- Letter L (Left stylized green serif) -->
+    <path d="M 120 70 L 205 70 L 205 105 L 180 105 L 180 230 C 180 250 200 260 225 260 L 225 285 L 120 285 Z" fill="url(#lvGreenGrad)"/>
+    <!-- Top serif on L -->
+    <path d="M 115 70 L 195 70 C 195 70 190 90 175 90 L 140 90 C 130 90 120 75 115 70 Z" fill="#145A32"/>
+
+    <!-- Letter V (Right stylized golden yellow serif) -->
+    <path d="M 220 90 L 265 90 L 335 245 L 415 90 L 455 90 L 360 285 L 315 285 Z" fill="url(#lvYellowGrad)"/>
+    <!-- V serif flourishes -->
+    <path d="M 210 90 L 275 90 L 260 105 L 230 105 Z" fill="#E29200"/>
+    <path d="M 405 90 L 465 90 L 450 105 L 415 105 Z" fill="#E29200"/>
+
+    <!-- Green Curved Swoosh across L & V -->
+    <path d="M 105 285 C 160 210 240 145 350 150 C 310 165 240 180 170 270 Z" fill="url(#lvGreenGrad)"/>
+
+    <!-- Woven Basket of Eggs -->
+    <!-- Basket Rim -->
+    <ellipse cx="250" cy="225" rx="72" ry="22" fill="#8B4A18" />
+
+    <!-- Fresh Eggs inside Basket -->
+    <!-- Egg 1 (back left) -->
+    <ellipse cx="205" cy="205" rx="20" ry="27" fill="url(#eggGrad1)" transform="rotate(-15 205 205)"/>
+    <!-- Egg 2 (back center) -->
+    <ellipse cx="245" cy="185" rx="22" ry="30" fill="url(#eggGrad2)"/>
+    <!-- Egg 3 (back right) -->
+    <ellipse cx="285" cy="195" rx="21" ry="28" fill="url(#eggGrad1)" transform="rotate(12 285 195)"/>
+    <!-- Egg 4 (mid left) -->
+    <ellipse cx="218" cy="220" rx="21" ry="28" fill="url(#eggGrad2)" transform="rotate(-8 218 220)"/>
+    <!-- Egg 5 (mid right) -->
+    <ellipse cx="270" cy="218" rx="21" ry="28" fill="url(#eggGrad1)" transform="rotate(10 270 218)"/>
+
+    <!-- Basket Body (woven pattern texture) -->
+    <path d="M 178 225 C 182 275 205 305 250 305 C 295 305 318 275 322 225 Z" fill="url(#basketGrad)" stroke="#5B2D05" stroke-width="2"/>
+    <!-- Wicker weave accents -->
+    <path d="M 195 235 C 220 280 280 280 305 235" fill="none" stroke="#B46E30" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 188 255 C 215 295 285 295 312 255" fill="none" stroke="#7A3F0E" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 210 230 L 225 298 M 240 230 L 246 304 M 260 230 L 254 304 M 280 230 L 275 298" stroke="#5B2D05" stroke-width="1.8" opacity="0.6"/>
+
+    <!-- Foreground Eggs (leaning on basket) -->
+    <!-- Egg 6 (front center) -->
+    <ellipse cx="272" cy="275" rx="29" ry="25" fill="url(#eggGrad1)" transform="rotate(6 272 275)"/>
+    <!-- Egg 7 (front right) -->
+    <ellipse cx="320" cy="270" rx="23" ry="26" fill="url(#eggGrad2)" transform="rotate(18 320 270)"/>
+
+    <!-- Natural Egg Sheen Highlights -->
+    <ellipse cx="260" cy="265" rx="7" ry="4" fill="#FFFFFF" opacity="0.45" transform="rotate(-20 260 265)"/>
+    <ellipse cx="238" cy="175" rx="6" ry="4" fill="#FFFFFF" opacity="0.4"/>
+
+    <!-- Green Leaves framing basket -->
+    <path d="M 155 260 C 130 285 160 315 200 310 C 180 295 170 275 155 260 Z" fill="url(#leafGrad)"/>
+    <path d="M 330 250 C 370 260 380 305 340 315 C 345 290 340 270 330 250 Z" fill="url(#leafGrad)"/>
+    <path d="M 355 270 C 385 285 375 325 350 325 C 352 305 352 285 355 270 Z" fill="#15803D"/>
+  </g>
+
+  <!-- Typography matching official Lymbo Venture branding -->
+  <!-- "LYMBO" in bold uppercase emerald green -->
+  <text x="250" y="385" font-family="'Poppins', 'Arial Black', sans-serif" font-weight="900" font-size="64" fill="#0E5A2E" text-anchor="middle" letter-spacing="4">LYMBO</text>
+
+  <!-- "— VENTURE —" in golden yellow with flanking horizontal rules -->
+  <line x1="50" y1="414" x2="125" y2="414" stroke="#F5B700" stroke-width="5" stroke-linecap="round"/>
+  <text x="250" y="424" font-family="'Poppins', 'Arial', sans-serif" font-weight="800" font-size="34" fill="#F5B700" text-anchor="middle" letter-spacing="8">VENTURE</text>
+  <line x1="375" y1="414" x2="450" y2="414" stroke="#F5B700" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- "General Supplies" in green italic font -->
+  <text x="250" y="465" font-family="'Poppins', 'Georgia', serif" font-weight="700" font-style="italic" font-size="28" fill="#146034" text-anchor="middle" letter-spacing="1.5">General Supplies</text>
+</svg>
