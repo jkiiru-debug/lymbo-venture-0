@@ -7,7 +7,7 @@
       "name": "System Administrator",
       "role": "admin",
       "status": "active",
-      "passwordHash": "$2b$12$VqMFevRaT2HL3uveqK7a7./gtiImocco0XbL6vpGqXlRsYT4DwAaO",
+      "passwordHash": "$2b$12$QYpJzFh1cxCjVsWSoAvI3elJVgiuOw2V7GP8sWgnJQMlUSZpH0c0u",
       "mfaRequired": true,
       "mfaSecret": "OFGOF3HHJV2CXE37J6PW",
       "mfaBackupCodes": [
@@ -27,7 +27,7 @@
       "name": "Operations Manager",
       "role": "manager",
       "status": "active",
-      "passwordHash": "$2b$12$2GUvdaqg6Bp36VI6xNMyJ.NUXtctofbTDUDdMiUb7Li5ofUAsi9n2",
+      "passwordHash": "$2b$12$QYpJzFh1cxCjVsWSoAvI3elJVgiuOw2V7GP8sWgnJQMlUSZpH0c0u",
       "mfaRequired": true,
       "mfaSecret": "3IEBASYG3R52LY44XQS4",
       "mfaBackupCodes": [
@@ -47,7 +47,7 @@
       "name": "Junior Sales Staff",
       "role": "staff",
       "status": "active",
-      "passwordHash": "$2b$12$flHC7suq4VA9XAXOyvd4zOaWHkxSqwKEzVqRc8l/B9eHWwnGogrIq",
+      "passwordHash": "$2b$12$QYpJzFh1cxCjVsWSoAvI3elJVgiuOw2V7GP8sWgnJQMlUSZpH0c0u",
       "mfaRequired": false,
       "mfaSecret": "57LPDG7YXDCYIH5JDP5X",
       "mfaBackupCodes": [
@@ -67,7 +67,7 @@
       "name": "Wairimu Njeri",
       "role": "staff",
       "status": "active",
-      "passwordHash": "$2b$12$t0daJ44lKhPWbN8xT9P3gO5IczyM1bGOcHV9xV8B6gCwr.aCzLBK.",
+      "passwordHash": "$2b$12$QYpJzFh1cxCjVsWSoAvI3elJVgiuOw2V7GP8sWgnJQMlUSZpH0c0u",
       "mfaRequired": false,
       "mfaSecret": "C2MAVPNES4PSXKQTR7OL",
       "mfaBackupCodes": [
@@ -200,6 +200,36 @@
   ],
   "auditLogs": [
     {
+      "id": "AUDIT-1793558447406-817",
+      "timestamp": "2026-11-01T18:40:47.406Z",
+      "userId": "usr_staff_01",
+      "userEmail": "sales@lymboventures.co.ke",
+      "userRole": "staff",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User sales@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793558075085-930",
+      "timestamp": "2026-11-01T18:34:35.085Z",
+      "userId": "usr_staff_01",
+      "userEmail": "sales@lymboventures.co.ke",
+      "userRole": "staff",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User sales@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793558042845-111",
+      "timestamp": "2026-11-01T18:34:02.845Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "MFA_VERIFIED",
+      "details": "User lymboventures0@gmail.com completed MFA verification."
+    },
+    {
       "id": "AUDIT-1793440549693-342",
       "timestamp": "2026-10-31T09:55:49.693Z",
       "userId": "customer_portal",
@@ -278,5 +308,5 @@
   "nextOrderSeq": 1004,
   "nextInvoiceSeq": 4,
   "nextDeliveryNoteSeq": 4,
-  "lastUpdated": "2026-10-31T09:55:49.693Z"
+  "lastUpdated": "2026-11-01T18:40:47.406Z"
 }
