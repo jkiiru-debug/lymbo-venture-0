@@ -4346,11 +4346,22 @@
             <span class="input-error-msg" id="custAddressError">Please provide your street or landmark for our rider.</span>
           </div>
 
-          <!-- Specific Delivery Instructions / Gate Entry Codes -->
+          <!-- Dedicated Special Delivery Instructions Field -->
           <div class="form-group">
-            <label for="custDeliveryInstructions" class="form-label">Delivery Instructions & Gate Entry Codes</label>
-            <textarea id="custDeliveryInstructions" class="form-textarea" rows="2" placeholder="e.g. Gate code #4521, call rider upon arrival at barrier, 2nd floor apt 4B, leave with gatekeeper..."></textarea>
-            <span style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 0.25rem;">Rider guidance, gate access pins, buzzer, apartment number or special drop-off instructions.</span>
+            <label for="custDeliveryInstructions" class="form-label">
+              Special Delivery Instructions <span style="font-weight: 400; color: var(--text-muted); font-size: 0.75rem;">(Optional)</span>
+            </label>
+            <textarea 
+              id="custDeliveryInstructions" 
+              name="specialDeliveryInstructions" 
+              class="form-textarea" 
+              rows="2" 
+              placeholder="e.g. Gate access code #4521, call rider upon arrival at barrier, 2nd floor Apt 4B, leave with gatekeeper or security..."
+              style="width: 100%; resize: vertical; min-height: 58px;"
+            ></textarea>
+            <span class="form-help-text" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 0.25rem;">
+              Provide any gate access pins, rider navigation directions, apartment number, or special drop-off preferences.
+            </span>
           </div>
 
           <!-- Delivery Schedule: Future Calendar Date Picker & Preferred Time Slot -->
@@ -6371,7 +6382,7 @@
           </div>
 
           <!-- Recharts Daily Egg Orders & Demand Trends Line Chart -->
-          <div id="adminSalesChartRoot" style="margin-bottom: 1.5rem; min-height: 400px;"></div>
+          <div id="adminSalesChartRoot" style="margin-bottom: 1.5rem; min-height: 400px; width: 100%; display: block;"></div>
 
           <!-- Zone Breakdown & Financial Health -->
           <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1rem;">
@@ -14510,7 +14521,7 @@
           deliveryFee,
           grandTotal,
           paymentMethod: paymentMethod.includes("Cash") ? "Cash on Delivery" : "M-Pesa",
-          notes
+          notes: deliveryInstructions || notes || ""
         })
       })
       .then(res => res.json())

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   ResponsiveContainer,
   LineChart,
@@ -86,8 +86,11 @@ export default function DailyOrdersLineChart() {
   });
   const [rawOrders, setRawOrders] = useState<OrderItemData[]>([]);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
-  const [isVisible, setIsVisible] = useState<boolean>(true);
   const [renderKey, setRenderKey] = useState<number>(0);
+  
+  // Guard to ensure Recharts is only mounted when container has measurable positive dimensions
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [isContainerReady, setIsContainerReady] = useState<boolean>(false);
 
   // Monitor DOM dark mode changes
   useEffect(() => {
@@ -104,6 +107,64 @@ export default function DailyOrdersLineChart() {
     });
 
     return () => observer.disconnect();
+  }, []);
+
+  // Monitor container visibility and dimensions to prevent Recharts 0-dimension warnings
+  useEffect(() => {
+    const checkDimensions = () => {
+      const el = chartContainerRef.current;
+      if (el) {
+        // Element is visible if offsetParent is not null and clientWidth is greater than 0
+        const isVisible = el.offsetParent !== null && el.clientWidth > 0;
+        setIsContainerReady(isVisible);
+      }
+    };
+
+    checkDimensions();
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && chartContainerRef.current) {
+      ro = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.contentRect.width > 0) {
+            setIsContainerReady(true);
+          } else {
+            setIsContainerReady(false);
+          }
+        }
+      });
+      ro.observe(chartContainerRef.current);
+    }
+
+    const handleTabChanged = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tab?: string }>;
+      if (customEvent.detail && customEvent.detail.tab === 'reports') {
+        setTimeout(() => {
+          checkDimensions();
+          setRenderKey(prev => prev + 1);
+        }, 60);
+      } else if (customEvent.detail && customEvent.detail.tab !== 'reports') {
+        setIsContainerReady(false);
+      }
+    };
+
+    const handleReportsRendered = () => {
+      setTimeout(() => {
+        checkDimensions();
+        setRenderKey(prev => prev + 1);
+      }, 60);
+    };
+
+    window.addEventListener('lymbo:tab-changed', handleTabChanged);
+    window.addEventListener('lymbo:reports-rendered', handleReportsRendered);
+    window.addEventListener('resize', checkDimensions);
+
+    return () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener('lymbo:tab-changed', handleTabChanged);
+      window.removeEventListener('lymbo:reports-rendered', handleReportsRendered);
+      window.removeEventListener('resize', checkDimensions);
+    };
   }, []);
 
   // Fetch real orders from state or localStorage
@@ -124,43 +185,26 @@ export default function DailyOrdersLineChart() {
       }
       setRawOrders(orders);
       setLastRefreshed(new Date());
-      setRenderKey(prev => prev + 1);
     } catch {
       // Fallback gracefully
     }
   }, []);
 
-  // Listen for applet events (e.g. switching to reports tab or placing new orders)
+  // Listen for order updates
   useEffect(() => {
     loadOrders();
 
-    const handleReportsRendered = (e: Event) => {
+    const handleOrdersUpdated = (e: Event) => {
       const customEvent = e as CustomEvent<{ orders?: OrderItemData[] }>;
       if (customEvent.detail && Array.isArray(customEvent.detail.orders)) {
         setRawOrders(customEvent.detail.orders);
       } else {
         loadOrders();
       }
-      // Force Recharts dimension recalculation once parent pane becomes visible
-      setTimeout(() => {
-        setRenderKey(prev => prev + 1);
-        setIsVisible(true);
-      }, 50);
+      setRenderKey(prev => prev + 1);
     };
 
-    const handleTabChanged = (e: Event) => {
-      const customEvent = e as CustomEvent<{ tab?: string }>;
-      if (customEvent.detail && customEvent.detail.tab === 'reports') {
-        setTimeout(() => {
-          setRenderKey(prev => prev + 1);
-          setIsVisible(true);
-        }, 80);
-      }
-    };
-
-    window.addEventListener('lymbo:reports-rendered', handleReportsRendered);
-    window.addEventListener('lymbo:tab-changed', handleTabChanged);
-    window.addEventListener('lymbo:orders-updated', handleReportsRendered);
+    window.addEventListener('lymbo:orders-updated', handleOrdersUpdated);
 
     // Expose direct refresh hook for index.html vanilla script
     (window as unknown as { refreshLymboChart?: (orders?: OrderItemData[]) => void }).refreshLymboChart = (orders) => {
@@ -173,9 +217,7 @@ export default function DailyOrdersLineChart() {
     };
 
     return () => {
-      window.removeEventListener('lymbo:reports-rendered', handleReportsRendered);
-      window.removeEventListener('lymbo:tab-changed', handleTabChanged);
-      window.removeEventListener('lymbo:orders-updated', handleReportsRendered);
+      window.removeEventListener('lymbo:orders-updated', handleOrdersUpdated);
       delete (window as unknown as { refreshLymboChart?: unknown }).refreshLymboChart;
     };
   }, [loadOrders]);
@@ -283,9 +325,7 @@ export default function DailyOrdersLineChart() {
         tooltipBg: '#1F2833',
         tooltipBorder: '#37475A',
         primaryLine: '#10B981', // Vivid green for dark mode
-        primaryDot: '#059669',
-        secondaryLine: '#F59E0B', // Amber
-        secondaryDot: '#D97706'
+        secondaryLine: '#F59E0B' // Amber
       };
     }
     return {
@@ -298,9 +338,7 @@ export default function DailyOrdersLineChart() {
       tooltipBg: '#FFFFFF',
       tooltipBorder: '#E2E8F0',
       primaryLine: '#1F7A4D', // Deep Forest Green
-      primaryDot: '#17603C',
-      secondaryLine: '#D97706', // Warm Amber
-      secondaryDot: '#B45309'
+      secondaryLine: '#D97706' // Warm Amber
     };
   }, [isDarkMode]);
 
@@ -582,202 +620,239 @@ export default function DailyOrdersLineChart() {
         </div>
       </div>
 
-      {/* Main Recharts Line Chart */}
-      <div style={{ width: '100%', height: 320, position: 'relative' }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={chartData}
-            margin={{ top: 12, right: 16, left: -10, bottom: 4 }}
+      {/* Main Recharts Line Chart with Visibility Guard */}
+      <div
+        ref={chartContainerRef}
+        style={{
+          width: '100%',
+          minWidth: '100%',
+          height: 320,
+          minHeight: '320px',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        {isContainerReady ? (
+          <ResponsiveContainer
+            width="100%"
+            height={320}
+            minWidth={100}
+            minHeight={320}
           >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={colors.grid}
-              vertical={false}
-            />
-            <XAxis
-              dataKey="dateLabel"
-              stroke={colors.axisText}
-              fontSize={11}
-              tickLine={false}
-              axisLine={{ stroke: colors.border }}
-              dy={6}
-            />
-            
-            {/* Left Y-Axis for Trays */}
-            {(metricView === 'both' || metricView === 'trays') && (
-              <YAxis
-                yAxisId="trays"
+            <LineChart
+              data={chartData}
+              margin={{ top: 12, right: 16, left: -10, bottom: 4 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={colors.grid}
+                vertical={false}
+              />
+              <XAxis
+                dataKey="dateLabel"
                 stroke={colors.axisText}
                 fontSize={11}
                 tickLine={false}
-                axisLine={false}
-                tickFormatter={(val) => `${val} tr`}
-                domain={[0, 'auto']}
+                axisLine={{ stroke: colors.border }}
+                dy={6}
               />
-            )}
+              
+              {/* Left Y-Axis for Trays */}
+              {(metricView === 'both' || metricView === 'trays') && (
+                <YAxis
+                  yAxisId="trays"
+                  stroke={colors.axisText}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(val) => `${val} tr`}
+                  domain={[0, 'auto']}
+                />
+              )}
 
-            {/* Right Y-Axis for Orders Count if in Dual View */}
-            {metricView === 'both' && (
-              <YAxis
-                yAxisId="orders"
-                orientation="right"
-                stroke={colors.axisText}
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(val) => `${val} ord`}
-                domain={[0, 'auto']}
-              />
-            )}
+              {/* Right Y-Axis for Orders Count if in Dual View */}
+              {metricView === 'both' && (
+                <YAxis
+                  yAxisId="orders"
+                  orientation="right"
+                  stroke={colors.axisText}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(val) => `${val} ord`}
+                  domain={[0, 'auto']}
+                />
+              )}
 
-            {/* When only orders count is selected, use left Y-axis */}
-            {metricView === 'orders' && (
-              <YAxis
-                yAxisId="orders"
-                stroke={colors.axisText}
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(val) => `${val} ord`}
-                domain={[0, 'auto']}
-              />
-            )}
+              {/* When only orders count is selected, use left Y-axis */}
+              {metricView === 'orders' && (
+                <YAxis
+                  yAxisId="orders"
+                  stroke={colors.axisText}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(val) => `${val} ord`}
+                  domain={[0, 'auto']}
+                />
+              )}
 
-            <Tooltip
-              content={({ active, payload }) => {
-                if (!active || !payload || !payload.length) return null;
-                const data = payload[0].payload as DailyDataPoint;
-                return (
-                  <div
-                    style={{
-                      backgroundColor: colors.tooltipBg,
-                      border: `1px solid ${colors.tooltipBorder}`,
-                      borderRadius: '8px',
-                      padding: '0.75rem 0.875rem',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                      fontSize: '0.75rem',
-                      lineHeight: '1.4'
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, color: colors.textMain, marginBottom: '6px' }}>
-                      📅 {data.fullDate}
-                      {data.isPeak && (
-                        <span
-                          style={{
-                            marginLeft: '6px',
-                            fontSize: '0.625rem',
-                            fontWeight: 700,
-                            backgroundColor: isDarkMode ? '#382C0A' : '#FFF9E6',
-                            color: colors.secondaryLine,
-                            padding: '2px 6px',
-                            borderRadius: '4px'
-                          }}
-                        >
-                          PEAK DEMAND
-                        </span>
-                      )}
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (!active || !payload || !payload.length) return null;
+                  const data = payload[0].payload as DailyDataPoint;
+                  return (
+                    <div
+                      style={{
+                        backgroundColor: colors.tooltipBg,
+                        border: `1px solid ${colors.tooltipBorder}`,
+                        borderRadius: '8px',
+                        padding: '0.75rem 0.875rem',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                        fontSize: '0.75rem',
+                        lineHeight: '1.4'
+                      }}
+                    >
+                      <div style={{ fontWeight: 700, color: colors.textMain, marginBottom: '6px' }}>
+                        📅 {data.fullDate}
+                        {data.isPeak && (
+                          <span
+                            style={{
+                              marginLeft: '6px',
+                              fontSize: '0.625rem',
+                              fontWeight: 700,
+                              backgroundColor: isDarkMode ? '#382C0A' : '#FFF9E6',
+                              color: colors.secondaryLine,
+                              padding: '2px 6px',
+                              borderRadius: '4px'
+                            }}
+                          >
+                            PEAK DEMAND
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+                          <span style={{ color: colors.textMuted }}>Egg Trays Demanded:</span>
+                          <strong style={{ color: colors.primaryLine }}>
+                            {data.trays} trays ({data.eggsTotal.toLocaleString()} eggs)
+                          </strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+                          <span style={{ color: colors.textMuted }}>Orders Logged:</span>
+                          <strong style={{ color: colors.secondaryLine }}>
+                            {data.ordersCount} orders
+                          </strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', marginTop: '2px', paddingTop: '4px', borderTop: `1px dashed ${colors.border}` }}>
+                          <span style={{ color: colors.textMuted }}>Estimated Value:</span>
+                          <strong style={{ color: colors.textMain }}>
+                            KES {data.revenue.toLocaleString()}
+                          </strong>
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-                        <span style={{ color: colors.textMuted }}>Egg Trays Demanded:</span>
-                        <strong style={{ color: colors.primaryLine }}>
-                          {data.trays} trays ({data.eggsTotal.toLocaleString()} eggs)
-                        </strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-                        <span style={{ color: colors.textMuted }}>Orders Logged:</span>
-                        <strong style={{ color: colors.secondaryLine }}>
-                          {data.ordersCount} orders
-                        </strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', marginTop: '2px', paddingTop: '4px', borderTop: `1px dashed ${colors.border}` }}>
-                        <span style={{ color: colors.textMuted }}>Estimated Value:</span>
-                        <strong style={{ color: colors.textMain }}>
-                          KES {data.revenue.toLocaleString()}
-                        </strong>
-                      </div>
-                    </div>
-                  </div>
-                );
-              }}
-            />
-
-            <Legend
-              verticalAlign="top"
-              align="right"
-              iconType="circle"
-              wrapperStyle={{ paddingBottom: '8px', fontSize: '11px', color: colors.textMuted }}
-            />
-
-            {/* Peak Reference Line */}
-            {metrics.peakDay && metrics.peakDay.trays > 0 && (
-              <ReferenceLine
-                yAxisId="trays"
-                y={metrics.peakDay.trays}
-                stroke={colors.secondaryLine}
-                strokeDasharray="4 4"
-                label={{
-                  value: `Peak: ${metrics.peakDay.trays} Trays`,
-                  fill: colors.secondaryLine,
-                  fontSize: 10,
-                  position: 'insideTopRight'
+                  );
                 }}
               />
-            )}
 
-            {/* Primary Demand Line: Trays Demanded */}
-            {(metricView === 'both' || metricView === 'trays') && (
-              <Line
-                yAxisId="trays"
-                type="monotone"
-                dataKey="trays"
-                name="Egg Trays Demanded"
-                stroke={colors.primaryLine}
-                strokeWidth={3}
-                dot={{
-                  r: 3.5,
-                  fill: colors.cardBg,
-                  stroke: colors.primaryLine,
-                  strokeWidth: 2
-                }}
-                activeDot={{
-                  r: 6,
-                  fill: colors.primaryLine,
-                  stroke: colors.cardBg,
-                  strokeWidth: 2
-                }}
-                animationDuration={800}
+              <Legend
+                verticalAlign="top"
+                align="right"
+                iconType="circle"
+                wrapperStyle={{ paddingBottom: '8px', fontSize: '11px', color: colors.textMuted }}
               />
-            )}
 
-            {/* Secondary Line: Orders Count */}
-            {(metricView === 'both' || metricView === 'orders') && (
-              <Line
-                yAxisId="orders"
-                type="monotone"
-                dataKey="ordersCount"
-                name="Orders Placed"
-                stroke={colors.secondaryLine}
-                strokeWidth={2}
-                strokeDasharray={metricView === 'both' ? '4 3' : undefined}
-                dot={{
-                  r: 3,
-                  fill: colors.cardBg,
-                  stroke: colors.secondaryLine,
-                  strokeWidth: 1.5
-                }}
-                activeDot={{
-                  r: 5,
-                  fill: colors.secondaryLine,
-                  stroke: colors.cardBg,
-                  strokeWidth: 2
-                }}
-                animationDuration={800}
-              />
-            )}
-          </LineChart>
-        </ResponsiveContainer>
+              {/* Peak Reference Line */}
+              {metrics.peakDay && metrics.peakDay.trays > 0 && (
+                <ReferenceLine
+                  yAxisId="trays"
+                  y={metrics.peakDay.trays}
+                  stroke={colors.secondaryLine}
+                  strokeDasharray="4 4"
+                  label={{
+                    value: `Peak: ${metrics.peakDay.trays} Trays`,
+                    fill: colors.secondaryLine,
+                    fontSize: 10,
+                    position: 'insideTopRight'
+                  }}
+                />
+              )}
+
+              {/* Primary Demand Line: Trays Demanded */}
+              {(metricView === 'both' || metricView === 'trays') && (
+                <Line
+                  yAxisId="trays"
+                  type="monotone"
+                  dataKey="trays"
+                  name="Egg Trays Demanded"
+                  stroke={colors.primaryLine}
+                  strokeWidth={3}
+                  dot={{
+                    r: 3.5,
+                    fill: colors.cardBg,
+                    stroke: colors.primaryLine,
+                    strokeWidth: 2
+                  }}
+                  activeDot={{
+                    r: 6,
+                    fill: colors.primaryLine,
+                    stroke: colors.cardBg,
+                    strokeWidth: 2
+                  }}
+                  animationDuration={800}
+                />
+              )}
+
+              {/* Secondary Line: Orders Count */}
+              {(metricView === 'both' || metricView === 'orders') && (
+                <Line
+                  yAxisId="orders"
+                  type="monotone"
+                  dataKey="ordersCount"
+                  name="Orders Placed"
+                  stroke={colors.secondaryLine}
+                  strokeWidth={2}
+                  strokeDasharray={metricView === 'both' ? '4 3' : undefined}
+                  dot={{
+                    r: 3,
+                    fill: colors.cardBg,
+                    stroke: colors.secondaryLine,
+                    strokeWidth: 1.5
+                  }}
+                  activeDot={{
+                    r: 5,
+                    fill: colors.secondaryLine,
+                    stroke: colors.cardBg,
+                    strokeWidth: 2
+                  }}
+                  animationDuration={800}
+                />
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              width: '100%',
+              color: colors.textMuted,
+              fontSize: '0.8125rem'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <TrendingUp size={16} style={{ color: colors.primaryLine }} />
+              <span>Daily demand trends chart active</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Chart Footer with Contextual Insights */}
