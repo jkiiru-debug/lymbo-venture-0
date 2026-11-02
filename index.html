@@ -5372,17 +5372,39 @@
           <div id="adminLockoutWarning" style="display: none; background: #FEF2F2; border: 1.5px solid #FCA5A5; color: #991B1B; padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.78125rem; margin: 1rem 0; text-align: left; line-height: 1.45;">
             <strong>⛔ Rate Limit / Temporary Lockout Active</strong><br />
             <span id="adminLockoutWarningText">Too many failed login attempts. Please wait before retrying.</span>
+          </div>
+
           <!-- Quick-Fill Seed Credentials Helper -->
-          <div style="background: var(--bg-body); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.65rem 0.75rem; margin-top: 1rem; text-align: left; font-size: 0.75rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.35rem;">
-              <span style="font-weight: 700; color: var(--text-main);">🔑 Seed Credentials:</span>
-              <button type="button" class="btn btn-outline btn-sm" onclick="quickFillCredentials('admin')" style="font-size: 0.7rem; padding: 0.15rem 0.5rem; background: var(--primary-light); color: var(--primary); border-color: var(--primary);">
-                Auto-Fill Admin
+          <div style="background: var(--bg-body); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.75rem; margin-top: 1rem; text-align: left; font-size: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.35rem;">
+              <span style="font-weight: 700; color: var(--text-main);">🔑 Authorized Staff Quick-Fill:</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">PW: <code style="font-weight: 700; color: var(--primary);">20lymboventures@26</code></span>
+            </div>
+            <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="quickFillCredentials('admin')" style="font-size: 0.6875rem; padding: 0.2rem 0.45rem; background: var(--primary-light); color: var(--primary); border-color: var(--primary);">
+                👑 Admin
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="quickFillCredentials('manager')" style="font-size: 0.6875rem; padding: 0.2rem 0.45rem;">
+                📋 Manager
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="quickFillCredentials('sales')" style="font-size: 0.6875rem; padding: 0.2rem 0.45rem;">
+                💼 Sales
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="quickFillCredentials('dispatch')" style="font-size: 0.6875rem; padding: 0.2rem 0.45rem;">
+                🚚 Dispatch
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="quickFillCredentials('accounts')" style="font-size: 0.6875rem; padding: 0.2rem 0.45rem;">
+                💳 Accounts
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="quickFillCredentials('support')" style="font-size: 0.6875rem; padding: 0.2rem 0.45rem;">
+                🎧 Support
               </button>
             </div>
-            <div style="color: var(--text-muted); line-height: 1.45;">
-              <div>Email: <code style="user-select: all;">lymboventures0@gmail.com</code></div>
-              <div>Password: <code style="user-select: all;">20lymboventures@26</code></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border-subtle); padding-top: 0.4rem; font-size: 0.71875rem;">
+              <span style="color: var(--text-muted);">New Job Applicant?</span>
+              <button type="button" onclick="closeAdminPortal(); openStaffOnboardModal();" style="background: none; border: none; color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;">
+                Register / Apply for Staff Position ➔
+              </button>
             </div>
           </div>
 
@@ -5577,17 +5599,29 @@
           </button>
           <button type="button" class="admin-tab-btn" id="adminTabOrdersBtn" onclick="switchAdminTab('orders')">
             <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-            <span>Orders &amp; Fulfillment</span>
+            <span>Orders &amp; Sales</span>
             <span class="admin-tab-badge" id="adminOrdersTabBadge">0</span>
           </button>
-          <button type="button" class="admin-tab-btn" id="adminTabStaffBtn" onclick="switchAdminTab('staff')" title="Role-Based Access Control & Onboarding Approvals">
+          <button type="button" class="admin-tab-btn" id="adminTabDispatchBtn" onclick="switchAdminTab('dispatch')" title="Delivery Manifest & Gate Instructions">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <span>Dispatch Manifest</span>
+          </button>
+          <button type="button" class="admin-tab-btn" id="adminTabAccountsBtn" onclick="switchAdminTab('accounts')" title="M-Pesa Reconciliation & Receipts">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+            <span>Accounts &amp; Paybill</span>
+          </button>
+          <button type="button" class="admin-tab-btn" id="adminTabSupportBtn" onclick="switchAdminTab('support')" title="Customer Inquiries & Order Tracking Desk">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span>Support Desk</span>
+          </button>
+          <button type="button" class="admin-tab-btn" id="adminTabStaffBtn" onclick="switchAdminTab('staff')" title="Role-Based Access Control & Applications">
             <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            <span>Staff &amp; RBAC</span>
+            <span>Applications &amp; Staff</span>
             <span class="admin-tab-badge" id="adminStaffTabBadge" style="background: #10B981; color: #fff;">0</span>
           </button>
-          <button type="button" class="admin-tab-btn" id="adminTabReportsBtn" onclick="switchAdminTab('reports')" title="Sales Summaries & Financial Margins">
+          <button type="button" class="admin-tab-btn" id="adminTabReportsBtn" onclick="switchAdminTab('reports')" title="Sales Summaries & AI Demand Insights">
             <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
-            <span>Sales Reports</span>
+            <span>Sales &amp; AI Reports</span>
           </button>
           <button type="button" class="admin-tab-btn" id="adminTabPhotosBtn" onclick="switchAdminTab('photos')">
             <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -5598,9 +5632,9 @@
             <span>Restock Alerts</span>
             <span class="admin-tab-badge" id="adminRestockTabBadge" style="background: #F59E0B; color: #fff;">0</span>
           </button>
-          <button type="button" class="admin-tab-btn" id="adminTabSettingsBtn" onclick="switchAdminTab('settings')" title="Daraja M-Pesa & Security Configurations">
+          <button type="button" class="admin-tab-btn" id="adminTabSettingsBtn" onclick="switchAdminTab('settings')" title="Store Pricing, Fees & Settings">
             <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <span>Gateway Settings</span>
+            <span>Store Settings</span>
           </button>
           <button type="button" class="admin-tab-btn" id="adminTabLogsBtn" onclick="switchAdminTab('logs')">
             <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -5989,6 +6023,158 @@
               </thead>
               <tbody id="adminOrdersTableBody">
                 <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        <!-- ==========================================
+             PANE: DISPATCH & DELIVERY MANIFEST (Dispatch Officer, Manager, Admin)
+             ========================================== -->
+        <div id="adminTabDispatchPane" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h4 style="font-size: 1.0625rem; font-weight: 700; color: var(--text-main); margin: 0;">
+                  Delivery Manifest &amp; Gate Logistics
+                </h4>
+                <span class="role-badge role-badge-staff">Dispatch Desk</span>
+              </div>
+              <p style="font-size: 0.78125rem; color: var(--text-muted); margin: 0;">
+                Live route sheets, customer landmarks, gate delivery notes, and status toggles for Mombasa delivery drivers.
+              </p>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="loadDispatchManifest()" style="font-size: 0.75rem;">
+              🔄 Refresh Manifest
+            </button>
+          </div>
+
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); overflow-x: auto;">
+            <table class="admin-orders-table" style="margin-bottom: 0;">
+              <thead>
+                <tr>
+                  <th>Delivery Note #</th>
+                  <th>Customer &amp; Phone</th>
+                  <th>Delivery Zone &amp; Address</th>
+                  <th>Time Slot</th>
+                  <th>Trays</th>
+                  <th>Status</th>
+                  <th>Driver Action</th>
+                </tr>
+              </thead>
+              <tbody id="adminDispatchTableBody">
+                <!-- Injected via loadDispatchManifest() -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             PANE: ACCOUNTS & M-PESA RECONCILIATION (Accounts Officer, Admin)
+             ========================================== -->
+        <div id="adminTabAccountsPane" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h4 style="font-size: 1.0625rem; font-weight: 700; color: var(--text-main); margin: 0;">
+                  Accounts &amp; M-Pesa Paybill Reconciliation
+                </h4>
+                <span class="role-badge role-badge-admin">Accounts Desk</span>
+              </div>
+              <p style="font-size: 0.78125rem; color: var(--text-muted); margin: 0;">
+                Safaricom Paybill 625625 Account 20159160 receipt verification and cashless settlement tracking.
+              </p>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="loadAccountsReconciliation()" style="font-size: 0.75rem;">
+              🔄 Refresh Ledger
+            </button>
+          </div>
+
+          <!-- Accounts KPI Summary -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem;">
+            <div class="admin-kpi-card" style="border-left: 4px solid #059669;">
+              <span class="admin-kpi-label">Total Verified Collected</span>
+              <div class="admin-kpi-val" id="accountsTotalCollected" style="color: #065F46;">KES 0</div>
+              <span class="admin-kpi-sub">Cleared via M-Pesa Paybill</span>
+            </div>
+            <div class="admin-kpi-card" style="border-left: 4px solid #F59E0B;">
+              <span class="admin-kpi-label">Pending / Uncollected</span>
+              <div class="admin-kpi-val" id="accountsPendingCollection" style="color: #B45309;">KES 0</div>
+              <span class="admin-kpi-sub">Awaiting driver cash/STK match</span>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); overflow-x: auto;">
+            <table class="admin-orders-table" style="margin-bottom: 0;">
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Customer</th>
+                  <th>Trays</th>
+                  <th>Grand Total</th>
+                  <th>M-Pesa Code</th>
+                  <th>Payment Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="adminAccountsTableBody">
+                <!-- Injected via loadAccountsReconciliation() -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             PANE: CUSTOMER SUPPORT & TRACKING DESK (Support, Manager, Admin)
+             ========================================== -->
+        <div id="adminTabSupportPane" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h4 style="font-size: 1.0625rem; font-weight: 700; color: var(--text-main); margin: 0;">
+                  Customer Support &amp; Order Tracking Desk
+                </h4>
+                <span class="role-badge role-badge-staff">Support Desk</span>
+              </div>
+              <p style="font-size: 0.78125rem; color: var(--text-muted); margin: 0;">
+                Read-only customer lookup, order tracking timeline inquiries, and dispatch status verification.
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <a href="https://wa.me/254727811266" target="_blank" class="btn btn-outline btn-sm" style="color: #059669; border-color: #86EFAC;">
+                💬 Open WhatsApp Desk
+              </a>
+              <button type="button" class="btn btn-outline btn-sm" onclick="loadSupportTickets()">
+                🔄 Refresh Desk
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <input
+              type="text"
+              id="supportSearchInput"
+              class="form-input"
+              placeholder="Search by Order ID, Phone number, or Customer Name..."
+              oninput="filterSupportTickets(this.value)"
+              style="width: 100%; font-size: 0.875rem;"
+            />
+          </div>
+
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); overflow-x: auto;">
+            <table class="admin-orders-table" style="margin-bottom: 0;">
+              <thead>
+                <tr>
+                  <th>Order Ref</th>
+                  <th>Customer Name</th>
+                  <th>Phone Number</th>
+                  <th>Area</th>
+                  <th>Trays</th>
+                  <th>Order Status</th>
+                  <th>Payment</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="adminSupportTableBody">
+                <!-- Injected via loadSupportTickets() -->
               </tbody>
             </table>
           </div>
@@ -6572,71 +6758,190 @@
   </div>
 
   <!-- ==========================================================================
-       STAFF ONBOARDING ACCESS REQUEST MODAL
+       STAFF APPLICATION, VERIFICATION & ROLE ALLOCATION MODAL (Sections 1, 2, 3)
        ========================================================================== -->
   <div class="modal-backdrop" id="staffOnboardModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="staffOnboardTitle">
-    <div class="admin-modal-box" style="max-width: 460px; text-align: left;">
+    <div class="admin-modal-box" style="max-width: 520px; text-align: left;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <div style="display: flex; align-items: center; gap: 0.625rem;">
           <div style="width: 38px; height: 38px; border-radius: 8px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-            📝
+            📋
           </div>
           <div>
-            <h3 id="staffOnboardTitle" style="font-size: 1.125rem; font-weight: 700; line-height: 1.2;">Staff Access Onboarding</h3>
-            <span style="font-size: 0.71875rem; color: var(--text-muted);">Submit personal email for administrator review</span>
+            <h3 id="staffOnboardTitle" style="font-size: 1.125rem; font-weight: 700; line-height: 1.2;">Staff Position Application</h3>
+            <span style="font-size: 0.71875rem; color: var(--text-muted);">Lymbo Ventures · Role Request &amp; Vetting</span>
           </div>
         </div>
         <button type="button" class="drawer-close-btn" onclick="closeStaffOnboardModal()" aria-label="Close modal">✕</button>
       </div>
 
+      <!-- Step 1: Application Form (Section 3) -->
       <div id="onboardFormStep">
-        <p style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 1.125rem;">
-          To join Lymbo Ventures operations, enter your full name and personal email. Your request will be flagged as <code>pending_approval</code> and reviewed by the System Administrator (<code>lymboventures0@gmail.com</code>).
-        </p>
+        <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: var(--radius-sm); padding: 0.65rem 0.75rem; margin-bottom: 1rem; font-size: 0.75rem; color: #166534; line-height: 1.45;">
+          <strong>Security Principle:</strong> The position you select is a request only. The server allocates your actual role only after Administrator identity review.
+        </div>
 
-        <form id="staffOnboardForm" onsubmit="handleStaffOnboardSubmit(event)">
-          <div class="form-group" style="margin-bottom: 0.875rem;">
-            <label for="onboardFullName" class="form-label" style="font-weight: 600; font-size: 0.8125rem;">Full Legal Name *</label>
-            <input type="text" id="onboardFullName" class="form-input" placeholder="e.g. Kelvin Mutua" required style="width: 100%; font-size: 0.875rem;" />
+        <form id="staffOnboardForm" onsubmit="handleStaffRegistrationSubmit(event)">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; margin-bottom: 0.75rem;">
+            <div>
+              <label for="onboardFullName" class="form-label" style="font-weight: 600; font-size: 0.78125rem;">Full Name *</label>
+              <input type="text" id="onboardFullName" class="form-input" placeholder="e.g. Joseph Mbogo" required minlength="2" maxlength="80" style="width: 100%; font-size: 0.8125rem;" />
+            </div>
+            <div>
+              <label for="onboardPhone" class="form-label" style="font-weight: 600; font-size: 0.78125rem;">Kenyan Phone *</label>
+              <input type="tel" id="onboardPhone" class="form-input" placeholder="07XXXXXXXX or +254..." required pattern="^(?:\+254|0)[17]\d{8}$" style="width: 100%; font-size: 0.8125rem;" />
+            </div>
           </div>
 
-          <div class="form-group" style="margin-bottom: 0.875rem;">
-            <label for="onboardEmail" class="form-label" style="font-weight: 600; font-size: 0.8125rem;">Personal Email Address *</label>
-            <input type="email" id="onboardEmail" class="form-input" placeholder="e.g. kelvin.mutua@example.com" required style="width: 100%; font-size: 0.875rem;" />
+          <div class="form-group" style="margin-bottom: 0.75rem;">
+            <label for="onboardEmail" class="form-label" style="font-weight: 600; font-size: 0.78125rem;">Email Address *</label>
+            <input type="email" id="onboardEmail" class="form-input" placeholder="applicant@example.com" required style="width: 100%; font-size: 0.8125rem;" />
           </div>
 
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label for="onboardRequestedRole" class="form-label" style="font-weight: 600; font-size: 0.8125rem;">Desired Company Role *</label>
-            <select id="onboardRequestedRole" class="form-input" style="width: 100%; font-size: 0.875rem;">
-              <option value="staff" selected>Junior Sales Staff (Order fulfillment &amp; stock counts)</option>
-              <option value="manager">Operations Manager (Stock, orders, sales reports)</option>
+          <div class="form-group" style="margin-bottom: 0.75rem;">
+            <label for="onboardRequestedRole" class="form-label" style="font-weight: 600; font-size: 0.78125rem;">Position Applying For *</label>
+            <select id="onboardRequestedRole" class="form-input" required style="width: 100%; font-size: 0.8125rem;">
+              <option value="sales_officer" selected>Sales Officer (Orders, customer inquiries, sales)</option>
+              <option value="dispatch_officer">Dispatch or Delivery Officer (Delivery manifest &amp; status)</option>
+              <option value="accounts_officer">Accounts or Cashier Officer (M-Pesa reconciliation &amp; receipts)</option>
+              <option value="customer_support">Customer Support (Inquiries &amp; order tracking)</option>
+              <option value="manager">Operations Manager (Stock, delivery schedule, reports)</option>
             </select>
           </div>
 
-          <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label for="onboardNotes" class="form-label" style="font-weight: 600; font-size: 0.8125rem;">Department / Dispatch Route Notes</label>
-            <input type="text" id="onboardNotes" class="form-input" placeholder="e.g. Mombasa North Coast / Nyali distribution" style="width: 100%; font-size: 0.8125rem;" />
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; margin-bottom: 0.75rem;">
+            <div>
+              <label for="onboardPassword" class="form-label" style="font-weight: 600; font-size: 0.78125rem;">Password (Min 12 Chars) *</label>
+              <input type="password" id="onboardPassword" class="form-input" placeholder="Passphrase min 12 chars" required minlength="12" style="width: 100%; font-size: 0.8125rem;" oninput="updateRegPasswordStrength(this.value)" />
+            </div>
+            <div>
+              <label for="onboardConfirmPassword" class="form-label" style="font-weight: 600; font-size: 0.78125rem;">Confirm Password *</label>
+              <input type="password" id="onboardConfirmPassword" class="form-input" placeholder="Repeat password" required minlength="12" style="width: 100%; font-size: 0.8125rem;" />
+            </div>
           </div>
 
-          <button type="submit" class="btn btn-primary" id="onboardSubmitBtn" style="width: 100%; font-weight: 700; min-height: 44px;">
-            Submit Account for Admin Review ➔
+          <!-- Password Strength Indicator -->
+          <div style="margin-bottom: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.6875rem; margin-bottom: 0.2rem; color: var(--text-muted);">
+              <span>Password Security &amp; Length:</span>
+              <span id="regPwStrengthLabel" style="font-weight: 700;">Too Short</span>
+            </div>
+            <div style="height: 4px; border-radius: 2px; background: #E5E7EB; overflow: hidden;">
+              <div id="regPwStrengthBar" style="height: 100%; width: 10%; background: #EF4444; transition: width 0.3s, background 0.3s;"></div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.75rem;">
+            <label for="onboardNotes" class="form-label" style="font-weight: 600; font-size: 0.78125rem;">Short Note / References (Max 500 chars)</label>
+            <input type="text" id="onboardNotes" class="form-input" maxlength="500" placeholder="e.g. 2 years dispatch experience in Mombasa Island &amp; Nyali" style="width: 100%; font-size: 0.78125rem;" />
+          </div>
+
+          <!-- Kenya Data Protection Act 2019 Consent -->
+          <div style="background: var(--bg-body); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.65rem; margin-bottom: 1rem;">
+            <label style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer; font-size: 0.71875rem; color: var(--text-main); line-height: 1.4;">
+              <input type="checkbox" id="onboardConsent" required style="margin-top: 0.15rem;" />
+              <span>I consent to the collection and processing of my personal details for employment vetting in compliance with the <strong>Kenya Data Protection Act 2019</strong>.</span>
+            </label>
+          </div>
+
+          <div id="regErrorBanner" style="display: none; background: #FEF2F2; border: 1px solid #FCA5A5; color: #991B1B; padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.75rem; margin-bottom: 0.75rem;"></div>
+
+          <button type="submit" class="btn btn-primary" id="onboardSubmitBtn" style="width: 100%; font-weight: 700; min-height: 42px; font-size: 0.875rem;">
+            Submit Application &amp; Send Verification Code ➔
           </button>
         </form>
       </div>
 
-      <!-- Success Feedback Pane -->
+      <!-- Step 2: 6-Digit Email Verification Code Input -->
+      <div id="onboardVerifyStep" style="display: none; text-align: center; padding: 0.5rem 0;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: #EFF6FF; color: #2563EB; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.35rem;">
+          ✉️
+        </div>
+        <h4 style="font-size: 1.125rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">Verify Your Email Address</h4>
+        <p style="font-size: 0.78125rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 1rem;">
+          A single-use 6-digit verification code has been dispatched to <strong id="verifyEmailDisplay" style="color: var(--primary);"></strong>. It expires in 10 minutes.
+        </p>
+
+        <div style="max-width: 260px; margin: 0 auto 1rem;">
+          <input
+            type="text"
+            id="onboardVerifyCodeInput"
+            class="form-input"
+            placeholder="000000"
+            maxlength="6"
+            inputmode="numeric"
+            style="width: 100%; text-align: center; font-size: 1.625rem; font-weight: 800; letter-spacing: 0.35em; font-family: monospace; color: var(--primary);"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
+          />
+        </div>
+
+        <div id="verifyCodeErrorBanner" style="display: none; background: #FEF2F2; border: 1px solid #FCA5A5; color: #991B1B; padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.75rem; margin-bottom: 0.75rem; text-align: left;"></div>
+
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;">
+          <button type="button" class="btn btn-primary" id="confirmVerifyBtn" onclick="handleVerifyStaffCodeSubmit()" style="font-weight: 700; flex: 1;">
+            ✓ Confirm 6-Digit Code
+          </button>
+        </div>
+
+        <!-- Testing Simulation Tool: Outbox Viewer -->
+        <div style="background: #FFFBEB; border: 1px dashed #F59E0B; border-radius: var(--radius-sm); padding: 0.65rem 0.75rem; text-align: left; font-size: 0.75rem; margin-top: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+            <span style="font-weight: 700; color: #92400E;">🧪 Email Outbox Simulator:</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openOutboxSimulatorModal()" style="font-size: 0.6875rem; padding: 0.15rem 0.45rem; background: #fff;">
+              Open Outbox Viewer 📬
+            </button>
+          </div>
+          <div style="color: #78350F; font-size: 0.71875rem; line-height: 1.4;">
+            In local preview testing, sent emails are recorded in the simulated outbox. Click above to view the code or test the link!
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Verified & Pending Admin Approval Feedback -->
       <div id="onboardSuccessStep" style="display: none; text-align: center; padding: 1rem 0;">
         <div style="width: 52px; height: 52px; border-radius: 50%; background: #ECFDF5; color: #059669; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.5rem;">
           ✓
         </div>
-        <h4 style="font-size: 1.125rem; font-weight: 700; color: #065F46;">Request Successfully Submitted</h4>
+        <h4 style="font-size: 1.125rem; font-weight: 700; color: #065F46;">Email Verified Successfully</h4>
         <div style="background: #F0FDF4; border: 1.5px solid #86EFAC; color: #166534; padding: 0.875rem; border-radius: var(--radius-sm); font-size: 0.8125rem; margin: 1rem 0; line-height: 1.5; text-align: left;">
-          <strong>Status: Pending Admin Approval</strong><br />
-          Your account has been submitted successfully and is pending admin approval. Once approved by the Administrator, you will receive a secure one-time activation link to set your 12+ character password.
+          <strong>Account Status: Pending Approval</strong><br />
+          Your email address has been verified and your chosen position is recorded as a request. The Administrator will complete the identity and reference checks, confirm your final role, and activate your dashboard.
         </div>
-        <button type="button" class="btn btn-primary" onclick="closeStaffOnboardModal()" style="width: 100%;">
-          Close Window
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="btn btn-outline" onclick="closeStaffOnboardModal()" style="flex: 1;">
+            Close
+          </button>
+          <button type="button" class="btn btn-primary" onclick="closeStaffOnboardModal(); openAdminPortal();" style="flex: 1; font-weight: 700;">
+            Go to Staff Login ➔
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Outbox Email Simulator Modal -->
+  <div class="modal-backdrop" id="outboxSimulatorModalBackdrop" role="dialog" aria-modal="true">
+    <div class="admin-modal-box" style="max-width: 600px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.35rem;">📬</span>
+          <div>
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin: 0;">Lymbo Outbox Email Simulator</h3>
+            <span style="font-size: 0.71875rem; color: var(--text-muted);">Inspection viewer for outgoing transactional emails</span>
+          </div>
+        </div>
+        <button type="button" class="drawer-close-btn" onclick="closeOutboxSimulatorModal()">✕</button>
+      </div>
+
+      <div style="margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Recent transactional messages:</span>
+        <button type="button" class="btn btn-outline btn-sm" onclick="loadOutboxEmails()" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">
+          🔄 Refresh Outbox
         </button>
+      </div>
+
+      <div id="outboxEmailsContainer" style="max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem;">
+        <!-- Injected via loadOutboxEmails() -->
       </div>
     </div>
   </div>
@@ -7160,6 +7465,59 @@
       </div>
     </div>
   </section>
+
+  <!-- ==========================================================================
+       FLOATING AI ASSISTANT & CHAT DRAWER (Customer Service Powered by Gemini)
+       ========================================================================== -->
+  <button type="button" class="floating-ai-chat-btn" id="floatingAiChatBtn" onclick="toggleAiChatDrawer()" aria-label="Open Lymbo AI Egg Assistant" style="position: fixed; bottom: 5.25rem; right: 1.5rem; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #1F7A4D 0%, #15803D 100%); color: #fff; border: 2px solid #86EFAC; box-shadow: 0 4px 14px rgba(31, 122, 77, 0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 998; transition: transform 0.2s, box-shadow 0.2s;" title="Ask Lymbo AI Assistant">
+    <span style="font-size: 1.4rem;">🤖</span>
+  </button>
+
+  <div class="modal-backdrop" id="aiChatDrawerBackdrop" role="dialog" aria-modal="true" style="align-items: flex-end; justify-content: flex-end; padding: 1rem;">
+    <div style="background: var(--bg-surface); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); width: 380px; max-width: 100%; height: 520px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden;">
+      <!-- Header -->
+      <div style="padding: 0.875rem 1rem; background: var(--primary); color: #fff; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+            🥚
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.9375rem; line-height: 1.2;">Lymbo AI Assistant</div>
+            <div style="font-size: 0.6875rem; opacity: 0.9;">Mombasa Egg Specialist · Powered by Gemini</div>
+          </div>
+        </div>
+        <button type="button" onclick="toggleAiChatDrawer()" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; padding: 0.2rem;">✕</button>
+      </div>
+
+      <!-- Messages Body -->
+      <div id="aiChatMessages" style="flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; background: var(--bg-body); font-size: 0.8125rem;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 0.75rem 0.85rem; border-radius: 12px 12px 12px 2px; max-width: 85%; line-height: 1.45; color: var(--text-main);">
+          Habari! Karibu Lymbo Ventures. I can answer questions about egg prices, Mombasa delivery fees, M-Pesa Paybill, or help you place an order. How can I help today?
+        </div>
+      </div>
+
+      <!-- Quick Suggested Chips -->
+      <div style="padding: 0.5rem 0.75rem; background: var(--bg-surface); border-top: 1px solid var(--border-subtle); display: flex; gap: 0.35rem; overflow-x: auto; white-space: nowrap;">
+        <button type="button" onclick="sendAiQuickMessage('How much are eggs per tray?')" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 9999px; background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); cursor: pointer;">
+          💰 Egg Price?
+        </button>
+        <button type="button" onclick="sendAiQuickMessage('What are your delivery fees across Mombasa?')" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 9999px; background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); cursor: pointer;">
+          🚚 Delivery Fees?
+        </button>
+        <button type="button" onclick="sendAiQuickMessage('What is your Lipa na M-Pesa Paybill number?')" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 9999px; background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); cursor: pointer;">
+          📱 Paybill Info?
+        </button>
+      </div>
+
+      <!-- Input Footer -->
+      <form onsubmit="handleAiChatFormSubmit(event)" style="padding: 0.65rem 0.75rem; background: var(--bg-surface); border-top: 1px solid var(--border-subtle); display: flex; gap: 0.5rem;">
+        <input type="text" id="aiChatInput" placeholder="Ask about eggs, delivery, or orders..." style="flex: 1; padding: 0.45rem 0.75rem; font-size: 0.8125rem; border-radius: 20px; border: 1px solid var(--border-subtle); outline: none;" />
+        <button type="submit" class="btn btn-primary btn-sm" id="aiChatSendBtn" style="padding: 0.45rem 0.85rem; border-radius: 20px; font-weight: 700; font-size: 0.78125rem;">
+          Send
+        </button>
+      </form>
+    </div>
+  </div>
 
   <!-- ==========================================================================
        FLOATING WHATSAPP BUTTON (Fixed Bottom-Right on every screen)
@@ -9688,13 +10046,16 @@
     function quickFillCredentials(role) {
       const idInput = document.getElementById("adminIdentifierInput");
       const pinInput = document.getElementById("adminPasswordInput");
-      if (role === 'admin') {
-        if (idInput) idInput.value = "lymboventures0@gmail.com";
-        if (pinInput) pinInput.value = "20lymboventures@26";
-      } else {
-        if (idInput) idInput.value = "sales@lymboventures.co.ke";
-        if (pinInput) pinInput.value = "20lymboventures@26";
-      }
+      const emailMap = {
+        admin: 'lymboventures0@gmail.com',
+        manager: 'manager@lymboventures.co.ke',
+        sales: 'sales@lymboventures.co.ke',
+        dispatch: 'dispatch@lymboventures.co.ke',
+        accounts: 'accounts@lymboventures.co.ke',
+        support: 'support@lymboventures.co.ke'
+      };
+      if (idInput) idInput.value = emailMap[role] || 'lymboventures0@gmail.com';
+      if (pinInput) pinInput.value = "20lymboventures@26";
       handleAdminPasswordKeyup("20lymboventures@26");
     }
 
@@ -10379,6 +10740,9 @@
       state.adminActiveTab = tabName;
       const invPane = document.getElementById("adminTabInventoryPane");
       const ordPane = document.getElementById("adminTabOrdersPane");
+      const dispatchPane = document.getElementById("adminTabDispatchPane");
+      const accountsPane = document.getElementById("adminTabAccountsPane");
+      const supportPane = document.getElementById("adminTabSupportPane");
       const phoPane = document.getElementById("adminTabPhotosPane");
       const restockPane = document.getElementById("adminTabRestockPane");
       const logsPane = document.getElementById("adminTabLogsPane");
@@ -10388,6 +10752,9 @@
 
       const invBtn = document.getElementById("adminTabInventoryBtn");
       const ordBtn = document.getElementById("adminTabOrdersBtn");
+      const dispatchBtn = document.getElementById("adminTabDispatchBtn");
+      const accountsBtn = document.getElementById("adminTabAccountsBtn");
+      const supportBtn = document.getElementById("adminTabSupportBtn");
       const phoBtn = document.getElementById("adminTabPhotosBtn");
       const restockBtn = document.getElementById("adminTabRestockBtn");
       const logsBtn = document.getElementById("adminTabLogsBtn");
@@ -10397,6 +10764,9 @@
 
       if (invPane) invPane.style.display = tabName === "inventory" ? "block" : "none";
       if (ordPane) ordPane.style.display = tabName === "orders" ? "block" : "none";
+      if (dispatchPane) dispatchPane.style.display = tabName === "dispatch" ? "block" : "none";
+      if (accountsPane) accountsPane.style.display = tabName === "accounts" ? "block" : "none";
+      if (supportPane) supportPane.style.display = tabName === "support" ? "block" : "none";
       if (phoPane) phoPane.style.display = tabName === "photos" ? "block" : "none";
       if (restockPane) restockPane.style.display = tabName === "restock" ? "block" : "none";
       if (logsPane) logsPane.style.display = tabName === "logs" ? "block" : "none";
@@ -10406,6 +10776,9 @@
 
       if (invBtn) invBtn.classList.toggle("active", tabName === "inventory");
       if (ordBtn) ordBtn.classList.toggle("active", tabName === "orders");
+      if (dispatchBtn) dispatchBtn.classList.toggle("active", tabName === "dispatch");
+      if (accountsBtn) accountsBtn.classList.toggle("active", tabName === "accounts");
+      if (supportBtn) supportBtn.classList.toggle("active", tabName === "support");
       if (phoBtn) phoBtn.classList.toggle("active", tabName === "photos");
       if (restockBtn) restockBtn.classList.toggle("active", tabName === "restock");
       if (logsBtn) logsBtn.classList.toggle("active", tabName === "logs");
@@ -10420,6 +10793,12 @@
         renderInventoryTable();
       } else if (tabName === "orders") {
         renderAdminOrdersTable();
+      } else if (tabName === "dispatch") {
+        loadDispatchManifest();
+      } else if (tabName === "accounts") {
+        loadAccountsReconciliation();
+      } else if (tabName === "support") {
+        loadSupportTickets();
       } else if (tabName === "staff") {
         loadAdminUsersList();
       } else if (tabName === "reports") {
@@ -15153,6 +15532,9 @@
     /* ==========================================================================
        RBAC ROLE ENFORCEMENT & UI GOVERNANCE
        ========================================================================== */
+    /* ==========================================================================
+       RBAC ROLE ENFORCEMENT & UI GOVERNANCE (Section 4 & 5)
+       ========================================================================== */
     function enforceRbacUi() {
       const role = state.currentUserRole || 'admin';
       const roleDisplay = document.getElementById("adminBannerRoleDisplay");
@@ -15164,39 +15546,77 @@
         roleDisplay.textContent = role.toUpperCase();
       }
       if (userDisplay) {
-        userDisplay.textContent = state.currentUserName || (role === 'admin' ? 'System Administrator' : (role === 'manager' ? 'Operations Manager' : 'Junior Sales Staff'));
+        userDisplay.textContent = state.currentUserName || (role === 'admin' ? 'System Administrator' : (role === 'manager' ? 'Operations Manager' : 'Authorized Staff'));
       }
       if (titleDisplay) {
-        if (role === 'admin') titleDisplay.textContent = 'Full Infrastructure Governance Active';
-        else if (role === 'manager') titleDisplay.textContent = 'Operational Supervision & Stock Control';
-        else if (role === 'staff') titleDisplay.textContent = 'Order Fulfillment & Dispatch (Data Minimization)';
+        if (role === 'admin') titleDisplay.textContent = 'Administrator: Full System & Infrastructure Governance';
+        else if (role === 'manager') titleDisplay.textContent = 'Manager: Orders, Stock, Schedule & Sales Reports';
+        else if (role === 'sales_officer') titleDisplay.textContent = 'Sales Officer: Order Creation & Customer Inquiries';
+        else if (role === 'dispatch_officer') titleDisplay.textContent = 'Dispatch Officer: Delivery Manifest & Route Notes';
+        else if (role === 'accounts_officer') titleDisplay.textContent = 'Accounts Officer: M-Pesa Reconciliation & Receipts';
+        else if (role === 'customer_support') titleDisplay.textContent = 'Customer Support: Order Tracking & Messages';
+        else titleDisplay.textContent = 'Operations Access Active';
       }
 
-      // Principle of Least Privilege: Hide Prohibited Tabs
-      const staffBtn = document.getElementById("adminTabStaffBtn");
-      const settingsBtn = document.getElementById("adminTabSettingsBtn");
-      const reportsBtn = document.getElementById("adminTabReportsBtn");
+      // Principle of Least Privilege: Tab Visibility (Section 4)
+      const tabMap = {
+        invBtn: document.getElementById("adminTabInventoryBtn"),
+        ordBtn: document.getElementById("adminTabOrdersBtn"),
+        dispatchBtn: document.getElementById("adminTabDispatchBtn"),
+        accountsBtn: document.getElementById("adminTabAccountsBtn"),
+        supportBtn: document.getElementById("adminTabSupportBtn"),
+        staffBtn: document.getElementById("adminTabStaffBtn"),
+        reportsBtn: document.getElementById("adminTabReportsBtn"),
+        phoBtn: document.getElementById("adminTabPhotosBtn"),
+        restockBtn: document.getElementById("adminTabRestockBtn"),
+        settingsBtn: document.getElementById("adminTabSettingsBtn"),
+        logsBtn: document.getElementById("adminTabLogsBtn"),
+      };
 
-      if (staffBtn) staffBtn.style.display = (role === 'admin') ? 'inline-flex' : 'none';
-      if (settingsBtn) settingsBtn.style.display = (role === 'admin') ? 'inline-flex' : 'none';
-      if (reportsBtn) reportsBtn.style.display = (role === 'admin' || role === 'manager') ? 'inline-flex' : 'none';
+      const allowedTabs = {
+        admin: ['inventory', 'orders', 'dispatch', 'accounts', 'support', 'staff', 'reports', 'photos', 'restock', 'settings', 'logs'],
+        manager: ['inventory', 'orders', 'dispatch', 'reports', 'support', 'photos', 'restock'],
+        sales_officer: ['orders', 'support'],
+        dispatch_officer: ['dispatch'],
+        accounts_officer: ['accounts'],
+        customer_support: ['support'],
+        staff: ['orders', 'support']
+      };
 
-      // If user is Junior Staff and currently on restricted tab, switch to orders
-      if (role === 'staff' && (state.adminActiveTab === 'staff' || state.adminActiveTab === 'settings' || state.adminActiveTab === 'reports')) {
-        switchAdminTab('orders');
+      const myAllowed = allowedTabs[role] || ['orders'];
+
+      if (tabMap.invBtn) tabMap.invBtn.style.display = myAllowed.includes('inventory') ? 'inline-flex' : 'none';
+      if (tabMap.ordBtn) tabMap.ordBtn.style.display = myAllowed.includes('orders') ? 'inline-flex' : 'none';
+      if (tabMap.dispatchBtn) tabMap.dispatchBtn.style.display = myAllowed.includes('dispatch') ? 'inline-flex' : 'none';
+      if (tabMap.accountsBtn) tabMap.accountsBtn.style.display = myAllowed.includes('accounts') ? 'inline-flex' : 'none';
+      if (tabMap.supportBtn) tabMap.supportBtn.style.display = myAllowed.includes('support') ? 'inline-flex' : 'none';
+      if (tabMap.staffBtn) tabMap.staffBtn.style.display = myAllowed.includes('staff') ? 'inline-flex' : 'none';
+      if (tabMap.reportsBtn) tabMap.reportsBtn.style.display = myAllowed.includes('reports') ? 'inline-flex' : 'none';
+      if (tabMap.phoBtn) tabMap.phoBtn.style.display = myAllowed.includes('photos') ? 'inline-flex' : 'none';
+      if (tabMap.restockBtn) tabMap.restockBtn.style.display = myAllowed.includes('restock') ? 'inline-flex' : 'none';
+      if (tabMap.settingsBtn) tabMap.settingsBtn.style.display = myAllowed.includes('settings') ? 'inline-flex' : 'none';
+      if (tabMap.logsBtn) tabMap.logsBtn.style.display = myAllowed.includes('logs') ? 'inline-flex' : 'none';
+
+      // Switch to the first allowed tab if current is forbidden
+      if (!myAllowed.includes(state.adminActiveTab)) {
+        switchAdminTab(myAllowed[0]);
       }
     }
 
     /* ==========================================================================
-       STAFF ONBOARDING ACCESS REQUEST WORKFLOW
+       STAFF APPLICATION & EMAIL VERIFICATION WORKFLOW (Section 1, 2, 3)
        ========================================================================== */
     function openStaffOnboardModal() {
       const modal = document.getElementById("staffOnboardModalBackdrop");
       if (!modal) return;
-      const formStep = document.getElementById("onboardFormStep");
-      const successStep = document.getElementById("onboardSuccessStep");
-      if (formStep) formStep.style.display = "block";
-      if (successStep) successStep.style.display = "none";
+      const step1 = document.getElementById("onboardFormStep");
+      const step2 = document.getElementById("onboardVerifyStep");
+      const step3 = document.getElementById("onboardSuccessStep");
+      if (step1) step1.style.display = "block";
+      if (step2) step2.style.display = "none";
+      if (step3) step3.style.display = "none";
+      const err = document.getElementById("regErrorBanner");
+      if (err) err.style.display = "none";
       modal.classList.add("active");
       document.body.style.overflow = "hidden";
     }
@@ -15207,174 +15627,308 @@
       document.body.style.overflow = "";
     }
 
-    async function handleStaffOnboardSubmit(e) {
+    function updateRegPasswordStrength(pw) {
+      const bar = document.getElementById("regPwStrengthBar");
+      const label = document.getElementById("regPwStrengthLabel");
+      if (!bar || !label) return;
+
+      if (!pw || pw.length < 12) {
+        bar.style.width = Math.min(100, Math.max(10, (pw ? pw.length : 0) * 8)) + "%";
+        bar.style.background = "#EF4444";
+        label.textContent = `${pw ? pw.length : 0}/12 min chars`;
+        label.style.color = "#DC2626";
+      } else {
+        const hasUpper = /[A-Z]/.test(pw);
+        const hasNum = /[0-9]/.test(pw);
+        const hasSpecial = /[^A-Za-z0-9]/.test(pw);
+        let score = 2;
+        if (hasUpper) score++;
+        if (hasNum) score++;
+        if (hasSpecial) score++;
+        if (pw.length >= 16) score++;
+
+        if (score >= 4) {
+          bar.style.width = "100%";
+          bar.style.background = "#10B981";
+          label.textContent = "Strong Passphrase (✓ Pass)";
+          label.style.color = "#059669";
+        } else {
+          bar.style.width = "70%";
+          bar.style.background = "#F59E0B";
+          label.textContent = "Good Length (✓ Pass)";
+          label.style.color = "#D97706";
+        }
+      }
+    }
+
+    async function handleStaffRegistrationSubmit(e) {
       if (e) e.preventDefault();
-      const name = document.getElementById("onboardFullName")?.value.trim();
-      const email = document.getElementById("onboardEmail")?.value.trim();
-      const requestedRole = document.getElementById("onboardRequestedRole")?.value || "staff";
-      const notes = document.getElementById("onboardNotes")?.value.trim();
+      const fullName = document.getElementById("onboardFullName")?.value.trim();
+      const phone = document.getElementById("onboardPhone")?.value.trim();
+      const email = document.getElementById("onboardEmail")?.value.trim().toLowerCase();
+      const position = document.getElementById("onboardRequestedRole")?.value;
+      const password = document.getElementById("onboardPassword")?.value;
+      const confirmPassword = document.getElementById("onboardConfirmPassword")?.value;
+      const note = document.getElementById("onboardNotes")?.value.trim();
+      const consent = document.getElementById("onboardConsent")?.checked;
+      const errBanner = document.getElementById("regErrorBanner");
       const btn = document.getElementById("onboardSubmitBtn");
 
-      if (!name || !email) {
-        showToast("Please enter your name and email.");
+      if (errBanner) errBanner.style.display = "none";
+
+      if (password !== confirmPassword) {
+        if (errBanner) {
+          errBanner.textContent = "Passwords do not match. Please verify.";
+          errBanner.style.display = "block";
+        }
+        return;
+      }
+
+      if (password.length < 12) {
+        if (errBanner) {
+          errBanner.textContent = "Password must be at least 12 characters long.";
+          errBanner.style.display = "block";
+        }
+        return;
+      }
+
+      if (!consent) {
+        if (errBanner) {
+          errBanner.textContent = "You must accept the personal data processing consent (Data Protection Act 2019).";
+          errBanner.style.display = "block";
+        }
         return;
       }
 
       if (btn) {
         btn.disabled = true;
-        btn.textContent = "⏳ Submitting Request...";
+        btn.textContent = "⏳ Submitting Application...";
       }
 
       try {
-        const res = await fetch('/api/auth/onboard-request', {
+        const res = await fetch('/api/staff/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, requestedRole, notes })
+          body: JSON.stringify({ fullName, phone, email, position, password, note, consent })
         });
         const data = await res.json();
-        if (!data.success) {
-          showToast(data.error || "Failed to submit request.");
-          return;
-        }
 
-        const formStep = document.getElementById("onboardFormStep");
-        const successStep = document.getElementById("onboardSuccessStep");
-        if (formStep) formStep.style.display = "none";
-        if (successStep) successStep.style.display = "block";
-        showToast("✓ Your account has been submitted successfully and is pending admin approval.");
-      } catch (err) {
-        showToast("Network error submitting request.");
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = "Submit Account for Admin Review ➔";
-        }
-      }
-    }
-
-    /* ==========================================================================
-       ACCOUNT ACTIVATION & 12+ CHAR PASSWORD SETUP
-       ========================================================================== */
-    function openAccountActivationModal(token) {
-      const modal = document.getElementById("accountActivationModalBackdrop");
-      if (!modal) return;
-      const tokenInput = document.getElementById("activationTokenInput");
-      if (tokenInput && token) tokenInput.value = token;
-      const err = document.getElementById("activationErrorBanner");
-      if (err) err.style.display = "none";
-      modal.classList.add("active");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeAccountActivationModal() {
-      const modal = document.getElementById("accountActivationModalBackdrop");
-      if (modal) modal.classList.remove("active");
-      document.body.style.overflow = "";
-    }
-
-    async function handleAccountActivationSubmit(e) {
-      if (e) e.preventDefault();
-      const token = document.getElementById("activationTokenInput")?.value.trim();
-      const pw = document.getElementById("activationPasswordInput")?.value;
-      const confirmPw = document.getElementById("activationConfirmPasswordInput")?.value;
-      const errBanner = document.getElementById("activationErrorBanner");
-      const submitBtn = document.getElementById("activationSubmitBtn");
-
-      if (!token || !pw) {
-        showToast("Please enter token and new password.");
-        return;
-      }
-
-      if (pw.length < 12) {
-        if (errBanner) {
-          errBanner.textContent = `Password must be at least 12 characters (currently ${pw.length} chars).`;
-          errBanner.style.display = "block";
-        }
-        return;
-      }
-
-      if (pw !== confirmPw) {
-        if (errBanner) {
-          errBanner.textContent = "Passwords do not match.";
-          errBanner.style.display = "block";
-        }
-        return;
-      }
-
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "⏳ Activating Account...";
-      }
-
-      try {
-        const res = await fetch('/api/auth/activate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, newPassword: pw })
-        });
-        const data = await res.json();
         if (!data.success) {
           if (errBanner) {
-            errBanner.textContent = data.error || "Activation failed.";
+            errBanner.textContent = data.error || "Application submission failed.";
             errBanner.style.display = "block";
           }
           return;
         }
 
-        closeAccountActivationModal();
-        showToast("✓ Account activated! Please sign in with your new 12+ character password.");
-        openAdminPortal();
+        state.pendingRegistrationEmail = email;
+        const display = document.getElementById("verifyEmailDisplay");
+        if (display) display.textContent = email;
+
+        const step1 = document.getElementById("onboardFormStep");
+        const step2 = document.getElementById("onboardVerifyStep");
+        if (step1) step1.style.display = "none";
+        if (step2) step2.style.display = "block";
+
+        const codeInput = document.getElementById("onboardVerifyCodeInput");
+        if (codeInput) {
+          codeInput.value = "";
+          setTimeout(() => codeInput.focus(), 100);
+        }
+
+        showToast("✓ Application recorded! Verification code dispatched.");
       } catch (err) {
-        showToast("Error connecting to server during activation.");
+        if (errBanner) {
+          errBanner.textContent = "Error connecting to server. Please try again.";
+          errBanner.style.display = "block";
+        }
       } finally {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Activate Account & Unlock Portal ➔";
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "Submit Application & Send Verification Code ➔";
         }
       }
     }
 
+    async function handleVerifyStaffCodeSubmit() {
+      const email = state.pendingRegistrationEmail || document.getElementById("onboardEmail")?.value.trim().toLowerCase();
+      const codeInput = document.getElementById("onboardVerifyCodeInput");
+      const code = codeInput ? codeInput.value.trim() : "";
+      const errBanner = document.getElementById("verifyCodeErrorBanner");
+      const btn = document.getElementById("confirmVerifyBtn");
+
+      if (errBanner) errBanner.style.display = "none";
+
+      if (!email || !code || code.length !== 6) {
+        if (errBanner) {
+          errBanner.textContent = "Please enter the complete 6-digit code.";
+          errBanner.style.display = "block";
+        }
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "⏳ Verifying...";
+      }
+
+      try {
+        const res = await fetch('/api/staff/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          if (errBanner) {
+            errBanner.textContent = data.error || "Invalid or expired code.";
+            errBanner.style.display = "block";
+          }
+          return;
+        }
+
+        const step2 = document.getElementById("onboardVerifyStep");
+        const step3 = document.getElementById("onboardSuccessStep");
+        if (step2) step2.style.display = "none";
+        if (step3) step3.style.display = "block";
+        showToast("✓ Email verified! Application pending Administrator review.");
+      } catch (err) {
+        if (errBanner) {
+          errBanner.textContent = "Error verifying code with server.";
+          errBanner.style.display = "block";
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "✓ Confirm 6-Digit Code";
+        }
+      }
+    }
+
+    /* Outbox Simulator Functions */
+    function openOutboxSimulatorModal() {
+      const modal = document.getElementById("outboxSimulatorModalBackdrop");
+      if (modal) {
+        modal.classList.add("active");
+        loadOutboxEmails();
+      }
+    }
+
+    function closeOutboxSimulatorModal() {
+      const modal = document.getElementById("outboxSimulatorModalBackdrop");
+      if (modal) modal.classList.remove("active");
+    }
+
+    async function loadOutboxEmails() {
+      const container = document.getElementById("outboxEmailsContainer");
+      if (!container) return;
+      container.innerHTML = '<div style="color: var(--text-muted); font-size: 0.75rem;">Loading outbox...</div>';
+
+      try {
+        const res = await fetch('/api/dev/outbox');
+        const data = await res.json();
+        const emails = data.emails || [];
+
+        if (emails.length === 0) {
+          container.innerHTML = '<div style="color: var(--text-muted); font-size: 0.75rem; text-align: center; padding: 1.5rem;">No emails dispatched yet. Submit a registration form to test.</div>';
+          return;
+        }
+
+        container.innerHTML = emails.map(m => `
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.75rem; font-size: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+              <strong style="color: var(--primary);">${escapeHtml(m.subject)}</strong>
+              <span style="font-size: 0.6875rem; color: var(--text-muted);">${new Date(m.sentAt).toLocaleTimeString()}</span>
+            </div>
+            <div style="color: var(--text-muted); margin-bottom: 0.35rem;">To: <code>${escapeHtml(m.to)}</code> (${m.type})</div>
+            ${m.codePreview ? `
+              <div style="background: #ECFDF5; border: 1px solid #A7F3D0; padding: 0.4rem 0.6rem; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <span>6-Digit Code: <strong style="font-family: monospace; font-size: 1rem; letter-spacing: 0.1em; color: #065F46;">${m.codePreview}</strong></span>
+                <button type="button" class="btn btn-outline btn-sm" onclick="applyOutboxCode('${m.codePreview}')" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">
+                  Paste to Form
+                </button>
+              </div>
+            ` : ''}
+            <div style="background: var(--bg-body); padding: 0.5rem; border-radius: 4px; font-size: 0.71875rem; color: var(--text-main); max-height: 80px; overflow-y: auto;">
+              ${m.html}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = '<div style="color: #DC2626; font-size: 0.75rem;">Error loading outbox.</div>';
+      }
+    }
+
+    function applyOutboxCode(code) {
+      const input = document.getElementById("onboardVerifyCodeInput");
+      if (input) {
+        input.value = code;
+        closeOutboxSimulatorModal();
+        showToast("✓ Code auto-pasted!");
+      }
+    }
+
     /* ==========================================================================
-       ADMIN USER MANAGEMENT (TIER 1 ADMIN ONLY)
+       ADMIN USER & APPLICATIONS MANAGEMENT (Section 7)
        ========================================================================== */
     async function loadAdminUsersList() {
       try {
-        const res = await fetch('/api/admin/users');
-        const data = await res.json();
-        if (!data.success || !Array.isArray(data.users)) return;
+        const [usersRes, appsRes] = await Promise.all([
+          fetch('/api/admin/users'),
+          fetch('/api/admin/staff/applications')
+        ]);
+        const usersData = await usersRes.json();
+        const appsData = await appsRes.json();
 
-        state.usersList = data.users;
-        state.pendingUsersList = data.users.filter(u => u.status === 'pending_approval');
-        const activeUsers = data.users.filter(u => u.status === 'active');
+        const applications = appsData.applications || [];
+        const users = usersData.users || [];
+        const pendingApps = applications.filter(a => a.status === 'pending_approval' || a.status === 'pending_email');
 
-        // Update Badges
         const staffBadge = document.getElementById("adminStaffTabBadge");
         const pendingBadge = document.getElementById("pendingApprovalsCountBadge");
-        if (staffBadge) staffBadge.textContent = state.pendingUsersList.length;
-        if (pendingBadge) pendingBadge.textContent = `${state.pendingUsersList.length} Pending`;
+        if (staffBadge) staffBadge.textContent = pendingApps.length;
+        if (pendingBadge) pendingBadge.textContent = `${pendingApps.length} Pending`;
 
-        // Render Pending Approvals Queue
+        // Render Pending Applications Queue
         const pendingTbody = document.getElementById("adminPendingUsersTableBody");
         if (pendingTbody) {
-          if (state.pendingUsersList.length === 0) {
-            pendingTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No pending staff onboarding requests at this time. All users verified.</td></tr>`;
+          if (applications.length === 0) {
+            pendingTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No staff applications recorded. New applicants register at Staff Application.</td></tr>`;
           } else {
-            pendingTbody.innerHTML = state.pendingUsersList.map(u => `
+            pendingTbody.innerHTML = applications.map(a => `
               <tr>
-                <td><strong>${escapeHtml(u.name || u.username)}</strong></td>
-                <td><code>${escapeHtml(u.email)}</code></td>
-                <td><span class="role-badge role-badge-${u.requestedRole === 'manager' ? 'manager' : 'staff'}">${escapeHtml(u.requestedRole || 'staff')}</span></td>
-                <td>${new Date(u.createdAt).toLocaleDateString()}</td>
-                <td><span style="background: #FEF3C7; color: #92400E; font-size: 0.6875rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 9999px;">Pending Approval</span></td>
+                <td><strong>${escapeHtml(a.fullName || a.name || a.email)}</strong></td>
+                <td><code>${escapeHtml(a.email)}</code><br /><small style="color: var(--text-muted);">${escapeHtml(a.phone || '')}</small></td>
                 <td>
-                  <div style="display: flex; gap: 0.35rem;">
-                    <button type="button" class="btn btn-primary btn-sm" onclick="handleApproveUser('${u.id}', '${escapeHtml(u.email)}', '${u.requestedRole || 'staff'}')" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;">
-                      ✓ Approve &amp; Link
-                    </button>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="handleDeleteUser('${u.id}', '${escapeHtml(u.email)}')" style="padding: 0.25rem 0.55rem; font-size: 0.72rem; color: #DC2626;">
-                      Reject
-                    </button>
-                  </div>
+                  <span class="role-badge role-badge-staff">${(a.requestedPosition || 'sales_officer').toUpperCase()}</span>
+                  ${a.note ? `<div style="font-size: 0.6875rem; color: var(--text-muted); margin-top: 0.2rem;">${escapeHtml(a.note)}</div>` : ''}
+                </td>
+                <td>${new Date(a.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <span style="font-size: 0.6875rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 9999px; background: ${a.status === 'pending_approval' ? '#FEF3C7; color: #92400E;' : (a.status === 'active' ? '#D1FAE5; color: #065F46;' : '#FEE2E2; color: #991B1B;')};">
+                    ${a.status.replace('_', ' ').toUpperCase()}
+                  </span>
+                </td>
+                <td>
+                  ${a.status === 'pending_approval' ? `
+                    <div style="display: flex; gap: 0.35rem; align-items: center;">
+                      <select id="roleSelect_${a.id}" style="font-size: 0.72rem; padding: 0.2rem 0.35rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
+                        <option value="sales_officer" ${a.requestedPosition === 'sales_officer' ? 'selected' : ''}>Sales Officer</option>
+                        <option value="dispatch_officer" ${a.requestedPosition === 'dispatch_officer' ? 'selected' : ''}>Dispatch Officer</option>
+                        <option value="accounts_officer" ${a.requestedPosition === 'accounts_officer' ? 'selected' : ''}>Accounts Officer</option>
+                        <option value="customer_support" ${a.requestedPosition === 'customer_support' ? 'selected' : ''}>Customer Support</option>
+                        <option value="manager" ${a.requestedPosition === 'manager' ? 'selected' : ''}>Operations Manager</option>
+                        <option value="admin">Administrator</option>
+                      </select>
+                      <button type="button" class="btn btn-primary btn-sm" onclick="handleConfirmRoleApproval('${a.id}')" style="padding: 0.25rem 0.55rem; font-size: 0.72rem; font-weight: 700;">
+                        ✓ Confirm &amp; Approve
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="handleRejectApplication('${a.id}')" style="padding: 0.25rem 0.45rem; font-size: 0.72rem; color: #DC2626;">
+                        ✕
+                      </button>
+                    </div>
+                  ` : (a.status === 'pending_email' ? '<span style="font-size: 0.7rem; color: var(--text-muted);">Awaiting code</span>' : '<span style="font-size: 0.7rem; color: #059669;">Reviewed</span>')}
                 </td>
               </tr>
             `).join('');
@@ -15384,24 +15938,27 @@
         // Render Active Staff Directory
         const activeTbody = document.getElementById("adminActiveUsersTableBody");
         if (activeTbody) {
-          activeTbody.innerHTML = activeUsers.map(u => `
+          const activeList = users.filter(u => u.status === 'active' || u.status === 'suspended');
+          activeTbody.innerHTML = activeList.map(u => `
             <tr>
-              <td><strong>${escapeHtml(u.name || u.username)}</strong></td>
+              <td><strong>${escapeHtml(u.fullName || u.name || u.username)}</strong></td>
               <td><code>${escapeHtml(u.email)}</code></td>
-              <td>
-                <span class="role-badge role-badge-${u.role === 'admin' ? 'admin' : (u.role === 'manager' ? 'manager' : 'staff')}">${u.role.toUpperCase()}</span>
-              </td>
+              <td><span class="role-badge role-badge-${u.role === 'admin' ? 'admin' : (u.role === 'manager' ? 'manager' : 'staff')}">${(u.role || 'staff').toUpperCase()}</span></td>
               <td>${u.mfaRequired ? '<span style="color: #059669; font-weight: 700;">✓ TOTP Enforced</span>' : '<span style="color: var(--text-muted);">Standard</span>'}</td>
-              <td><span style="color: #059669; font-weight: 700;">● Active</span></td>
               <td>
-                ${u.email.toLowerCase() === 'lymboventures0@gmail.com' ? '<span style="font-size: 0.7rem; color: var(--text-muted);">Primary Root</span>' : `
+                <span style="font-size: 0.6875rem; font-weight: 700; color: ${u.status === 'active' ? '#059669' : '#DC2626'};">
+                  ● ${u.status.toUpperCase()}
+                </span>
+              </td>
+              <td>
+                ${u.email.toLowerCase() === 'lymboventures0@gmail.com' ? '<span style="font-size: 0.7rem; color: var(--text-muted);">Primary Root Admin</span>' : `
                   <div style="display: flex; gap: 0.35rem;">
-                    <select onchange="handleChangeUserRole('${u.id}', this.value)" style="font-size: 0.72rem; padding: 0.2rem 0.35rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface); color: var(--text-main);">
-                      <option value="staff" ${u.role === 'staff' ? 'selected' : ''}>Staff</option>
-                      <option value="manager" ${u.role === 'manager' ? 'selected' : ''}>Manager</option>
-                      <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
-                    </select>
-                    <button type="button" onclick="handleDeleteUser('${u.id}', '${escapeHtml(u.email)}')" class="btn btn-outline btn-sm" style="color: #DC2626; padding: 0.2rem 0.45rem; font-size: 0.7rem;">Revoke</button>
+                    <button type="button" onclick="handleToggleSuspendStaff('${u.id}', '${u.status}')" class="btn btn-outline btn-sm" style="padding: 0.2rem 0.45rem; font-size: 0.7rem;">
+                      ${u.status === 'active' ? 'Suspend' : 'Reactivate'}
+                    </button>
+                    <button type="button" onclick="handleDeleteStaffUser('${u.id}')" class="btn btn-outline btn-sm" style="color: #DC2626; padding: 0.2rem 0.45rem; font-size: 0.7rem;">
+                      Remove
+                    </button>
                   </div>
                 `}
               </td>
@@ -15409,87 +15966,262 @@
           `).join('');
         }
       } catch (err) {
-        console.warn("Error loading admin users:", err);
+        console.warn("Error loading staff data:", err);
       }
     }
 
-    async function handleApproveUser(userId, userEmail, defaultRole) {
-      const chosenRole = prompt(`Assign role for ${userEmail}:\nType 'staff' for Junior Sales Staff or 'manager' for Manager (or 'admin'):`, defaultRole || 'staff');
-      if (!chosenRole) return;
-      const validRole = ['admin', 'manager', 'staff'].includes(chosenRole.trim().toLowerCase()) ? chosenRole.trim().toLowerCase() : 'staff';
+    async function handleConfirmRoleApproval(userId) {
+      const select = document.getElementById(`roleSelect_${userId}`);
+      const chosenRole = select ? select.value : 'sales_officer';
 
       try {
-        const res = await fetch(`/api/admin/users/${userId}/approve`, {
+        const res = await fetch(`/api/admin/staff/${userId}/approve`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ assignedRole: validRole })
+          body: JSON.stringify({ assignedRole: chosenRole })
         });
         const data = await res.json();
         if (!data.success) {
           showToast(data.error || "Approval failed");
           return;
         }
-
-        state.activeActivationToken = data.activationToken;
-        const banner = document.getElementById("adminApprovalSuccessBanner");
-        const linkInput = document.getElementById("adminGeneratedActivationLinkInput");
-        if (banner && linkInput) {
-          banner.style.display = "block";
-          linkInput.value = data.activationUrl || `${window.location.origin}/#activate=${data.activationToken}`;
-        }
-
-        showToast(`✓ Account for ${userEmail} approved as ${validRole.toUpperCase()}! Activation link generated.`);
+        showToast(`✓ Staff member approved in role: ${chosenRole.toUpperCase()}`);
         loadAdminUsersList();
       } catch (err) {
-        showToast("Error approving user account.");
+        showToast("Error approving staff member.");
       }
     }
 
-    async function handleDeleteUser(userId, userEmail) {
-      if (!confirm(`Are you sure you want to revoke system access for ${userEmail || 'this user'}?`)) return;
-      try {
-        const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (data.success) {
-          showToast(`Access revoked for ${userEmail}`);
-          loadAdminUsersList();
-        } else {
-          showToast(data.error || "Failed to revoke access.");
-        }
-      } catch (err) {
-        showToast("Error revoking user access.");
-      }
-    }
+    async function handleRejectApplication(userId) {
+      const reason = prompt("Enter rejection reason (optional):", "Application requirements not met.");
+      if (reason === null) return;
 
-    async function handleChangeUserRole(userId, newRole) {
       try {
-        const res = await fetch(`/api/admin/users/${userId}/role`, {
+        const res = await fetch(`/api/admin/staff/${userId}/reject`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ role: newRole })
+          body: JSON.stringify({ reason })
         });
         const data = await res.json();
         if (data.success) {
-          showToast(`✓ User role updated to ${newRole.toUpperCase()}`);
+          showToast("Application rejected.");
           loadAdminUsersList();
-        } else {
-          showToast(data.error || "Role update failed.");
         }
       } catch (err) {
-        showToast("Error updating user role.");
+        showToast("Error rejecting application.");
       }
     }
 
-    function copyActivationLink() {
-      const input = document.getElementById("adminGeneratedActivationLinkInput");
-      if (!input || !input.value) return;
-      navigator.clipboard.writeText(input.value);
-      showToast("✓ Activation link copied to clipboard (15-min validity)!");
+    async function handleToggleSuspendStaff(userId, currentStatus) {
+      const action = currentStatus === 'active' ? 'suspend' : 'reactivate';
+      try {
+        const res = await fetch(`/api/admin/staff/${userId}/${action}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Account ${action}ed.`);
+          loadAdminUsersList();
+        }
+      } catch (err) {
+        showToast(`Error changing staff status.`);
+      }
     }
 
-    function testOpenActivationLink() {
-      if (state.activeActivationToken) {
-        openAccountActivationModal(state.activeActivationToken);
+    async function handleDeleteStaffUser(userId) {
+      if (!confirm("Are you sure you want to permanently delete this staff account? All sessions will end immediately.")) return;
+      try {
+        const res = await fetch(`/api/admin/staff/${userId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast("Staff account removed.");
+          loadAdminUsersList();
+        }
+      } catch (err) {
+        showToast("Error removing staff account.");
+      }
+    }
+
+    /* ==========================================================================
+       DISPATCH, ACCOUNTS & SUPPORT ROLE DASHBOARDS (Section 4)
+       ========================================================================== */
+    async function loadDispatchManifest() {
+      const tbody = document.getElementById("adminDispatchTableBody");
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 1rem;">Loading delivery manifest...</td></tr>';
+
+      try {
+        const res = await fetch('/api/dispatch/manifest');
+        const data = await res.json();
+        const deliveries = data.deliveries || [];
+
+        if (deliveries.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No deliveries scheduled for dispatch today.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = deliveries.map(d => `
+          <tr>
+            <td><strong>${escapeHtml(d.deliveryNoteNumber || `DN-${d.id}`)}</strong></td>
+            <td>${escapeHtml(d.customerName)}<br /><a href="tel:${d.customerPhone}" style="color: var(--primary); font-weight: 700;">📞 ${d.customerPhone}</a></td>
+            <td><strong>${escapeHtml(d.deliveryArea)}</strong><br /><small style="color: var(--text-muted);">${escapeHtml(d.deliveryAddress || '')}</small></td>
+            <td>${d.deliveryDate || 'Today'}<br /><small>${d.deliveryTimeSlot || 'Morning'}</small></td>
+            <td><strong>${d.eggTrays}</strong> trays</td>
+            <td><span class="status-badge status-${d.orderStatus}">${d.orderStatus.toUpperCase()}</span></td>
+            <td>
+              ${d.orderStatus !== 'delivered' ? `
+                <button type="button" class="btn btn-primary btn-sm" onclick="markOrderDelivered('${d.id}')" style="font-size: 0.72rem; padding: 0.25rem 0.55rem; font-weight: 700;">
+                  ✓ Mark Delivered
+                </button>
+              ` : '<span style="color: #059669; font-weight: 700;">Completed</span>'}
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #DC2626; padding: 1rem;">Error loading dispatch manifest.</td></tr>';
+      }
+    }
+
+    async function markOrderDelivered(orderId) {
+      try {
+        const res = await fetch(`/api/orders/${orderId}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'delivered', note: 'Confirmed doorstep drop-off by driver' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ Order #${orderId} marked as delivered!`);
+          loadDispatchManifest();
+        }
+      } catch (err) {
+        showToast("Error updating order status.");
+      }
+    }
+
+    async function loadAccountsReconciliation() {
+      const tbody = document.getElementById("adminAccountsTableBody");
+      try {
+        const res = await fetch('/api/accounts/reconciliation');
+        const data = await res.json();
+
+        const collectedEl = document.getElementById("accountsTotalCollected");
+        const pendingEl = document.getElementById("accountsPendingCollection");
+        if (collectedEl) collectedEl.textContent = `KES ${(data.totalCollected || 0).toLocaleString()}`;
+        if (pendingEl) pendingEl.textContent = `KES ${(data.pendingCollection || 0).toLocaleString()}`;
+
+        if (tbody) {
+          const orders = data.orders || [];
+          if (orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No payment transactions recorded.</td></tr>';
+            return;
+          }
+          tbody.innerHTML = orders.map(o => `
+            <tr>
+              <td><strong>${escapeHtml(o.invoiceNumber || `INV-${o.id}`)}</strong></td>
+              <td>${escapeHtml(o.customerName)}</td>
+              <td>${o.eggTrays} Trays</td>
+              <td><strong>KES ${o.grandTotal.toLocaleString()}</strong></td>
+              <td><code style="font-weight: 700; color: var(--primary);">${escapeHtml(o.mpesaTransactionCode || 'PENDING')}</code></td>
+              <td>
+                <span class="status-badge status-${o.paymentStatus === 'paid' ? 'approved' : 'pending'}">
+                  ${(o.paymentStatus || 'pending').toUpperCase()}
+                </span>
+              </td>
+              <td>
+                ${o.paymentStatus !== 'paid' ? `
+                  <button type="button" class="btn btn-outline btn-sm" onclick="openAdminCodeEntryModal('${o.id}', ${o.grandTotal})" style="font-size: 0.72rem; padding: 0.2rem 0.5rem; color: #059669; border-color: #A7F3D0;">
+                    Confirm M-Pesa
+                  </button>
+                ` : '<span style="color: #059669; font-weight: 700;">Reconciled</span>'}
+              </td>
+            </tr>
+          `).join('');
+        }
+      } catch (err) {
+        if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #DC2626; padding: 1rem;">Error loading accounts reconciliation.</td></tr>';
+      }
+    }
+
+    async function loadSupportTickets() {
+      const tbody = document.getElementById("adminSupportTableBody");
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 1rem;">Loading support tickets...</td></tr>';
+
+      try {
+        const res = await fetch('/api/support/tickets');
+        const data = await res.json();
+        state.supportTickets = data.tickets || [];
+        renderSupportTickets(state.supportTickets);
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #DC2626; padding: 1rem;">Error loading support desk.</td></tr>';
+      }
+    }
+
+    function renderSupportTickets(tickets) {
+      const tbody = document.getElementById("adminSupportTableBody");
+      if (!tbody) return;
+
+      if (tickets.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No customer tickets found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = tickets.map(t => `
+        <tr>
+          <td><strong>#${t.id}</strong></td>
+          <td>${escapeHtml(t.customerName)}</td>
+          <td><a href="tel:${t.customerPhone}" style="color: var(--primary); font-weight: 700;">${t.customerPhone}</a></td>
+          <td>${escapeHtml(t.deliveryArea)}</td>
+          <td>${t.eggTrays}</td>
+          <td><span class="status-badge status-${t.orderStatus}">${t.orderStatus.toUpperCase()}</span></td>
+          <td><span class="status-badge status-${t.paymentStatus === 'paid' ? 'approved' : 'pending'}">${(t.paymentStatus || 'pending').toUpperCase()}</span></td>
+          <td>
+            <a href="https://wa.me/${t.customerPhone.replace(/[^0-9]/g, '')}?text=Habari%20${encodeURIComponent(t.customerName)}%2C%20regarding%20your%20Lymbo%20Ventures%20Order%20%23${t.id}..." target="_blank" class="btn btn-outline btn-sm" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;">
+              WhatsApp
+            </a>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterSupportTickets(query) {
+      if (!state.supportTickets) return;
+      const q = (query || '').toLowerCase().trim();
+      if (!q) {
+        renderSupportTickets(state.supportTickets);
+        return;
+      }
+      const filtered = state.supportTickets.filter(t =>
+        t.id.toLowerCase().includes(q) ||
+        (t.customerName && t.customerName.toLowerCase().includes(q)) ||
+        (t.customerPhone && t.customerPhone.includes(q)) ||
+        (t.deliveryArea && t.deliveryArea.toLowerCase().includes(q))
+      );
+      renderSupportTickets(filtered);
+    }
+
+    /* ==========================================================================
+       AI DEMAND INSIGHTS (Admin & Manager)
+       ========================================================================== */
+    async function generateAiDemandInsights() {
+      const card = document.getElementById("aiInsightsCard");
+      const body = document.getElementById("aiInsightsBody");
+      const btn = document.getElementById("btnGenerateAiInsights");
+
+      if (card) card.style.display = "block";
+      if (body) body.innerHTML = '<div style="color: #4F46E5; font-weight: 600;">✨ Analyzing inventory turnover, delivery corridors, and revenue margins with Gemini 2.5 Flash...</div>';
+      if (btn) btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/admin/ai-insights');
+        const data = await res.json();
+        if (data.success && body) {
+          body.textContent = data.insights || "AI briefing generated.";
+          showToast("✓ AI Supply Chain Briefing Updated!");
+        }
+      } catch (err) {
+        if (body) body.textContent = "Error generating AI insights. Please check network connection.";
+      } finally {
+        if (btn) btn.disabled = false;
       }
     }
 
@@ -15639,6 +16371,100 @@
           el.textContent = dict[key];
         }
       });
+    }
+
+    /* ==========================================================================
+       AI CUSTOMER CHATBOT LOGIC
+       ========================================================================== */
+    state.aiChatHistory = [];
+
+    function toggleAiChatDrawer() {
+      const drawer = document.getElementById("aiChatDrawerBackdrop");
+      if (!drawer) return;
+      const isOpen = drawer.classList.contains("active");
+      if (isOpen) {
+        drawer.classList.remove("active");
+      } else {
+        drawer.classList.add("active");
+        const input = document.getElementById("aiChatInput");
+        if (input) setTimeout(() => input.focus(), 150);
+      }
+    }
+
+    function sendAiQuickMessage(text) {
+      const input = document.getElementById("aiChatInput");
+      if (input) {
+        input.value = text;
+        handleAiChatFormSubmit();
+      }
+    }
+
+    async function handleAiChatFormSubmit(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById("aiChatInput");
+      const messagesContainer = document.getElementById("aiChatMessages");
+      const sendBtn = document.getElementById("aiChatSendBtn");
+
+      if (!input || !input.value.trim()) return;
+      const userText = input.value.trim();
+      input.value = "";
+
+      // Append user bubble
+      if (messagesContainer) {
+        const userBubble = document.createElement("div");
+        userBubble.style.cssText = "align-self: flex-end; background: var(--primary); color: #fff; padding: 0.65rem 0.85rem; border-radius: 12px 12px 2px 12px; max-width: 85%; line-height: 1.45;";
+        userBubble.textContent = userText;
+        messagesContainer.appendChild(userBubble);
+
+        // Typing indicator
+        const typingBubble = document.createElement("div");
+        typingBubble.id = "aiTypingIndicator";
+        typingBubble.style.cssText = "align-self: flex-start; background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 0.5rem 0.75rem; border-radius: 12px; font-size: 0.75rem; color: var(--text-muted);";
+        typingBubble.textContent = "Lymbo Assistant is typing...";
+        messagesContainer.appendChild(typingBubble);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      state.aiChatHistory.push({ role: 'user', text: userText });
+      if (sendBtn) sendBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: userText,
+            history: state.aiChatHistory
+          })
+        });
+        const data = await res.json();
+        const reply = data.reply || "Karibu Lymbo Ventures! Fresh Grade A eggs are KES 500 per tray. Call 0727 811 266 for instant delivery.";
+
+        state.aiChatHistory.push({ role: 'model', text: reply });
+
+        // Remove typing indicator and append bot bubble
+        const indicator = document.getElementById("aiTypingIndicator");
+        if (indicator) indicator.remove();
+
+        if (messagesContainer) {
+          const botBubble = document.createElement("div");
+          botBubble.style.cssText = "align-self: flex-start; background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 0.65rem 0.85rem; border-radius: 12px 12px 12px 2px; max-width: 85%; line-height: 1.45; color: var(--text-main);";
+          botBubble.innerHTML = escapeHtml(reply).replace(/\n/g, '<br />');
+          messagesContainer.appendChild(botBubble);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+      } catch (err) {
+        const indicator = document.getElementById("aiTypingIndicator");
+        if (indicator) indicator.remove();
+        if (messagesContainer) {
+          const errBubble = document.createElement("div");
+          errBubble.style.cssText = "align-self: flex-start; background: #FEF2F2; color: #991B1B; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.75rem;";
+          errBubble.textContent = "Connection issue. You can call or WhatsApp our Mombasa team directly at 0727 811 266.";
+          messagesContainer.appendChild(errBubble);
+        }
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+      }
     }
   </script>
   <div id="root"></div>

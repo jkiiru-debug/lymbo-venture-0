@@ -586,6 +586,22 @@ export function loadDatabase(): StoreData {
           }
         };
       }
+      
+      // Auto-migrate seed accounts for all 6 roles
+      const seedUsers = getSeedData().users;
+      for (const su of seedUsers) {
+        const idx = dbState.users.findIndex(u => u.email.toLowerCase() === su.email.toLowerCase());
+        if (idx === -1) {
+          dbState.users.push(su);
+        } else {
+          dbState.users[idx].passwordHash = su.passwordHash;
+          dbState.users[idx].status = 'active';
+          if (!dbState.users[idx].role || (dbState.users[idx].role as string) === 'staff') {
+            dbState.users[idx].role = su.role;
+          }
+        }
+      }
+      saveDatabase();
       return dbState;
     } catch (err) {
       console.error('Failed to parse database file, bootstrapping clean data:', err);

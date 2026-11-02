@@ -7,7 +7,7 @@
       "name": "System Administrator",
       "role": "admin",
       "status": "active",
-      "passwordHash": "$2b$12$QYpJzFh1cxCjVsWSoAvI3elJVgiuOw2V7GP8sWgnJQMlUSZpH0c0u",
+      "passwordHash": "$2b$12$u1wlr9pwETknYeUyEMn7IOvJaudJF7ZnzbY5U9yEOX8EJUFt1cFgG",
       "mfaRequired": true,
       "mfaSecret": "OFGOF3HHJV2CXE37J6PW",
       "mfaBackupCodes": [
@@ -27,7 +27,7 @@
       "name": "Operations Manager",
       "role": "manager",
       "status": "active",
-      "passwordHash": "$2b$12$QYpJzFh1cxCjVsWSoAvI3elJVgiuOw2V7GP8sWgnJQMlUSZpH0c0u",
+      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
       "mfaRequired": true,
       "mfaSecret": "3IEBASYG3R52LY44XQS4",
       "mfaBackupCodes": [
@@ -45,9 +45,9 @@
       "email": "sales@lymboventures.co.ke",
       "username": "sales_rep",
       "name": "Junior Sales Staff",
-      "role": "staff",
+      "role": "sales_officer",
       "status": "active",
-      "passwordHash": "$2b$12$QYpJzFh1cxCjVsWSoAvI3elJVgiuOw2V7GP8sWgnJQMlUSZpH0c0u",
+      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
       "mfaRequired": false,
       "mfaSecret": "57LPDG7YXDCYIH5JDP5X",
       "mfaBackupCodes": [
@@ -82,6 +82,160 @@
       "notes": "Submitted via staff onboarding portal; awaiting Administrator review.",
       "approvedBy": "lymboventures0@gmail.com",
       "approvedAt": "2026-10-31T09:55:29.859Z"
+    },
+    {
+      "id": "usr_staff_1793621965253",
+      "fullName": "Amina Ali Hassan",
+      "name": "Amina Ali Hassan",
+      "email": "amina.hassan@example.com",
+      "phone": "0712345678",
+      "username": "amina.hassan",
+      "role": "dispatch_officer",
+      "requestedPosition": "dispatch_officer",
+      "status": "active",
+      "passwordHash": "$2b$12$NoSqLpEL301oJiQLmUlMb.hm3/8BI3qsYWrEIhN9B2AKWf/8jxUBq",
+      "note": "3 years experience managing logistics in Mombasa & Nyali",
+      "consentGiven": true,
+      "mfaRequired": false,
+      "mfaSecret": "XZPPT7QMJ6B6A2T727UY",
+      "mfaBackupCodes": [
+        "9121-3131",
+        "7973-7582",
+        "5890-5680",
+        "1783-6647",
+        "9809-2577"
+      ],
+      "createdAt": "2026-11-02T12:19:25.253Z",
+      "approvedBy": "usr_admin_root",
+      "approvedAt": "2026-11-02T12:19:51.751Z"
+    },
+    {
+      "id": "usr_staff_1793622577675",
+      "fullName": "Kennedy Omondi",
+      "name": "Kennedy Omondi",
+      "email": "kennedy.omondi.1793622576952@example.com",
+      "phone": "0722001122",
+      "username": "kennedy.omondi.1793622576952",
+      "role": "accounts_officer",
+      "requestedPosition": "accounts_officer",
+      "status": "active",
+      "passwordHash": "$2b$12$BJAbs/5RnqRe5QzyBrMLYuV8Gbw/qN2mnooMv1jOpFTBs0P68UdKO",
+      "note": "BCom Accounting graduate with M-Pesa reconciliation experience",
+      "consentGiven": true,
+      "mfaRequired": true,
+      "mfaSecret": "R2JFRPVGOTCU4TVYAJOS",
+      "mfaBackupCodes": [
+        "2400-4396",
+        "5378-1355",
+        "3021-1758",
+        "6924-3159",
+        "2443-9703"
+      ],
+      "createdAt": "2026-11-02T12:29:37.675Z",
+      "approvedBy": "usr_admin_root",
+      "approvedAt": "2026-11-02T12:29:37.699Z"
+    },
+    {
+      "id": "usr_dispatch_01",
+      "fullName": "Ali Hassan Juma",
+      "name": "Ali Hassan Juma",
+      "email": "dispatch@lymboventures.co.ke",
+      "phone": "+254733445566",
+      "username": "dispatch_officer",
+      "role": "dispatch_officer",
+      "requestedPosition": "dispatch_officer",
+      "status": "active",
+      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "consentGiven": true,
+      "mfaRequired": false,
+      "mfaSecret": "XIBUKQCT4BD6N7TTCZKJ",
+      "mfaBackupCodes": [
+        "1851-7791",
+        "6827-3105",
+        "8926-3819",
+        "5296-4828",
+        "1350-5126"
+      ],
+      "createdAt": "2026-11-02T12:31:18.634Z",
+      "approvedBy": "usr_admin_root",
+      "approvedAt": "2026-11-02T12:31:18.634Z",
+      "notes": "Manages route delivery manifest, gate codes, and rider status updates"
+    },
+    {
+      "id": "usr_accounts_01",
+      "fullName": "Faith Muthoni",
+      "name": "Faith Muthoni",
+      "email": "accounts@lymboventures.co.ke",
+      "phone": "+254744556677",
+      "username": "cashier_mombasa",
+      "role": "accounts_officer",
+      "requestedPosition": "accounts_officer",
+      "status": "active",
+      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "consentGiven": true,
+      "mfaRequired": false,
+      "mfaSecret": "VNNHKRCV7DCQEIUIWGLO",
+      "mfaBackupCodes": [
+        "6777-3216",
+        "1599-9407",
+        "9821-7263",
+        "9036-6034",
+        "5055-8671"
+      ],
+      "createdAt": "2026-11-02T12:31:18.634Z",
+      "approvedBy": "usr_admin_root",
+      "approvedAt": "2026-11-02T12:31:18.634Z",
+      "notes": "Reconciles M-Pesa receipts, Buy Goods transactions, and tax invoices"
+    },
+    {
+      "id": "usr_support_01",
+      "fullName": "Omar Salim",
+      "name": "Omar Salim",
+      "email": "support@lymboventures.co.ke",
+      "phone": "+254755667788",
+      "username": "customer_support",
+      "role": "customer_support",
+      "requestedPosition": "customer_support",
+      "status": "active",
+      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "consentGiven": true,
+      "mfaRequired": false,
+      "mfaSecret": "TRXUWDHZXQGBSMTYB7I7",
+      "mfaBackupCodes": [
+        "5002-3192",
+        "2719-5918",
+        "5677-6689",
+        "7328-2490",
+        "3730-9402"
+      ],
+      "createdAt": "2026-11-02T12:31:18.634Z",
+      "approvedBy": "usr_admin_root",
+      "approvedAt": "2026-11-02T12:31:18.634Z",
+      "notes": "Customer support messages and read-only order tracking inquiries"
+    },
+    {
+      "id": "usr_applicant_01",
+      "fullName": "John Mwenda Kinyua",
+      "name": "John Mwenda Kinyua",
+      "email": "john.mwenda@example.com",
+      "phone": "+254719887766",
+      "username": "john.mwenda",
+      "role": null,
+      "requestedPosition": "dispatch_officer",
+      "status": "active",
+      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "consentGiven": true,
+      "mfaRequired": false,
+      "mfaSecret": "RUZPYDOJDWIPDPWZJ4YQ",
+      "mfaBackupCodes": [
+        "7308-2734",
+        "1102-6444",
+        "6947-7256",
+        "1615-3517",
+        "8783-2655"
+      ],
+      "createdAt": "2026-11-02T08:31:18.635Z",
+      "note": "3 years motorcycle courier experience in Mombasa North (Nyali, Bamburi, Shanzu)."
     }
   ],
   "orders": [
@@ -200,6 +354,186 @@
   ],
   "auditLogs": [
     {
+      "id": "AUDIT-1793622789772-518",
+      "timestamp": "2026-11-02T12:33:09.772Z",
+      "userId": "usr_staff_01",
+      "userEmail": "sales@lymboventures.co.ke",
+      "userRole": "sales_officer",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User sales@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793622686076-942",
+      "timestamp": "2026-11-02T12:31:26.076Z",
+      "userId": "usr_support_01",
+      "userEmail": "support@lymboventures.co.ke",
+      "userRole": "customer_support",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User support@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793622685499-321",
+      "timestamp": "2026-11-02T12:31:25.499Z",
+      "userId": "usr_accounts_01",
+      "userEmail": "accounts@lymboventures.co.ke",
+      "userRole": "accounts_officer",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User accounts@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793622684972-208",
+      "timestamp": "2026-11-02T12:31:24.972Z",
+      "userId": "usr_dispatch_01",
+      "userEmail": "dispatch@lymboventures.co.ke",
+      "userRole": "dispatch_officer",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User dispatch@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793622684489-206",
+      "timestamp": "2026-11-02T12:31:24.489Z",
+      "userId": "usr_staff_01",
+      "userEmail": "sales@lymboventures.co.ke",
+      "userRole": "staff",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User sales@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793622585732-265",
+      "timestamp": "2026-11-02T12:29:45.732Z",
+      "userId": "usr_staff_01",
+      "userEmail": "sales@lymboventures.co.ke",
+      "userRole": "staff",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User sales@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793622577699-963",
+      "timestamp": "2026-11-02T12:29:37.699Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "STAFF_APPROVED",
+      "details": "Administrator approved kennedy.omondi.1793622576952@example.com. Final Position Assigned: 'accounts_officer' (Requested: 'accounts_officer').",
+      "targetEntityId": "usr_staff_1793622577675",
+      "metadata": {
+        "assignedRole": "accounts_officer",
+        "requestedPosition": "accounts_officer"
+      }
+    },
+    {
+      "id": "AUDIT-1793622577690-449",
+      "timestamp": "2026-11-02T12:29:37.690Z",
+      "userId": "usr_staff_1793622577675",
+      "userEmail": "kennedy.omondi.1793622576952@example.com",
+      "userRole": "applicant",
+      "clientIp": "client_web",
+      "action": "EMAIL_VERIFIED",
+      "details": "Applicant kennedy.omondi.1793622576952@example.com successfully verified email ownership with 6-digit code. Status changed to pending_approval."
+    },
+    {
+      "id": "AUDIT-1793622576949-973",
+      "timestamp": "2026-11-02T12:29:36.949Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "MFA_VERIFIED",
+      "details": "User lymboventures0@gmail.com completed MFA verification."
+    },
+    {
+      "id": "AUDIT-1793622574138-963",
+      "timestamp": "2026-11-02T12:29:34.138Z",
+      "userId": "usr_staff_01",
+      "userEmail": "sales@lymboventures.co.ke",
+      "userRole": "staff",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User sales@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793621992305-328",
+      "timestamp": "2026-11-02T12:19:52.305Z",
+      "userId": "usr_staff_1793621965253",
+      "userEmail": "amina.hassan@example.com",
+      "userRole": "dispatch_officer",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User amina.hassan@example.com signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793621991752-663",
+      "timestamp": "2026-11-02T12:19:51.752Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "STAFF_APPROVED",
+      "details": "Administrator approved amina.hassan@example.com. Final Position Assigned: 'dispatch_officer' (Requested: 'dispatch_officer').",
+      "targetEntityId": "usr_staff_1793621965253",
+      "metadata": {
+        "assignedRole": "dispatch_officer",
+        "requestedPosition": "dispatch_officer"
+      }
+    },
+    {
+      "id": "AUDIT-1793621991734-347",
+      "timestamp": "2026-11-02T12:19:51.734Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "MFA_VERIFIED",
+      "details": "User lymboventures0@gmail.com completed MFA verification."
+    },
+    {
+      "id": "AUDIT-1793621973092-943",
+      "timestamp": "2026-11-02T12:19:33.092Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "MFA_VERIFIED",
+      "details": "User lymboventures0@gmail.com completed MFA verification."
+    },
+    {
+      "id": "AUDIT-1793621965276-923",
+      "timestamp": "2026-11-02T12:19:25.276Z",
+      "userId": "usr_staff_1793621965253",
+      "userEmail": "amina.hassan@example.com",
+      "userRole": "applicant",
+      "clientIp": "client_web",
+      "action": "EMAIL_VERIFIED",
+      "details": "Applicant amina.hassan@example.com successfully verified email ownership with 6-digit code. Status changed to pending_approval."
+    },
+    {
+      "id": "AUDIT-1793621958814-628",
+      "timestamp": "2026-11-02T12:19:18.814Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "MFA_VERIFIED",
+      "details": "User lymboventures0@gmail.com completed MFA verification."
+    },
+    {
+      "id": "AUDIT-1793621944811-735",
+      "timestamp": "2026-11-02T12:19:04.811Z",
+      "userId": "usr_staff_01",
+      "userEmail": "sales@lymboventures.co.ke",
+      "userRole": "staff",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User sales@lymboventures.co.ke signed in successfully."
+    },
+    {
       "id": "AUDIT-1793558447406-817",
       "timestamp": "2026-11-01T18:40:47.406Z",
       "userId": "usr_staff_01",
@@ -308,5 +642,90 @@
   "nextOrderSeq": 1004,
   "nextInvoiceSeq": 4,
   "nextDeliveryNoteSeq": 4,
-  "lastUpdated": "2026-11-01T18:40:47.406Z"
+  "lastUpdated": "2026-11-02T12:33:09.772Z",
+  "emailVerifications": [
+    {
+      "id": "VER-1793621965253-196",
+      "userId": "usr_staff_1793621965253",
+      "email": "amina.hassan@example.com",
+      "codeHash": "b55759a5db8e430fe3abd1b145c470c6804cdb07e80befb2b5c899feed733dd5",
+      "tokenHash": "f71778ae4db24275853ba81d407b03a6e5c8be858fcdab174ecc4528b3d94ecd",
+      "attempts": 1,
+      "expiresAt": 1793622565253,
+      "usedAt": 1793621965275
+    },
+    {
+      "id": "VER-1793622577675-746",
+      "userId": "usr_staff_1793622577675",
+      "email": "kennedy.omondi.1793622576952@example.com",
+      "codeHash": "0816e76545ff266e7bea211e21d02a01d28834691c68a7be32e563c1e2bff415",
+      "tokenHash": "b87e63b3c6f7994d1dcbb9dd394916009ec075ab482f5d959c9007528ea4a570",
+      "attempts": 1,
+      "expiresAt": 1793623177675,
+      "usedAt": 1793622577689
+    }
+  ],
+  "outboxEmails": [
+    {
+      "id": "MAIL-1793622577699-988",
+      "to": "kennedy.omondi.1793622576952@example.com",
+      "subject": "Your Lymbo Ventures Staff Account Has Been Approved!",
+      "html": "<p>Hello Kennedy Omondi,</p>\n     <p>Your application for Lymbo Ventures has been reviewed and approved by the Administrator.</p>\n     <p><b>Assigned Position:</b> ACCOUNTS OFFICER</p>\n     <p>You can now sign in at <a href=\"/staff/login\">Staff Portal</a> using your registered password.</p>",
+      "type": "approval",
+      "sentAt": "2026-11-02T12:29:37.699Z"
+    },
+    {
+      "id": "MAIL-1793622577676-659",
+      "to": "kennedy.omondi.1793622576952@example.com",
+      "subject": "Verify your Lymbo Ventures Staff Application",
+      "html": "<p>Habari Kennedy Omondi,</p>\n       <p>Thank you for applying for the <b>ACCOUNTS OFFICER</b> position at Lymbo Ventures.</p>\n       <p>Your 6-digit email verification code is: <b style=\"font-size: 1.25rem; letter-spacing: 0.1em; color: #1F7A4D;\">918796</b> (valid for 10 minutes).</p>\n       <p>Or open this link to verify automatically: <a href=\"http://127.0.0.1:3000/verify?token=825309da384a3a0d6ae4002b52dc84438d4c477dc0400e67dfc7dfc20d4f963d\">http://127.0.0.1:3000/verify?token=825309da384a3a0d6ae4002b52dc84438d4c477dc0400e67dfc7dfc20d4f963d</a></p>",
+      "type": "verification",
+      "sentAt": "2026-11-02T12:29:37.676Z",
+      "codePreview": "918796",
+      "tokenPreview": "825309da384a3a0d6ae4002b52dc84438d4c477dc0400e67dfc7dfc20d4f963d"
+    },
+    {
+      "id": "MAIL-1793621991752-148",
+      "to": "amina.hassan@example.com",
+      "subject": "Your Lymbo Ventures Staff Account Has Been Approved!",
+      "html": "<p>Hello Amina Ali Hassan,</p>\n     <p>Your application for Lymbo Ventures has been reviewed and approved by the Administrator.</p>\n     <p><b>Assigned Position:</b> DISPATCH OFFICER</p>\n     <p>You can now sign in at <a href=\"/staff/login\">Staff Portal</a> using your registered password.</p>",
+      "type": "approval",
+      "sentAt": "2026-11-02T12:19:51.752Z"
+    },
+    {
+      "id": "MAIL-1793621965254-875",
+      "to": "amina.hassan@example.com",
+      "subject": "Verify your Lymbo Ventures Staff Application",
+      "html": "<p>Habari Amina Ali Hassan,</p>\n       <p>Thank you for applying for the <b>DISPATCH OFFICER</b> position at Lymbo Ventures.</p>\n       <p>Your 6-digit email verification code is: <b style=\"font-size: 1.25rem; letter-spacing: 0.1em; color: #1F7A4D;\">459727</b> (valid for 10 minutes).</p>\n       <p>Or open this link to verify automatically: <a href=\"http://127.0.0.1:3000/verify?token=832005bfc3742d437ee0c7739005dd64262878e04cfa3d12ed1228f1142161bf\">http://127.0.0.1:3000/verify?token=832005bfc3742d437ee0c7739005dd64262878e04cfa3d12ed1228f1142161bf</a></p>",
+      "type": "verification",
+      "sentAt": "2026-11-02T12:19:25.254Z",
+      "codePreview": "459727",
+      "tokenPreview": "832005bfc3742d437ee0c7739005dd64262878e04cfa3d12ed1228f1142161bf"
+    }
+  ],
+  "config": {
+    "eggPricePerTray": 500,
+    "deliveryFees": {
+      "Nyali": 100,
+      "Bamburi": 150,
+      "Kiembeni": 150,
+      "Mtwapa": 200,
+      "Likoni": 150,
+      "Mombasa Island": 50,
+      "Tudor": 50,
+      "Changamwe": 150,
+      "Kisauni": 100
+    },
+    "businessPhone": "+254 704 967 655",
+    "businessEmail": "lymboventures0@gmail.com",
+    "mpesaPaybill": "625625",
+    "mpesaAccountName": "Lymbo Ventures Ltd",
+    "businessHours": "Mon-Sat: 7:00 AM - 6:30 PM | Sun: 8:00 AM - 2:00 PM",
+    "features": {
+      "aiChatbot": true,
+      "aiDemandInsights": true,
+      "onlineOrders": true,
+      "customerTracking": true
+    }
+  }
 }

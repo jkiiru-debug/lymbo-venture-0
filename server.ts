@@ -80,12 +80,24 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 function parsePort(): number {
+  // 1. Check for explicit --port argument
   const portArgIdx = process.argv.indexOf('--port');
   if (portArgIdx !== -1 && process.argv[portArgIdx + 1]) {
     const val = parseInt(process.argv[portArgIdx + 1], 10);
-    if (!isNaN(val) && val > 0) return val;
+    if (!isNaN(val) && val > 0 && val !== 8080) return val;
   }
-  return parseInt(process.env.PORT || '3000', 10);
+  // 2. Check for npm run dev positional argument (e.g. `tsx server.ts 3000`)
+  for (const arg of process.argv.slice(2)) {
+    const val = parseInt(arg, 10);
+    if (!isNaN(val) && val > 0 && val !== 8080) return val;
+  }
+  // 3. Check custom app port env
+  if (process.env.APP_PORT) {
+    const val = parseInt(process.env.APP_PORT, 10);
+    if (!isNaN(val) && val > 0 && val !== 8080) return val;
+  }
+  // 4. Default strictly to 3000 (Environment constraint: Dev server must run on port 3000; port 8080 is reserved for nginx)
+  return 3000;
 }
 
 function parseHost(): string {
@@ -93,7 +105,12 @@ function parseHost(): string {
   if (hostArgIdx !== -1 && process.argv[hostArgIdx + 1]) {
     return process.argv[hostArgIdx + 1];
   }
-  return process.env.HOST || '0.0.0.0';
+  for (const arg of process.argv.slice(2)) {
+    if (arg === '0.0.0.0' || arg === 'localhost' || arg === '127.0.0.1') {
+      return arg;
+    }
+  }
+  return '0.0.0.0';
 }
 
 const PORT = parsePort();
@@ -188,11 +205,7 @@ app.get('/api/sync/events', (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const unregister = registerSseClient(res);
-
-  req.on('close', () => {
-    unregister();
-  });
+  registerSseClient(res);
 });
 
 // ==========================================================================
@@ -232,114 +245,325 @@ app.get('/api/auth/security-policies', (_req, res) => {
 });
 
 // ==========================================================================
-// USER ONBOARDING & ACCOUNT APPROVAL WORKFLOW
+// STAFF REGISTRATION & ROLE ALLOCATION WORKFLOW (Sections 1, 2, 4, 9)
 // ==========================================================================
 
-// Step 1: User Submits Email via Onboarding Portal -> Account Created: Status = Pending Approval
-app.post('/api/auth/onboard-request', authLimiter, (req, res) => {
-  try {
-    const { email, name, requestedRole } = req.body;
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return res.status(400).json({ success: false, error: 'A valid email address is required.' });
-    }
-
-    const roleToRequest: UserRole = ['manager', 'staff'].includes(requestedRole) ? requestedRole : 'staff';
-    const result = createPendingAccount(email, name || '', roleToRequest);
-
-    if (result.status === 'already_exists') {
-      return res.status(400).json({
-        success: false,
-        error: 'An active account with that email already exists. Please sign in or use forgot password.'
-      });
-    }
-
-    return res.json({
-      success: true,
-      status: 'pending_approval',
-      message: 'Your account has been submitted successfully and is pending admin approval. You will be notified once reviewed.',
-      user: {
-        id: result.user.id,
-        email: result.user.email,
-        name: result.user.name,
-        requestedRole: result.user.requestedRole,
-        status: result.user.status
-      }
-    });
-  } catch (err: any) {
-    return res.status(500).json({ success: false, error: err.message || 'Error creating account request' });
-  }
+const registerSchema = z.object({
+  fullName: z.string().trim().min(2, 'Full name must be at least 2 characters').max(80),
+  email: z.string().trim().toLowerCase().email('A valid email address is required').max(254),
+  phone: z.string().trim().regex(/^(?:\+254|0)[17]\d{8}$/, 'Must be a valid Kenyan mobile number (e.g. 07XXXXXXXX or +2547XXXXXXXX)'),
+  password: z.string().min(12, 'Password must be at least 12 characters').max(128),
+  position: z.enum(APPLY_POSITIONS),
+  note: z.string().max(500).optional(),
+  consent: z.boolean().refine(val => val === true, {
+    message: 'You must consent to personal data processing under Data Protection Act 2019'
+  })
 });
 
-// Step 2: Administrator Reviews & Approves Account -> Generates 15-Minute Hashed Activation Link
-app.post('/api/admin/users/:id/approve', requireAdminAuth, (req, res) => {
-  try {
-    const { id } = req.params;
-    const { assignedRole } = req.body;
-    const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
-
-    const validRoles: UserRole[] = ['admin', 'manager', 'staff'];
-    const role: UserRole = validRoles.includes(assignedRole) ? assignedRole : 'staff';
-
-    const result = approveAccountByAdmin(id, role, (req as any).user, clientIp);
-    if (!result) {
-      return res.status(404).json({ success: false, error: 'User account not found.' });
-    }
-
-    return res.json({
-      success: true,
-      message: `Account approved. One-time activation link generated for ${result.user.email} (Expires in 15 minutes).`,
-      user: {
-        id: result.user.id,
-        email: result.user.email,
-        name: result.user.name,
-        role: result.user.role,
-        status: result.user.status
-      },
-      // Activation link token is provided to the administrator to transmit to the approved user
-      activationToken: result.rawActivationToken,
-      activationUrl: `${req.protocol}://${req.get('host')}#activate=${result.rawActivationToken}`,
-      expiresInMinutes: result.expiresInMinutes
-    });
-  } catch (err: any) {
-    return res.status(500).json({ success: false, error: err.message || 'Error approving account' });
-  }
+const registerLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { success: false, error: 'Too many registration requests. Please try again after 15 minutes.' },
+  validate: { xForwardedForHeader: false }
 });
 
-// Step 3: Approved User Sets 12+ Character Password -> Account Activated & Access Granted
-app.post('/api/auth/activate', authLimiter, (req, res) => {
+async function isBreached(password: string): Promise<boolean> {
   try {
-    const { token, newPassword } = req.body;
-    const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
+    const sha1 = crypto.createHash('sha1').update(password).digest('hex').toUpperCase();
+    const res = await fetch('https://api.pwnedpasswords.com/range/' + sha1.slice(0, 5), {
+      signal: AbortSignal.timeout(2000)
+    });
+    if (!res.ok) return false;
+    return (await res.text()).includes(sha1.slice(5));
+  } catch {
+    return false;
+  }
+}
 
-    if (!token || !newPassword) {
-      return res.status(400).json({ success: false, error: 'Activation token and new password are required.' });
-    }
+// 1. Applicant Registration
+app.post('/api/staff/register', registerLimiter, async (req, res) => {
+  const parsed = registerSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({
+      success: false,
+      error: parsed.error.issues.map(i => i.message).join(', ')
+    });
+  }
+  const { fullName, email, phone, password, position, note, consent } = parsed.data;
 
-    const validation = validatePasswordSecurity(newPassword);
-    if (!validation.valid) {
-      return res.status(400).json({ success: false, error: validation.error });
-    }
+  const local = email.split('@')[0].toLowerCase();
+  if (password.toLowerCase().includes(local) || (await isBreached(password))) {
+    return res.status(400).json({
+      success: false,
+      error: 'That password is too easy to guess or has appeared in known data breaches. Please choose a longer, unique passphrase.'
+    });
+  }
 
-    const result = activateAccountWithPassword(token, newPassword, clientIp);
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  try {
+    const result = createStaffApplication({
+      fullName,
+      email,
+      phone,
+      passwordHash,
+      position,
+      note,
+      consent
+    });
+
     if (!result.success) {
-      return res.status(400).json(result);
+      return res.status(400).json({ success: false, error: result.error });
     }
 
-    return res.json({
-      success: true,
-      message: 'Account activated successfully! You may now sign in with your new 12+ character password.',
-      user: result.user
-    });
+    const { code, token } = result;
+    const siteUrl = process.env.SITE_URL || `${req.protocol}://${req.get('host')}`;
+    const verifyLink = `${siteUrl}/verify?token=${token}`;
+
+    recordOutboxEmail(
+      email,
+      'Verify your Lymbo Ventures Staff Application',
+      `<p>Habari ${fullName},</p>
+       <p>Thank you for applying for the <b>${position.replace('_', ' ').toUpperCase()}</b> position at Lymbo Ventures.</p>
+       <p>Your 6-digit email verification code is: <b style="font-size: 1.25rem; letter-spacing: 0.1em; color: #1F7A4D;">${code}</b> (valid for 10 minutes).</p>
+       <p>Or open this link to verify automatically: <a href="${verifyLink}">${verifyLink}</a></p>`,
+      'verification',
+      code,
+      token
+    );
   } catch (err: any) {
-    return res.status(500).json({ success: false, error: err.message || 'Error activating account' });
+    console.error('Staff registration error:', err.message);
   }
+
+  res.json({
+    success: true,
+    message: 'If the details are valid, a verification email has been sent. Please check your inbox or the in-app email simulator.'
+  });
+});
+
+// 2. Email Verification by 6-digit Code
+app.post('/api/staff/verify', registerLimiter, async (req, res) => {
+  const { email, code } = req.body;
+  if (!email || !code) {
+    return res.status(400).json({ success: false, error: 'Email and 6-digit verification code are required.' });
+  }
+
+  const result = verifyStaffEmailByCode(String(email), String(code));
+  if (!result.success) {
+    return res.status(400).json({ success: false, error: result.error || 'Invalid or expired code.' });
+  }
+
+  res.json({
+    success: true,
+    status: 'pending_approval',
+    message: 'Email verified. Your application is now waiting for Administrator identity review and position approval.'
+  });
+});
+
+// 3. Email Verification by Link Token
+app.post('/api/staff/verify-token', async (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ success: false, error: 'Verification token is required.' });
+  }
+
+  const result = verifyStaffEmailByToken(String(token));
+  if (!result.success) {
+    return res.status(400).json({ success: false, error: result.error || 'Invalid or expired verification link.' });
+  }
+
+  res.json({
+    success: true,
+    status: 'pending_approval',
+    message: 'Email verified. Your application is now waiting for Administrator identity review and position approval.'
+  });
+});
+
+app.get('/verify', (req, res) => {
+  const token = req.query.token as string;
+  if (!token) {
+    return res.redirect('/#verify_error=missing_token');
+  }
+  const result = verifyStaffEmailByToken(token);
+  if (result.success) {
+    return res.redirect('/#verified=true');
+  }
+  return res.redirect('/#verify_error=invalid_token');
+});
+
+// 4. Admin Applications Review Queue
+app.get('/api/admin/staff/applications', requireRole('admin'), (_req, res) => {
+  const applications = getStaffApplications();
+  res.json({
+    success: true,
+    applications: applications.map(a => ({
+      id: a.id,
+      fullName: a.fullName,
+      email: a.email,
+      phone: a.phone,
+      requestedPosition: a.requestedPosition,
+      role: a.role,
+      status: a.status,
+      note: a.note,
+      consentGiven: a.consentGiven,
+      createdAt: a.createdAt,
+      approvedAt: a.approvedAt,
+      rejectedAt: a.rejectedAt,
+      rejectionReason: a.rejectionReason
+    }))
+  });
+});
+
+// 5. Admin Approves and Assigns Final Role (Section 9.4)
+app.post('/api/admin/staff/:id/approve', requireRole('admin'), async (req, res) => {
+  const chosenRole = req.body.role || req.body.assignedRole;
+  const roleCheck = z.enum(ROLES).safeParse(chosenRole);
+  if (!roleCheck.success) {
+    return res.status(400).json({ success: false, error: 'Invalid role specified.' });
+  }
+
+  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
+  const adminUser = (req as any).user;
+
+  const result = approveStaffApplication(
+    req.params.id,
+    roleCheck.data,
+    adminUser?.id || 'usr_admin_root',
+    adminUser?.email || 'admin@lymboventures.co.ke',
+    clientIp
+  );
+
+  if (!result.success) {
+    return res.status(400).json({ success: false, error: result.error });
+  }
+
+  res.json({
+    success: true,
+    message: `Application approved! Staff member confirmed in role: ${roleCheck.data.toUpperCase()}.`,
+    user: {
+      id: result.user!.id,
+      fullName: result.user!.fullName,
+      email: result.user!.email,
+      role: result.user!.role,
+      status: result.user!.status
+    }
+  });
+});
+
+// 6. Admin Rejects Application
+app.post('/api/admin/staff/:id/reject', requireRole('admin'), async (req, res) => {
+  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
+  const adminUser = (req as any).user;
+  const reason = req.body.reason || 'Did not meet current vacancy requirements';
+
+  const result = rejectStaffApplication(
+    req.params.id,
+    reason,
+    adminUser?.id || 'usr_admin_root',
+    adminUser?.email || 'admin@lymboventures.co.ke',
+    clientIp
+  );
+
+  if (!result.success) {
+    return res.status(400).json({ success: false, error: result.error });
+  }
+
+  res.json({ success: true, message: 'Application rejected.' });
+});
+
+// 7. Admin Suspends Staff User (Ends Sessions Immediately)
+app.post('/api/admin/staff/:id/suspend', requireRole('admin'), async (req, res) => {
+  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
+  const adminUser = (req as any).user;
+
+  const result = suspendStaffUser(
+    req.params.id,
+    adminUser?.id || 'usr_admin_root',
+    adminUser?.email || 'admin@lymboventures.co.ke',
+    clientIp
+  );
+
+  if (!result.success) {
+    return res.status(400).json({ success: false, error: result.error });
+  }
+
+  destroyAllUserSessions(req.params.id);
+  res.json({ success: true, message: 'Staff user suspended and all sessions revoked immediately.' });
+});
+
+// 8. Admin Reactivates Staff User
+app.post('/api/admin/staff/:id/reactivate', requireRole('admin'), async (req, res) => {
+  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
+  const adminUser = (req as any).user;
+
+  const result = reactivateStaffUser(
+    req.params.id,
+    adminUser?.id || 'usr_admin_root',
+    adminUser?.email || 'admin@lymboventures.co.ke',
+    clientIp
+  );
+
+  if (!result.success) {
+    return res.status(400).json({ success: false, error: result.error });
+  }
+
+  res.json({ success: true, message: 'Staff user reactivated.' });
+});
+
+// 9. Admin Permanently Removes Staff User
+app.delete('/api/admin/staff/:id', requireRole('admin'), async (req, res) => {
+  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
+  const adminUser = (req as any).user;
+
+  destroyAllUserSessions(req.params.id);
+  const result = deleteStaffUser(
+    req.params.id,
+    adminUser?.id || 'usr_admin_root',
+    adminUser?.email || 'admin@lymboventures.co.ke',
+    clientIp
+  );
+
+  if (!result.success) {
+    return res.status(400).json({ success: false, error: result.error });
+  }
+
+  res.json({ success: true, message: 'Staff account permanently removed.' });
+});
+
+// 10. Outbox Emails Simulator (In-App Transactional Email Viewer)
+app.get('/api/dev/outbox', (_req, res) => {
+  const emails = getOutboxEmails();
+  res.json({ success: true, count: emails.length, emails });
+});
+
+// Legacy backward-compatibility routes for onboarding
+app.post('/api/auth/onboard-request', authLimiter, (req, res) => {
+  const { email, name, requestedRole } = req.body;
+  const result = createPendingAccount(email, name || '', requestedRole || 'staff');
+  return res.json({
+    success: result.status === 'created',
+    message: result.status === 'created' ? 'Account submitted.' : 'Account already exists.',
+    user: result.user
+  });
+});
+
+app.post('/api/admin/users/:id/approve', requireRole('admin'), (req, res) => {
+  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
+  const adminUser = (req as any).user;
+  const result = approveStaffApplication(req.params.id, req.body.assignedRole || 'sales_officer', adminUser?.id || 'usr_admin_root', adminUser?.email || 'admin@lymboventures.co.ke', clientIp);
+  return res.json(result);
+});
+
+app.post('/api/auth/activate', (req, res) => {
+  return res.json({ success: true, message: 'Account active.' });
 });
 
 // Admin User Management: List Users
-app.get('/api/admin/users', requireAdminAuth, (_req, res) => {
+app.get('/api/admin/users', requireRole('admin'), (_req, res) => {
   const db = loadDatabase();
   const safeUsers = db.users.map(u => ({
     id: u.id,
+    fullName: u.fullName || u.name,
     email: u.email,
     username: u.username,
     name: u.name,
@@ -349,7 +573,7 @@ app.get('/api/admin/users', requireAdminAuth, (_req, res) => {
     createdAt: u.createdAt,
     approvedBy: u.approvedBy,
     approvedAt: u.approvedAt,
-    requestedRole: u.requestedRole
+    requestedPosition: u.requestedPosition
   }));
   res.json({ success: true, users: safeUsers });
 });
@@ -504,7 +728,7 @@ app.post('/api/auth/login', authLimiter, async (req, res) => {
       maxAge: 8 * 60 * 60 * 1000
     });
 
-    addAuditLog(user.id, user.email, user.role, clientIp, 'USER_LOGIN', `User ${user.email} signed in successfully.`);
+    addAuditLog(user.id, user.email, user.role || 'staff', clientIp, 'USER_LOGIN', `User ${user.email} signed in successfully.`);
 
     return res.json({
       success: true,
@@ -572,7 +796,7 @@ app.post('/api/auth/mfa-verify', authLimiter, (req, res) => {
       maxAge: 8 * 60 * 60 * 1000
     });
 
-    addAuditLog(user.id, user.email, user.role, clientIp, 'MFA_VERIFIED', `User ${user.email} completed MFA verification.`);
+    addAuditLog(user.id, user.email, user.role || 'staff', clientIp, 'MFA_VERIFIED', `User ${user.email} completed MFA verification.`);
 
     return res.json({
       success: true,
@@ -783,11 +1007,12 @@ app.post('/api/orders', orderLimiter, (req, res) => {
 // GET /api/orders - Role-Based Order Retrieval with Kenya Data Protection Act 2019 Data Minimization
 app.get('/api/orders', requireStaffOrAdminAuth, (req, res) => {
   const user = (req as any).user;
-  const orders = getOrdersProjectedForRole(user.role);
+  const db = loadDatabase();
+  const orders = getOrdersProjectedForRole(user.role, db.orders);
   res.json({
     success: true,
     role: user.role,
-    dataMinimizationApplied: user.role === 'staff',
+    dataMinimizationApplied: user.role !== 'admin',
     orders
   });
 });
@@ -893,8 +1118,8 @@ app.post('/api/inventory/receive', requireStaffOrAdminAuth, (req, res) => {
   const result = recordGoodsReceived(Number(trays), batchRef, supplier, notes, user, clientIp);
   return res.json({
     success: true,
-    message: `Recorded ${trays} trays inward under batch ${result.item.batchRef}.`,
-    ...result
+    message: `Recorded ${trays} trays inward under batch ${result.batchRef}.`,
+    item: result
   });
 });
 
@@ -1171,7 +1396,317 @@ app.get('/api/admin/client-info', (req, res) => {
   });
 });
 
+// ==========================================================================
+// DYNAMIC STORE CONFIGURATION (Admin Configurable)
+// ==========================================================================
+app.get('/api/config', (_req, res) => {
+  const config = getStoreConfig();
+  res.json({ success: true, config });
+});
+
+app.post('/api/admin/config', requireAdminAuth, (req, res) => {
+  const user = (req as any).user;
+  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
+  const updated = updateStoreConfig(req.body, user.id, user.email, clientIp);
+  broadcastSyncEvent('config_updated', updated);
+
+  res.json({ success: true, config: updated, message: 'Store configuration updated successfully.' });
+});
+
+// ==========================================================================
+// AI CUSTOMER CHATBOT (Lymbo Smart Assistant)
+// ==========================================================================
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: { success: false, error: 'Too many chat requests. Please wait a moment.' },
+  validate: { xForwardedForHeader: false }
+});
+
+app.post('/api/chat', chatLimiter, async (req, res) => {
+  const { message, history } = req.body;
+  if (!message || typeof message !== 'string') {
+    return res.status(400).json({ success: false, error: 'Message text is required.' });
+  }
+
+  const config = getStoreConfig();
+  const db = loadDatabase();
+  const stock = getInventoryStatus();
+
+  const systemPrompt = `You are "Lymbo Assistant", the helpful, polite, and knowledgeable virtual assistant for Lymbo Ventures — Mombasa's trusted supplier of farm-fresh Grade A eggs.
+Store Information & Facts:
+- Product: Farm-fresh Grade A table eggs, 30 eggs per tray.
+- Current Price: KES ${config.eggPricePerTray} per tray.
+- Current Live Stock Available: ${stock.currentStock} trays.
+- Delivery Areas in Mombasa & Coastal Region:
+  * Mombasa Island & Tudor: KES 50
+  * Nyali & Kisauni: KES 100
+  * Bamburi & Kiembeni: KES 150
+  * Changamwe & Likoni: KES 150
+  * Mtwapa: KES 200
+- Same-Day Delivery: Available for orders placed before 3:00 PM. Morning delivery slot (8:00 AM - 12:00 PM) and Afternoon slot (1:00 PM - 5:30 PM).
+- Lipa na M-Pesa: Paybill ${config.mpesaPaybill}, Account Number 20159160 (${config.mpesaAccountName}).
+- Phone & WhatsApp Support: ${config.businessPhone} or 0727 811 266.
+- Operating Hours: ${config.businessHours}.
+- Location / Hub: Mombasa Central Hub (serving Island, North Coast, and South Coast).
+- Tone: Welcoming, courteous (use Kenyan warmth: "Karibu", "Habari"), concise, and accurate. If asked to place an order, guide them to click the "Order Fresh Eggs" button on the website.
+Answer clearly in 2 to 4 sentences. If they need urgent delivery confirmation, encourage them to call or WhatsApp 0727 811 266.`;
+
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (apiKey) {
+      const ai = new GoogleGenAI();
+      const chatContents: any[] = [
+        { role: 'user', parts: [{ text: systemPrompt }] },
+        { role: 'model', parts: [{ text: 'Karibu! I am the Lymbo Assistant. How may I help you with farm-fresh eggs today?' }] }
+      ];
+
+      if (Array.isArray(history)) {
+        for (const h of history.slice(-6)) {
+          if (h.role && h.text) {
+            chatContents.push({
+              role: h.role === 'user' ? 'user' : 'model',
+              parts: [{ text: String(h.text).slice(0, 500) }]
+            });
+          }
+        }
+      }
+
+      chatContents.push({
+        role: 'user',
+        parts: [{ text: message.slice(0, 1000) }]
+      });
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: chatContents,
+      });
+
+      const reply = response.text || 'Karibu Lymbo Ventures! Fresh Grade A eggs are available at KES 500 per tray. Call 0727 811 266 for instant delivery.';
+      return res.json({ success: true, reply, source: 'gemini' });
+    }
+  } catch (err: any) {
+    console.warn('Gemini chat failed, using intelligent rule-based response:', err.message);
+  }
+
+  // Intelligent fallback responder
+  const lower = message.toLowerCase();
+  let fallbackReply = `Karibu Lymbo Ventures! Our farm-fresh Grade A eggs are KES ${config.eggPricePerTray} per tray of 30. We deliver across Mombasa (Nyali, Bamburi, Island, Mtwapa, Likoni). For orders or questions, call/WhatsApp us at 0727 811 266!`;
+
+  if (lower.includes('price') || lower.includes('cost') || lower.includes('bei') || lower.includes('tray')) {
+    fallbackReply = `Our farm-fresh Grade A eggs are KES ${config.eggPricePerTray} per tray (30 eggs). We also offer wholesale discounts for bulk orders of 20+ trays. Call or WhatsApp 0727 811 266 for bulk pricing.`;
+  } else if (lower.includes('deliver') || lower.includes('nyali') || lower.includes('bamburi') || lower.includes('mtwapa') || lower.includes('island') || lower.includes('likoni')) {
+    fallbackReply = `We deliver across Mombasa! Delivery fees: Island/Tudor KES 50, Nyali/Kisauni KES 100, Bamburi/Kiembeni KES 150, Likoni/Changamwe KES 150, Mtwapa KES 200. Orders before 3 PM get same-day delivery!`;
+  } else if (lower.includes('pay') || lower.includes('mpesa') || lower.includes('lipa') || lower.includes('paybill')) {
+    fallbackReply = `You can pay via Lipa na M-Pesa Paybill ${config.mpesaPaybill}, Account number 20159160 (${config.mpesaAccountName}). We also accept Cash on Delivery for verified clients!`;
+  } else if (lower.includes('track') || lower.includes('order')) {
+    fallbackReply = `To track your order, enter your Order ID or phone number in our Order Tracker section on this page, or call our dispatch desk at 0727 811 266.`;
+  } else if (lower.includes('stock') || lower.includes('available')) {
+    fallbackReply = `We currently have ${stock.currentStock} fresh trays ready for immediate dispatch from our Mombasa hub. All eggs are inspected daily for Grade A freshness.`;
+  }
+
+  return res.json({ success: true, reply: fallbackReply, source: 'fallback' });
+});
+
+// ==========================================================================
+// AI DEMAND INSIGHTS (Admin / Manager)
+// ==========================================================================
+app.get('/api/admin/ai-insights', requireManagerOrAdminAuth, async (_req, res) => {
+  const db = loadDatabase();
+  const stock = getInventoryStatus();
+  const config = getStoreConfig();
+
+  const totalOrders = db.orders.length;
+  const pendingOrders = db.orders.filter(o => o.orderStatus === 'pending' || o.orderStatus === 'processing');
+  const deliveredOrders = db.orders.filter(o => o.orderStatus === 'delivered');
+  const totalTraysOrdered = db.orders.reduce((sum, o) => sum + (o.eggTrays || 0), 0);
+  const totalRevenue = db.orders.reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+
+  // Group by area
+  const areaCounts: Record<string, number> = {};
+  db.orders.forEach(o => {
+    areaCounts[o.deliveryArea] = (areaCounts[o.deliveryArea] || 0) + (o.eggTrays || 0);
+  });
+
+  const prompt = `You are the Lead Supply Chain & Revenue AI Analyst for Lymbo Ventures egg distribution in Mombasa, Kenya.
+Current Metrics:
+- Current Available Stock: ${stock.currentStock} trays
+- Total Orders: ${totalOrders} (Pending/Processing: ${pendingOrders.length}, Delivered: ${deliveredOrders.length})
+- Total Trays Sold: ${totalTraysOrdered} trays
+- Gross Sales: KES ${totalRevenue.toLocaleString()}
+- Sales by Area: ${JSON.stringify(areaCounts)}
+- Tray Base Price: KES ${config.eggPricePerTray}
+
+Provide a concise, high-impact Executive Intelligence Briefing in markdown with 3 clear sections:
+1. **Inventory & Restock Recommendation** (exact tray replenishment number and urgency).
+2. **Top Delivery Corridors & Demand Pattern** (key Mombasa zones like Nyali, Bamburi, Island).
+3. **Cash Flow & Pricing Strategy** (profit margin advice and M-Pesa collection efficiency).
+Keep it professional, actionable, and under 250 words.`;
+
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (apiKey) {
+      const ai = new GoogleGenAI();
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt
+      });
+      const insightText = response.text || '';
+      return res.json({
+        success: true,
+        source: 'gemini',
+        insights: insightText,
+        metrics: {
+          currentStock: stock.currentStock,
+          totalOrders,
+          pendingOrders: pendingOrders.length,
+          totalTraysOrdered,
+          totalRevenue,
+          topAreas: Object.entries(areaCounts).sort((a, b) => b[1] - a[1]).slice(0, 4)
+        }
+      });
+    }
+  } catch (err: any) {
+    console.warn('Gemini demand insights error:', err.message);
+  }
+
+  // Heuristic rule-based supply chain briefing
+  const topCorridor = Object.entries(areaCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Nyali & Bamburi';
+  const restockQty = stock.currentStock < 100 ? 300 : 150;
+  const urgency = stock.currentStock < 60 ? 'HIGH (Urgent Inward Batch Needed within 24h)' : 'OPTIMAL (Stable 3-day buffer)';
+
+  const fallbackInsights = `### 1. Inventory & Restock Recommendation
+- **Current Reserve:** ${stock.currentStock} trays in Mombasa depot.
+- **Urgency Level:** ${urgency}.
+- **Recommended Inward:** Order **${restockQty} trays** from layer farm suppliers to maintain delivery commitments and prevent stockouts.
+
+### 2. High-Demand Mombasa Corridors
+- **Primary Corridor:** **${topCorridor}** leads retail and restaurant demand.
+- **Logistics Tip:** Cluster morning delivery van runs between Nyali and Bamburi to minimize fuel burn while ensuring delivery before 11:00 AM.
+
+### 3. Cash Flow & M-Pesa Settlement
+- **Total Revenue Recorded:** KES ${totalRevenue.toLocaleString()}.
+- **Action:** Ensure all Lipa na M-Pesa receipts (Paybill 625625 Acc 20159160) are verified in the Accounts Officer portal before dispatch release.`;
+
+  return res.json({
+    success: true,
+    source: 'heuristic',
+    insights: fallbackInsights,
+    metrics: {
+      currentStock: stock.currentStock,
+      totalOrders,
+      pendingOrders: pendingOrders.length,
+      totalTraysOrdered,
+      totalRevenue,
+      topAreas: Object.entries(areaCounts).sort((a, b) => b[1] - a[1]).slice(0, 4)
+    }
+  });
+});
+
+// ==========================================================================
+// ROLE-SPECIFIC APPLICATION ENDPOINTS (Least Privilege per Section 4)
+// ==========================================================================
+
+// Dispatch Officer & Manager: Delivery Manifest
+app.get('/api/dispatch/manifest', requireRole('dispatch_officer', 'manager', 'admin'), (_req, res) => {
+  const db = loadDatabase();
+  const activeDeliveries = db.orders
+    .filter(o => o.orderStatus === 'approved' || o.orderStatus === 'processing' || o.orderStatus === 'shipped')
+    .map(o => ({
+      id: o.id,
+      deliveryNoteNumber: o.deliveryNoteNumber,
+      customerName: o.customerName,
+      customerPhone: o.customerPhone,
+      deliveryArea: o.deliveryArea,
+      deliveryAddress: o.deliveryAddress,
+      deliveryDate: o.deliveryDate,
+      deliveryTimeSlot: o.deliveryTimeSlot,
+      eggTrays: o.eggTrays,
+      orderStatus: o.orderStatus,
+      paymentStatus: o.paymentStatus,
+      notes: o.notes
+    }));
+
+  res.json({ success: true, deliveries: activeDeliveries });
+});
+
+// Accounts Officer & Admin: M-Pesa Reconciliation
+app.get('/api/accounts/reconciliation', requireRole('accounts_officer', 'admin'), (_req, res) => {
+  const db = loadDatabase();
+  const orders = db.orders.map(o => ({
+    id: o.id,
+    invoiceNumber: o.invoiceNumber,
+    customerName: o.customerName,
+    eggTrays: o.eggTrays,
+    grandTotal: o.grandTotal,
+    paymentMethod: o.paymentMethod,
+    paymentStatus: o.paymentStatus,
+    mpesaTransactionCode: o.mpesaTransactionCode,
+    orderStatus: o.orderStatus,
+    createdAt: o.createdAt
+  }));
+
+  const totalCollected = db.orders
+    .filter(o => o.paymentStatus === 'paid')
+    .reduce((sum, o) => sum + o.grandTotal, 0);
+
+  const pendingCollection = db.orders
+    .filter(o => o.paymentStatus !== 'paid')
+    .reduce((sum, o) => sum + o.grandTotal, 0);
+
+  res.json({
+    success: true,
+    totalCollected,
+    pendingCollection,
+    orders
+  });
+});
+
+// Customer Support, Manager & Admin: Customer Tickets & Inquiries
+app.get('/api/support/tickets', requireRole('customer_support', 'manager', 'admin'), (_req, res) => {
+  const db = loadDatabase();
+  const summary = db.orders.slice(0, 30).map(o => ({
+    id: o.id,
+    invoiceNumber: o.invoiceNumber,
+    deliveryNoteNumber: o.deliveryNoteNumber,
+    customerName: o.customerName,
+    customerPhone: o.customerPhone,
+    deliveryArea: o.deliveryArea,
+    eggTrays: o.eggTrays,
+    orderStatus: o.orderStatus,
+    paymentStatus: o.paymentStatus,
+    createdAt: o.createdAt
+  }));
+
+  res.json({
+    success: true,
+    tickets: summary,
+    helplinePhone: '0727811266',
+    altPhone: '0704967655'
+  });
+});
+
+// Sales Officer, Manager & Admin: Sales Overview
+app.get('/api/sales/overview', requireRole('sales_officer', 'manager', 'admin'), (req, res) => {
+  const user = (req as any).user;
+  const db = loadDatabase();
+  
+  const totalTrays = db.orders.reduce((sum, o) => sum + (o.eggTrays || 0), 0);
+  const totalSales = db.orders.reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+  const recentOrders = getOrdersProjectedForRole(user.role, db.orders.slice(0, 20));
+
+  res.json({
+    success: true,
+    totalOrders: db.orders.length,
+    totalTrays,
+    totalSales,
+    recentOrders
+  });
+});
+
+// ==========================================================================
 // Vite Dev Server / Static File Serving
+// ==========================================================================
 async function startServer() {
   try {
     // Load persistent database on startup
@@ -1180,7 +1715,7 @@ async function startServer() {
     if (process.env.NODE_ENV !== 'production') {
       const { createServer: createViteServer } = await import('vite');
       const vite = await createViteServer({
-        server: { middlewareMode: true, host: HOST },
+        server: { middlewareMode: true, hmr: false, watch: null },
         appType: 'spa'
       });
       app.use(vite.middlewares);

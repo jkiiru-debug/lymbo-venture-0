@@ -252,7 +252,7 @@ export function createSession(user: UserAccount, ip: string, userAgent: string):
   sessions.set(sessionId, {
     id: sessionId,
     userId: user.id,
-    role: user.role,
+    role: (user.role || 'staff') as UserRole,
     email: user.email,
     name: user.name,
     createdAt: now,
@@ -321,7 +321,7 @@ export function createPasswordResetRequest(email: string, clientIp: string): { s
   addAuditLog(
     user.id,
     user.email,
-    user.role,
+    user.role || 'staff',
     clientIp,
     'PASSWORD_RESET_REQUESTED',
     `Password reset link requested for ${user.email}. Hashed token saved (15m expiry).`,
@@ -367,7 +367,7 @@ export function confirmPasswordReset(token: string, newPassword: string, clientI
   addAuditLog(
     user.id,
     user.email,
-    user.role,
+    user.role || 'staff',
     clientIp,
     'PASSWORD_RESET_COMPLETED',
     `Password successfully updated for ${user.email} (12+ char requirement verified). All active sessions invalidated.`,
