@@ -442,12 +442,55 @@ export function requireManagerOrAdminAuth(req: Request, res: Response, next: Nex
   next();
 }
 
+// Generic Role Check Middleware (Database Grounded on Every Request - Section 9.4)
+export function requireRole(...allowed: UserRole[]) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
+    const session = getSession(sessionId);
+
+    if (!session) {
+      return res.status(401).json({ success: false, error: 'Please sign in.' });
+    }
+
+    const db = loadDatabase();
+    const user = db.users.find(u => u.id === session.userId);
+    if (!user || user.status !== 'active' || !user.role) {
+      return res.status(403).json({ success: false, error: 'Not allowed: Active staff role required.' });
+    }
+
+    // Admin always possesses root governance
+    if (user.role === 'admin') {
+      (req as any).user = { id: user.id, email: user.email, role: user.role, name: user.name };
+      return next();
+    }
+
+    const effectiveRole = user.role === 'staff' ? 'sales_officer' : user.role;
+    const isPermitted = allowed.some(r => r === user.role || (r === 'sales_officer' && user.role === 'staff') || (r === 'staff' && user.role === 'sales_officer'));
+
+    if (!isPermitted) {
+      return res.status(403).json({ success: false, error: 'Forbidden: Insufficient role permissions for this endpoint.' });
+    }
+
+    (req as any).user = { id: user.id, email: user.email, role: user.role, name: user.name };
+    next();
+  };
+}
+
 // Middleware: Require Staff, Manager, or Admin (Tier 1, Tier 2, Tier 3)
 export function requireStaffOrAdminAuth(req: Request, res: Response, next: NextFunction) {
   const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
   const session = getSession(sessionId);
 
-  if (!session || !['admin', 'manager', 'staff'].includes(session.role)) {
+  if (!session) {
+    return res.status(401).json({
+      success: false,
+      authenticated: false,
+      error: 'Unauthorized: Valid authenticated session required.'
+    });
+  }
+
+  const validRoles: string[] = ['admin', 'manager', 'sales_officer', 'dispatch_officer', 'accounts_officer', 'customer_support', 'staff'];
+  if (!validRoles.includes(session.role)) {
     return res.status(403).json({
       success: false,
       authenticated: Boolean(session),

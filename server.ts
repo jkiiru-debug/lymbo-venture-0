@@ -1,12 +1,14 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import twilio from 'twilio';
 import cookieParser from 'cookie-parser';
 import bcrypt from 'bcryptjs';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
+import { GoogleGenAI } from '@google/genai';
 
 import {
   loadDatabase,
@@ -22,6 +24,21 @@ import {
   activateAccountWithPassword,
   registerSseClient,
   broadcastSyncEvent,
+  createStaffApplication,
+  verifyStaffEmailByCode,
+  verifyStaffEmailByToken,
+  approveStaffApplication,
+  rejectStaffApplication,
+  suspendStaffUser,
+  reactivateStaffUser,
+  deleteStaffUser,
+  getStaffApplications,
+  getOutboxEmails,
+  recordOutboxEmail,
+  getStoreConfig,
+  updateStoreConfig,
+  APPLY_POSITIONS,
+  ROLES,
   UserRole
 } from './src/db/persistentStore.ts';
 
@@ -45,7 +62,8 @@ import {
   requireAuth,
   requireAdminAuth,
   requireManagerOrAdminAuth,
-  requireStaffOrAdminAuth
+  requireStaffOrAdminAuth,
+  requireRole
 } from './src/auth/authService.ts';
 
 import {
