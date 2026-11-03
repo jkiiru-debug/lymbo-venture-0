@@ -391,12 +391,34 @@ export function findUserByIdentifier(identifier: string): UserAccount | null {
   ) || null;
 }
 
+// Helper: Resolve authenticated user from database on every request (Section 5)
+export function resolveAuthenticatedUser(req: Request): { user: UserAccount; session: SessionData } | null {
+  const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
+  if (!sessionId) return null;
+
+  const session = getSession(sessionId);
+  if (!session) return null;
+
+  const db = loadDatabase();
+  const user = db.users.find(u => u.id === session.userId);
+  if (!user || user.status !== 'active' || !user.role) {
+    destroySession(sessionId);
+    return null;
+  }
+
+  // Keep session live state synchronized with database on every request
+  session.role = user.role;
+  session.email = user.email;
+  session.name = user.name;
+
+  return { user, session };
+}
+
 // Middleware: Require Authenticated User (Any Active Staff/Admin)
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
-  const session = getSession(sessionId);
+  const auth = resolveAuthenticatedUser(req);
 
-  if (!session) {
+  if (!auth) {
     return res.status(401).json({
       success: false,
       authenticated: false,
@@ -404,84 +426,118 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     });
   }
 
-  (req as any).user = session;
+  (req as any).user = {
+    id: auth.user.id,
+    email: auth.user.email,
+    role: auth.user.role,
+    name: auth.user.name,
+    sessionId: auth.session.id
+  };
   next();
 }
 
 // Middleware: Require System Admin (Tier 1: lymboventures0@gmail.com)
 export function requireAdminAuth(req: Request, res: Response, next: NextFunction) {
-  const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
-  const session = getSession(sessionId);
+  const auth = resolveAuthenticatedUser(req);
 
-  if (!session || session.role !== 'admin') {
+  if (!auth) {
+    return res.status(401).json({
+      success: false,
+      authenticated: false,
+      error: 'Unauthorized: Valid authenticated session required.'
+    });
+  }
+
+  if (auth.user.role !== 'admin') {
     return res.status(403).json({
       success: false,
-      authenticated: Boolean(session),
+      authenticated: true,
       error: 'Forbidden: Access restricted strictly to System Administrators.'
     });
   }
 
-  (req as any).user = session;
+  (req as any).user = {
+    id: auth.user.id,
+    email: auth.user.email,
+    role: auth.user.role,
+    name: auth.user.name,
+    sessionId: auth.session.id
+  };
   next();
 }
 
 // Middleware: Require Manager or Admin (Tier 1 & Tier 2)
 export function requireManagerOrAdminAuth(req: Request, res: Response, next: NextFunction) {
-  const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
-  const session = getSession(sessionId);
+  const auth = resolveAuthenticatedUser(req);
 
-  if (!session || (session.role !== 'admin' && session.role !== 'manager')) {
+  if (!auth) {
+    return res.status(401).json({
+      success: false,
+      authenticated: false,
+      error: 'Unauthorized: Valid authenticated session required.'
+    });
+  }
+
+  if (auth.user.role !== 'admin' && auth.user.role !== 'manager') {
     return res.status(403).json({
       success: false,
-      authenticated: Boolean(session),
+      authenticated: true,
       error: 'Forbidden: Access restricted to Managers and Administrators.'
     });
   }
 
-  (req as any).user = session;
+  (req as any).user = {
+    id: auth.user.id,
+    email: auth.user.email,
+    role: auth.user.role,
+    name: auth.user.name,
+    sessionId: auth.session.id
+  };
   next();
 }
 
-// Generic Role Check Middleware (Database Grounded on Every Request - Section 9.4)
+// Generic Role Check Middleware (Database Grounded on Every Request - Section 5 & 9.4)
 export function requireRole(...allowed: UserRole[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
-    const session = getSession(sessionId);
+    const auth = resolveAuthenticatedUser(req);
 
-    if (!session) {
-      return res.status(401).json({ success: false, error: 'Please sign in.' });
+    if (!auth) {
+      return res.status(401).json({
+        success: false,
+        authenticated: false,
+        error: 'Unauthorized: Valid authenticated session required.'
+      });
     }
 
-    const db = loadDatabase();
-    const user = db.users.find(u => u.id === session.userId);
-    if (!user || user.status !== 'active' || !user.role) {
-      return res.status(403).json({ success: false, error: 'Not allowed: Active staff role required.' });
-    }
+    const { user, session } = auth;
 
     // Admin always possesses root governance
     if (user.role === 'admin') {
-      (req as any).user = { id: user.id, email: user.email, role: user.role, name: user.name };
+      (req as any).user = { id: user.id, email: user.email, role: user.role, name: user.name, sessionId: session.id };
       return next();
     }
 
     const effectiveRole = user.role === 'staff' ? 'sales_officer' : user.role;
-    const isPermitted = allowed.some(r => r === user.role || (r === 'sales_officer' && user.role === 'staff') || (r === 'staff' && user.role === 'sales_officer'));
+    const isPermitted = allowed.some(r => r === user.role || r === effectiveRole || (r === 'sales_officer' && user.role === 'staff') || (r === 'staff' && user.role === 'sales_officer'));
 
     if (!isPermitted) {
-      return res.status(403).json({ success: false, error: 'Forbidden: Insufficient role permissions for this endpoint.' });
+      return res.status(403).json({
+        success: false,
+        authenticated: true,
+        error: 'Forbidden: Insufficient role permissions for this endpoint.'
+      });
     }
 
-    (req as any).user = { id: user.id, email: user.email, role: user.role, name: user.name };
+    (req as any).user = { id: user.id, email: user.email, role: user.role, name: user.name, sessionId: session.id };
     next();
   };
 }
 
 // Middleware: Require Staff, Manager, or Admin (Tier 1, Tier 2, Tier 3)
 export function requireStaffOrAdminAuth(req: Request, res: Response, next: NextFunction) {
-  const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
-  const session = getSession(sessionId);
+  const auth = resolveAuthenticatedUser(req);
 
-  if (!session) {
+  if (!auth) {
     return res.status(401).json({
       success: false,
       authenticated: false,
@@ -490,14 +546,20 @@ export function requireStaffOrAdminAuth(req: Request, res: Response, next: NextF
   }
 
   const validRoles: string[] = ['admin', 'manager', 'sales_officer', 'dispatch_officer', 'accounts_officer', 'customer_support', 'staff'];
-  if (!validRoles.includes(session.role)) {
+  if (!auth.user.role || !validRoles.includes(auth.user.role)) {
     return res.status(403).json({
       success: false,
-      authenticated: Boolean(session),
+      authenticated: true,
       error: 'Forbidden: Access restricted to authorized company personnel.'
     });
   }
 
-  (req as any).user = session;
+  (req as any).user = {
+    id: auth.user.id,
+    email: auth.user.email,
+    role: auth.user.role,
+    name: auth.user.name,
+    sessionId: auth.session.id
+  };
   next();
 }

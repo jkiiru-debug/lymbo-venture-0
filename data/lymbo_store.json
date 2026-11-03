@@ -7,7 +7,7 @@
       "name": "System Administrator",
       "role": "admin",
       "status": "active",
-      "passwordHash": "$2b$12$u1wlr9pwETknYeUyEMn7IOvJaudJF7ZnzbY5U9yEOX8EJUFt1cFgG",
+      "passwordHash": "$2b$12$SC07h4gEAH9koZBR.GSspuOyVudF1EBCCFh.IKwNqBaYeK/zCFGUG",
       "mfaRequired": true,
       "mfaSecret": "OFGOF3HHJV2CXE37J6PW",
       "mfaBackupCodes": [
@@ -27,7 +27,7 @@
       "name": "Operations Manager",
       "role": "manager",
       "status": "active",
-      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
       "mfaRequired": true,
       "mfaSecret": "3IEBASYG3R52LY44XQS4",
       "mfaBackupCodes": [
@@ -47,7 +47,7 @@
       "name": "Junior Sales Staff",
       "role": "sales_officer",
       "status": "active",
-      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
       "mfaRequired": false,
       "mfaSecret": "57LPDG7YXDCYIH5JDP5X",
       "mfaBackupCodes": [
@@ -145,7 +145,7 @@
       "role": "dispatch_officer",
       "requestedPosition": "dispatch_officer",
       "status": "active",
-      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
       "consentGiven": true,
       "mfaRequired": false,
       "mfaSecret": "XIBUKQCT4BD6N7TTCZKJ",
@@ -171,7 +171,7 @@
       "role": "accounts_officer",
       "requestedPosition": "accounts_officer",
       "status": "active",
-      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
       "consentGiven": true,
       "mfaRequired": false,
       "mfaSecret": "VNNHKRCV7DCQEIUIWGLO",
@@ -197,7 +197,7 @@
       "role": "customer_support",
       "requestedPosition": "customer_support",
       "status": "active",
-      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
       "consentGiven": true,
       "mfaRequired": false,
       "mfaSecret": "TRXUWDHZXQGBSMTYB7I7",
@@ -223,7 +223,7 @@
       "role": null,
       "requestedPosition": "dispatch_officer",
       "status": "active",
-      "passwordHash": "$2b$12$9pO0Si/tVUnFLNeizacom.zt60lYAkjxPO8NMyeNb0nkcWH4Oic9m",
+      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
       "consentGiven": true,
       "mfaRequired": false,
       "mfaSecret": "RUZPYDOJDWIPDPWZJ4YQ",
@@ -236,6 +236,30 @@
       ],
       "createdAt": "2026-11-02T08:31:18.635Z",
       "note": "3 years motorcycle courier experience in Mombasa North (Nyali, Bamburi, Shanzu)."
+    },
+    {
+      "id": "usr_staff_1793727500137",
+      "fullName": "Jane Wanjiku Mwangi",
+      "name": "Jane Wanjiku Mwangi",
+      "email": "jane.1793727499422@lymboventures.co.ke",
+      "phone": "0712345678",
+      "username": "jane.1793727499422",
+      "role": null,
+      "requestedPosition": "sales_officer",
+      "status": "pending_email",
+      "passwordHash": "$2b$12$SXmUEKMr5AzBDTlqZ8V5zOgHzHzpTnUv/iRWdApzd23UrbG.snhPW",
+      "note": "Experienced sales rep in Mombasa",
+      "consentGiven": true,
+      "mfaRequired": false,
+      "mfaSecret": "J5GQIYP7YJ3BGLHIYEIQ",
+      "mfaBackupCodes": [
+        "1941-3595",
+        "5947-4052",
+        "2877-9506",
+        "9021-5513",
+        "6414-3520"
+      ],
+      "createdAt": "2026-11-03T17:38:20.137Z"
     }
   ],
   "orders": [
@@ -353,6 +377,56 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "AUDIT-1793727457413-567",
+      "timestamp": "2026-11-03T17:37:37.413Z",
+      "userId": "usr_dispatch_01",
+      "userEmail": "dispatch@lymboventures.co.ke",
+      "userRole": "dispatch_officer",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User dispatch@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793727456881-235",
+      "timestamp": "2026-11-03T17:37:36.881Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "MFA_VERIFIED",
+      "details": "User lymboventures0@gmail.com completed MFA verification."
+    },
+    {
+      "id": "AUDIT-1793721685480-508",
+      "timestamp": "2026-11-03T16:01:25.480Z",
+      "userId": "usr_accounts_01",
+      "userEmail": "accounts@lymboventures.co.ke",
+      "userRole": "accounts_officer",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User accounts@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793721684926-840",
+      "timestamp": "2026-11-03T16:01:24.926Z",
+      "userId": "usr_dispatch_01",
+      "userEmail": "dispatch@lymboventures.co.ke",
+      "userRole": "dispatch_officer",
+      "clientIp": "127.0.0.1",
+      "action": "USER_LOGIN",
+      "details": "User dispatch@lymboventures.co.ke signed in successfully."
+    },
+    {
+      "id": "AUDIT-1793721684380-947",
+      "timestamp": "2026-11-03T16:01:24.380Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "MFA_VERIFIED",
+      "details": "User lymboventures0@gmail.com completed MFA verification."
+    },
     {
       "id": "AUDIT-1793622789772-518",
       "timestamp": "2026-11-02T12:33:09.772Z",
@@ -642,7 +716,7 @@
   "nextOrderSeq": 1004,
   "nextInvoiceSeq": 4,
   "nextDeliveryNoteSeq": 4,
-  "lastUpdated": "2026-11-02T12:33:09.772Z",
+  "lastUpdated": "2026-11-03T17:38:20.139Z",
   "emailVerifications": [
     {
       "id": "VER-1793621965253-196",
@@ -663,9 +737,28 @@
       "attempts": 1,
       "expiresAt": 1793623177675,
       "usedAt": 1793622577689
+    },
+    {
+      "id": "VER-1793727500138-780",
+      "userId": "usr_staff_1793727500137",
+      "email": "jane.1793727499422@lymboventures.co.ke",
+      "codeHash": "97ba37562a79f4530eaa0eb7018a9378940a6a4fe5f5d57644a9886ed44487bb",
+      "tokenHash": "79bf18fa68181107d6d5060554d1b3e4c67f357874c32c790f7168d03acc8c77",
+      "attempts": 0,
+      "expiresAt": 1793728100138
     }
   ],
   "outboxEmails": [
+    {
+      "id": "MAIL-1793727500139-797",
+      "to": "jane.1793727499422@lymboventures.co.ke",
+      "subject": "Verify your Lymbo Ventures Staff Application",
+      "html": "<p>Habari Jane Wanjiku Mwangi,</p>\n       <p>Thank you for applying for the <b>SALES OFFICER</b> position at Lymbo Ventures.</p>\n       <p>Your 6-digit email verification code is: <b style=\"font-size: 1.25rem; letter-spacing: 0.1em; color: #1F7A4D;\">285252</b> (valid for 10 minutes).</p>\n       <p>Or open this link to verify automatically: <a href=\"http://127.0.0.1:3000/verify?token=0209af87510736451c8e95ae58e3a8bef169df6502f72a577c4796831e6a4a86\">http://127.0.0.1:3000/verify?token=0209af87510736451c8e95ae58e3a8bef169df6502f72a577c4796831e6a4a86</a></p>",
+      "type": "verification",
+      "sentAt": "2026-11-03T17:38:20.139Z",
+      "codePreview": "285252",
+      "tokenPreview": "0209af87510736451c8e95ae58e3a8bef169df6502f72a577c4796831e6a4a86"
+    },
     {
       "id": "MAIL-1793622577699-988",
       "to": "kennedy.omondi.1793622576952@example.com",

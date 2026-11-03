@@ -63,7 +63,8 @@ import {
   requireAdminAuth,
   requireManagerOrAdminAuth,
   requireStaffOrAdminAuth,
-  requireRole
+  requireRole,
+  resolveAuthenticatedUser
 } from './src/auth/authService.ts';
 
 import {
@@ -851,13 +852,13 @@ app.get('/api/auth/mfa-setup', (req, res) => {
   });
 });
 
-// GET /api/auth/session - Active Session Verification
+// GET /api/auth/session - Active Session Verification (Database Grounded - Section 5)
 app.get('/api/auth/session', (req, res) => {
-  const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
-  const session = getSession(sessionId);
   const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip || '127.0.0.1';
+  const auth = resolveAuthenticatedUser(req);
 
-  if (!session) {
+  if (!auth) {
+    res.clearCookie('lymbo_session', { path: '/' });
     return res.json({
       authenticated: false,
       user: null,
@@ -868,13 +869,113 @@ app.get('/api/auth/session', (req, res) => {
   return res.json({
     authenticated: true,
     user: {
-      id: session.userId,
-      email: session.email,
-      name: session.name,
-      role: session.role
+      id: auth.user.id,
+      email: auth.user.email,
+      name: auth.user.name,
+      role: auth.user.role
     },
     clientIp,
-    sessionExpiresInMinutes: Math.round((8 * 60 * 60 * 1000 - (Date.now() - session.createdAt)) / 60000)
+    sessionExpiresInMinutes: Math.round((8 * 60 * 60 * 1000 - (Date.now() - auth.session.createdAt)) / 60000)
+  });
+});
+
+// GET /api/admin/me - Current Authenticated User Role, Approval Status & Permissions
+app.get('/api/admin/me', (req, res) => {
+  const sessionId = req.cookies?.lymbo_session || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.substring(7) : null);
+  const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip || '127.0.0.1';
+
+  if (!sessionId) {
+    return res.status(401).json({
+      success: false,
+      authenticated: false,
+      error: 'Unauthorized: No active session. Please sign in.'
+    });
+  }
+
+  const session = getSession(sessionId);
+  if (!session) {
+    res.clearCookie('lymbo_session', { path: '/' });
+    return res.status(401).json({
+      success: false,
+      authenticated: false,
+      error: 'Session expired or invalid. Please sign in again.'
+    });
+  }
+
+  const db = loadDatabase();
+  const user = db.users.find(u => u.id === session.userId);
+
+  if (!user) {
+    destroySession(sessionId);
+    res.clearCookie('lymbo_session', { path: '/' });
+    return res.status(401).json({
+      success: false,
+      authenticated: false,
+      error: 'User account not found.'
+    });
+  }
+
+  // Keep session live state synchronized with database on every request
+  session.role = (user.role || 'staff') as UserRole;
+  session.email = user.email;
+  session.name = user.name;
+
+  const isApproved = user.status === 'active';
+  const role = user.role || 'staff';
+
+  const roleTabMap: Record<string, string[]> = {
+    admin: ['inventory', 'orders', 'dispatch', 'accounts', 'support', 'staff', 'reports', 'photos', 'restock', 'settings', 'logs'],
+    manager: ['orders', 'inventory', 'dispatch', 'reports', 'photos', 'restock', 'support'],
+    sales_officer: ['orders', 'support'],
+    dispatch_officer: ['dispatch'],
+    accounts_officer: ['accounts'],
+    customer_support: ['support'],
+    staff: ['orders', 'support']
+  };
+
+  const roleDefaultTabMap: Record<string, string> = {
+    admin: 'orders',
+    manager: 'orders',
+    sales_officer: 'orders',
+    dispatch_officer: 'dispatch',
+    accounts_officer: 'accounts',
+    customer_support: 'support',
+    staff: 'orders'
+  };
+
+  const allowedTabs = isApproved ? (roleTabMap[role] || ['orders']) : [];
+  const defaultTab = isApproved ? (roleDefaultTabMap[role] || 'orders') : '';
+
+  return res.json({
+    success: true,
+    authenticated: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      status: user.status,
+      isApproved,
+      phone: user.phone,
+      allowedTabs,
+      defaultTab,
+      permissions: {
+        canManageStaff: role === 'admin' && isApproved,
+        canManageSettings: role === 'admin' && isApproved,
+        canViewAuditLogs: role === 'admin' && isApproved,
+        canReceiveStock: (role === 'admin' || role === 'manager') && isApproved,
+        canUploadPhotos: (role === 'admin' || role === 'manager') && isApproved,
+        canViewReports: (role === 'admin' || role === 'manager') && isApproved,
+        canManageOrders: ['admin', 'manager', 'sales_officer', 'staff'].includes(role) && isApproved,
+        canUpdateDeliveryStatus: ['admin', 'manager', 'dispatch_officer'].includes(role) && isApproved,
+        canViewManifest: ['admin', 'manager', 'dispatch_officer'].includes(role) && isApproved,
+        canReconcileAccounts: ['admin', 'accounts_officer'].includes(role) && isApproved,
+        canViewSupport: ['admin', 'manager', 'customer_support', 'sales_officer', 'staff'].includes(role) && isApproved,
+        canDeleteOrders: role === 'admin' && isApproved,
+        canEditPrices: role === 'admin' && isApproved
+      }
+    },
+    clientIp
   });
 });
 
@@ -1066,8 +1167,8 @@ app.get('/api/orders/track', (req, res) => {
   });
 });
 
-// POST /api/orders/:id/status - Staff / Manager / Admin Order Status Update
-app.post('/api/orders/:id/status', requireStaffOrAdminAuth, (req, res) => {
+// POST /api/orders/:id/status - Staff / Manager / Admin Order Status Update (Section 4)
+app.post('/api/orders/:id/status', requireRole('sales_officer', 'dispatch_officer', 'manager', 'admin', 'staff'), (req, res) => {
   const { id } = req.params;
   const { status, note } = req.body;
   const user = (req as any).user;
@@ -1075,6 +1176,11 @@ app.post('/api/orders/:id/status', requireStaffOrAdminAuth, (req, res) => {
 
   if (!['pending', 'processing', 'approved', 'shipped', 'delivered', 'declined'].includes(status)) {
     return res.status(400).json({ success: false, error: 'Invalid order status.' });
+  }
+
+  // Section 4 Least Privilege: Dispatch officers can only mark orders as shipped or delivered
+  if (user.role === 'dispatch_officer' && !['shipped', 'delivered'].includes(status)) {
+    return res.status(403).json({ success: false, error: 'Forbidden: Dispatch officers can only mark orders as shipped or delivered.' });
   }
 
   const updated = updateOrderStatusInStore(id, status as any, user, clientIp, note);
@@ -1105,8 +1211,8 @@ app.get('/api/inventory', (_req, res) => {
   });
 });
 
-// POST /api/inventory/receive - Record Goods Received (Admin/Manager/Staff)
-app.post('/api/inventory/receive', requireStaffOrAdminAuth, (req, res) => {
+// POST /api/inventory/receive - Record Goods Received (Admin & Operations Manager - Section 4)
+app.post('/api/inventory/receive', requireRole('manager', 'admin'), (req, res) => {
   const { trays, batchRef, supplier, notes } = req.body;
   const user = (req as any).user;
   const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
@@ -1131,7 +1237,7 @@ app.get('/api/photos', (_req, res) => {
   res.json({ success: true, photos: db.dailyPhotos });
 });
 
-app.post('/api/photos', requireStaffOrAdminAuth, (req, res) => {
+app.post('/api/photos', requireRole('manager', 'admin'), (req, res) => {
   const { url, caption, tag, date } = req.body;
   const user = (req as any).user;
   const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || '127.0.0.1';
@@ -1380,9 +1486,9 @@ app.post('/api/send-sms', requireStaffOrAdminAuth, smsLimiter, async (req, res) 
 });
 
 // ==========================================================================
-// IMMUTABLE AUDIT LOGS & CLIENT INFO
+// IMMUTABLE AUDIT LOGS & CLIENT INFO (Section 4 - Admin Only)
 // ==========================================================================
-app.get('/api/admin/audit-logs', requireManagerOrAdminAuth, (_req, res) => {
+app.get('/api/admin/audit-logs', requireAdminAuth, (_req, res) => {
   const db = loadDatabase();
   res.json({ success: true, logs: db.auditLogs });
 });

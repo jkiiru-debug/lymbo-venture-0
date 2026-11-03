@@ -9874,9 +9874,35 @@
     /* ==========================================================================
        ENTERPRISE ADMIN PORTAL AUTHENTICATION & MULTI-FACTOR (MFA) ENGINE
        ========================================================================== */
+    async function syncCurrentUserFromAdminMe() {
+      try {
+        const res = await fetch('/api/admin/me');
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data && data.authenticated && data.user) {
+          state.currentUserEmail = data.user.email;
+          state.currentUserRole = data.user.role;
+          state.currentUserName = data.user.name;
+          state.currentUserStatus = data.user.status;
+          state.currentUserIsApproved = data.user.isApproved;
+          state.currentUserAllowedTabs = data.user.allowedTabs || [];
+          state.currentUserDefaultTab = data.user.defaultTab || 'orders';
+          state.currentUserPermissions = data.user.permissions || {};
+          return data.user;
+        }
+      } catch (err) {
+        console.warn("Error fetching /api/admin/me:", err);
+      }
+      return null;
+    }
+
     async function checkAdminActiveSession() {
       try {
-        const res = await fetch('/api/auth/session');
+        const res = await fetch('/api/admin/me');
+        if (res.status === 401) {
+          state.isAdminAuthenticated = false;
+          return false;
+        }
         const data = await res.json();
         if (data && data.clientIp) {
           state.clientIp = data.clientIp;
@@ -9885,18 +9911,28 @@
           if (bannerIp) bannerIp.textContent = data.clientIp;
           if (kpiIp) kpiIp.textContent = data.clientIp;
         }
-        if (data && data.authenticated) {
-          state.isAdminAuthenticated = true;
-          if (data.user) {
-            state.currentUserEmail = data.user.email;
-            state.currentUserRole = data.user.role;
-            state.currentUserName = data.user.name;
+        if (data && data.authenticated && data.user) {
+          state.currentUserEmail = data.user.email;
+          state.currentUserRole = data.user.role;
+          state.currentUserName = data.user.name;
+          state.currentUserStatus = data.user.status;
+          state.currentUserIsApproved = data.user.isApproved;
+          state.currentUserAllowedTabs = data.user.allowedTabs || [];
+          state.currentUserDefaultTab = data.user.defaultTab || 'orders';
+          state.currentUserPermissions = data.user.permissions || {};
+
+          if (!data.user.isApproved || data.user.status !== 'active') {
+            state.isAdminAuthenticated = false;
+            showToast("⚠️ Account pending administrator approval.");
+            return false;
           }
+
+          state.isAdminAuthenticated = true;
           enforceRbacUi();
           return true;
         }
       } catch (e) {
-        console.warn("Session check error:", e);
+        console.warn("Session check error from /api/admin/me:", e);
       }
       state.isAdminAuthenticated = false;
       return false;
@@ -10009,11 +10045,33 @@
       if (pwInput) pwInput.focus();
     }
 
+    const ROLE_ALLOWED_TABS = {
+      admin: ['inventory', 'orders', 'dispatch', 'accounts', 'support', 'staff', 'reports', 'photos', 'restock', 'settings', 'logs'],
+      manager: ['orders', 'inventory', 'dispatch', 'reports', 'photos', 'restock', 'support'],
+      sales_officer: ['orders', 'support'],
+      dispatch_officer: ['dispatch'],
+      accounts_officer: ['accounts'],
+      customer_support: ['support'],
+      staff: ['orders', 'support']
+    };
+
+    const ROLE_DEFAULT_TABS = {
+      admin: 'orders',
+      manager: 'orders',
+      sales_officer: 'orders',
+      dispatch_officer: 'dispatch',
+      accounts_officer: 'accounts',
+      customer_support: 'support',
+      staff: 'orders'
+    };
+
     function showAdminManageScreen() {
       const authScreen = document.getElementById("adminAuthScreen");
       const manageScreen = document.getElementById("adminManageScreen");
       if (authScreen) authScreen.style.display = "none";
       if (manageScreen) manageScreen.style.display = "block";
+
+      enforceRbacUi();
 
       const goodsDate = document.getElementById("adminGoodsDate");
       if (goodsDate && !goodsDate.value) {
@@ -10024,7 +10082,16 @@
         goodsRef.value = `BATCH-MBS-${Math.floor(1000 + Math.random() * 9000)}`;
       }
 
-      switchAdminTab(state.adminActiveTab || 'inventory');
+      const role = state.currentUserRole || 'staff';
+      const allowed = (state.currentUserAllowedTabs && state.currentUserAllowedTabs.length > 0)
+        ? state.currentUserAllowedTabs
+        : (ROLE_ALLOWED_TABS[role] || ['orders']);
+      const defaultTab = state.currentUserDefaultTab || ROLE_DEFAULT_TABS[role] || allowed[0] || 'orders';
+      const targetTab = (state.adminActiveTab && allowed.includes(state.adminActiveTab)) 
+        ? state.adminActiveTab 
+        : defaultTab;
+
+      switchAdminTab(targetTab);
     }
 
     async function lockAdminPortal() {
@@ -10174,14 +10241,10 @@
           // Direct authentication for non-MFA roles (e.g. Junior Sales Staff)
           state.isAdminAuthenticated = true;
           state.preAuthToken = null;
-          if (data.user) {
-            state.currentUserEmail = data.user.email;
-            state.currentUserRole = data.user.role;
-            state.currentUserName = data.user.name;
-          }
+          await syncCurrentUserFromAdminMe();
           enforceRbacUi();
           showAdminManageScreen();
-          showToast(`✓ Welcome back ${data.user?.name || ''} (${data.user?.role?.toUpperCase() || ''})!`);
+          showToast(`✓ Welcome back ${state.currentUserName || data.user?.name || ''} (${(state.currentUserRole || data.user?.role || '').toUpperCase()})!`);
         }
       } catch (err) {
         console.warn("Login request network warning, engaging local authentication fallback:", err);
@@ -10223,6 +10286,36 @@
           enforceRbacUi();
           showAdminManageScreen();
           showToast("✓ Welcome back Operations Manager (MANAGER)!");
+          return;
+        } else if ((cleanIdent === 'dispatch@lymboventures.co.ke' || cleanIdent === 'dispatch_officer') && cleanPass === '20lymboventures@26') {
+          state.isAdminAuthenticated = true;
+          state.preAuthToken = null;
+          state.currentUserEmail = "dispatch@lymboventures.co.ke";
+          state.currentUserRole = "dispatch_officer";
+          state.currentUserName = "Mombasa Logistics Officer";
+          enforceRbacUi();
+          showAdminManageScreen();
+          showToast("✓ Welcome back Mombasa Logistics Officer (DISPATCH)!");
+          return;
+        } else if ((cleanIdent === 'accounts@lymboventures.co.ke' || cleanIdent === 'accounts_officer') && cleanPass === '20lymboventures@26') {
+          state.isAdminAuthenticated = true;
+          state.preAuthToken = null;
+          state.currentUserEmail = "accounts@lymboventures.co.ke";
+          state.currentUserRole = "accounts_officer";
+          state.currentUserName = "Finance & Reconciliation Officer";
+          enforceRbacUi();
+          showAdminManageScreen();
+          showToast("✓ Welcome back Finance Officer (ACCOUNTS)!");
+          return;
+        } else if ((cleanIdent === 'support@lymboventures.co.ke' || cleanIdent === 'customer_support') && cleanPass === '20lymboventures@26') {
+          state.isAdminAuthenticated = true;
+          state.preAuthToken = null;
+          state.currentUserEmail = "support@lymboventures.co.ke";
+          state.currentUserRole = "customer_support";
+          state.currentUserName = "Customer Care Lead";
+          enforceRbacUi();
+          showAdminManageScreen();
+          showToast("✓ Welcome back Customer Care Lead (SUPPORT)!");
           return;
         }
 
@@ -10348,11 +10441,7 @@
         // Full authentication complete! Session cookie established on client
         state.isAdminAuthenticated = true;
         state.preAuthToken = null;
-        if (data.user) {
-          state.currentUserEmail = data.user.email;
-          state.currentUserRole = data.user.role;
-          state.currentUserName = data.user.name;
-        }
+        await syncCurrentUserFromAdminMe();
         enforceRbacUi();
         recordStaffAuditLog(
           "PORTAL_LOGIN_SUCCESS",
@@ -10736,8 +10825,102 @@
       updateRestockBadge();
     }
 
+    /* ==========================================================================
+       ENTERPRISE ROLE GUARD & LEAST-PRIVILEGE AUTHORIZATION SYSTEM (Section 4 & 5)
+       ========================================================================== */
+    function checkRoleGuard(targetTab) {
+      const role = state.currentUserRole || 'staff';
+      const isApproved = state.currentUserIsApproved !== false;
+      const allowedTabs = isApproved
+        ? (state.currentUserAllowedTabs && state.currentUserAllowedTabs.length > 0
+            ? state.currentUserAllowedTabs
+            : (ROLE_ALLOWED_TABS[role] || ['orders']))
+        : [];
+      const defaultTab = state.currentUserDefaultTab || ROLE_DEFAULT_TABS[role] || allowedTabs[0] || 'orders';
+
+      if (!state.isAdminAuthenticated) {
+        return {
+          allowed: false,
+          reason: 'unauthenticated',
+          message: 'Please log in to access this operations tab.',
+          fallbackTab: defaultTab
+        };
+      }
+
+      if (!isApproved) {
+        return {
+          allowed: false,
+          reason: 'pending_approval',
+          message: 'Staff account is pending administrator approval.',
+          fallbackTab: defaultTab
+        };
+      }
+
+      if (!allowedTabs.includes(targetTab)) {
+        return {
+          allowed: false,
+          reason: 'unauthorized_tab',
+          message: `The '${targetTab.toUpperCase()}' tab is restricted for your role (${role.replace('_', ' ').toUpperCase()}).`,
+          fallbackTab: defaultTab
+        };
+      }
+
+      return { allowed: true, fallbackTab: defaultTab };
+    }
+
+    function guardAdminAction(requiredPermission, actionName = "this operation") {
+      const role = state.currentUserRole || 'staff';
+      const isApproved = state.currentUserIsApproved !== false;
+      const permissions = state.currentUserPermissions || {};
+
+      if (!state.isAdminAuthenticated) {
+        showToast("⛔ Role Guard: Authentication required. Please log in.");
+        return false;
+      }
+
+      if (!isApproved) {
+        showToast("⛔ Role Guard: Account pending approval. Action blocked.");
+        return false;
+      }
+
+      if (role !== 'admin' && !permissions[requiredPermission]) {
+        showToast(`⛔ Role Guard: Unauthorized action. '${actionName}' requires [${requiredPermission}] permission.`);
+        recordStaffAuditLog(
+          "ROLE_GUARD_ACTION_BLOCKED",
+          `Role Guard intercepted unauthorized attempt for '${actionName}'. User role '${role}' lacks permission '${requiredPermission}'.`,
+          "security",
+          "warning",
+          { actionName, requiredPermission, userRole: role }
+        );
+        return false;
+      }
+
+      return true;
+    }
+
     function switchAdminTab(tabName) {
-      state.adminActiveTab = tabName;
+      // 1. Enforce Role Guard
+      const guard = checkRoleGuard(tabName);
+      if (!guard.allowed) {
+        console.warn(`[Role Guard Intercept] Tab '${tabName}' blocked:`, guard.reason);
+        showToast(`⛔ Role Guard: ${guard.message}`);
+        recordStaffAuditLog(
+          "ROLE_GUARD_TAB_BLOCKED",
+          `Role Guard prevented role '${state.currentUserRole || 'unassigned'}' from navigating to restricted tab '${tabName}'.`,
+          "security",
+          "warning",
+          { attemptedTab: tabName, userRole: state.currentUserRole, reason: guard.reason }
+        );
+
+        // If currently positioned on a permitted tab, remain on it
+        if (state.adminActiveTab && state.currentUserAllowedTabs?.includes(state.adminActiveTab)) {
+          return;
+        }
+        tabName = guard.fallbackTab;
+      }
+
+      const safeTab = tabName;
+      state.adminActiveTab = safeTab;
       const invPane = document.getElementById("adminTabInventoryPane");
       const ordPane = document.getElementById("adminTabOrdersPane");
       const dispatchPane = document.getElementById("adminTabDispatchPane");
@@ -10762,53 +10945,53 @@
       const reportsBtn = document.getElementById("adminTabReportsBtn");
       const settingsBtn = document.getElementById("adminTabSettingsBtn");
 
-      if (invPane) invPane.style.display = tabName === "inventory" ? "block" : "none";
-      if (ordPane) ordPane.style.display = tabName === "orders" ? "block" : "none";
-      if (dispatchPane) dispatchPane.style.display = tabName === "dispatch" ? "block" : "none";
-      if (accountsPane) accountsPane.style.display = tabName === "accounts" ? "block" : "none";
-      if (supportPane) supportPane.style.display = tabName === "support" ? "block" : "none";
-      if (phoPane) phoPane.style.display = tabName === "photos" ? "block" : "none";
-      if (restockPane) restockPane.style.display = tabName === "restock" ? "block" : "none";
-      if (logsPane) logsPane.style.display = tabName === "logs" ? "block" : "none";
-      if (staffPane) staffPane.style.display = tabName === "staff" ? "block" : "none";
-      if (reportsPane) reportsPane.style.display = tabName === "reports" ? "block" : "none";
-      if (settingsPane) settingsPane.style.display = tabName === "settings" ? "block" : "none";
+      if (invPane) invPane.style.display = safeTab === "inventory" ? "block" : "none";
+      if (ordPane) ordPane.style.display = safeTab === "orders" ? "block" : "none";
+      if (dispatchPane) dispatchPane.style.display = safeTab === "dispatch" ? "block" : "none";
+      if (accountsPane) accountsPane.style.display = safeTab === "accounts" ? "block" : "none";
+      if (supportPane) supportPane.style.display = safeTab === "support" ? "block" : "none";
+      if (phoPane) phoPane.style.display = safeTab === "photos" ? "block" : "none";
+      if (restockPane) restockPane.style.display = safeTab === "restock" ? "block" : "none";
+      if (logsPane) logsPane.style.display = safeTab === "logs" ? "block" : "none";
+      if (staffPane) staffPane.style.display = safeTab === "staff" ? "block" : "none";
+      if (reportsPane) reportsPane.style.display = safeTab === "reports" ? "block" : "none";
+      if (settingsPane) settingsPane.style.display = safeTab === "settings" ? "block" : "none";
 
-      if (invBtn) invBtn.classList.toggle("active", tabName === "inventory");
-      if (ordBtn) ordBtn.classList.toggle("active", tabName === "orders");
-      if (dispatchBtn) dispatchBtn.classList.toggle("active", tabName === "dispatch");
-      if (accountsBtn) accountsBtn.classList.toggle("active", tabName === "accounts");
-      if (supportBtn) supportBtn.classList.toggle("active", tabName === "support");
-      if (phoBtn) phoBtn.classList.toggle("active", tabName === "photos");
-      if (restockBtn) restockBtn.classList.toggle("active", tabName === "restock");
-      if (logsBtn) logsBtn.classList.toggle("active", tabName === "logs");
-      if (staffBtn) staffBtn.classList.toggle("active", tabName === "staff");
-      if (reportsBtn) reportsBtn.classList.toggle("active", tabName === "reports");
-      if (settingsBtn) settingsBtn.classList.toggle("active", tabName === "settings");
+      if (invBtn) invBtn.classList.toggle("active", safeTab === "inventory");
+      if (ordBtn) ordBtn.classList.toggle("active", safeTab === "orders");
+      if (dispatchBtn) dispatchBtn.classList.toggle("active", safeTab === "dispatch");
+      if (accountsBtn) accountsBtn.classList.toggle("active", safeTab === "accounts");
+      if (supportBtn) supportBtn.classList.toggle("active", safeTab === "support");
+      if (phoBtn) phoBtn.classList.toggle("active", safeTab === "photos");
+      if (restockBtn) restockBtn.classList.toggle("active", safeTab === "restock");
+      if (logsBtn) logsBtn.classList.toggle("active", safeTab === "logs");
+      if (staffBtn) staffBtn.classList.toggle("active", safeTab === "staff");
+      if (reportsBtn) reportsBtn.classList.toggle("active", safeTab === "reports");
+      if (settingsBtn) settingsBtn.classList.toggle("active", safeTab === "settings");
 
-      window.dispatchEvent(new CustomEvent('lymbo:tab-changed', { detail: { tab: tabName } }));
+      window.dispatchEvent(new CustomEvent('lymbo:tab-changed', { detail: { tab: safeTab } }));
 
-      if (tabName === "inventory") {
+      if (safeTab === "inventory") {
         updateCustomerStockUI();
         renderInventoryTable();
-      } else if (tabName === "orders") {
+      } else if (safeTab === "orders") {
         renderAdminOrdersTable();
-      } else if (tabName === "dispatch") {
+      } else if (safeTab === "dispatch") {
         loadDispatchManifest();
-      } else if (tabName === "accounts") {
+      } else if (safeTab === "accounts") {
         loadAccountsReconciliation();
-      } else if (tabName === "support") {
+      } else if (safeTab === "support") {
         loadSupportTickets();
-      } else if (tabName === "staff") {
+      } else if (safeTab === "staff") {
         loadAdminUsersList();
-      } else if (tabName === "reports") {
+      } else if (safeTab === "reports") {
         renderReportsPane();
-      } else if (tabName === "photos") {
+      } else if (safeTab === "photos") {
         renderAdminPhotosTable();
-      } else if (tabName === "restock") {
+      } else if (safeTab === "restock") {
         renderAdminRestockTable();
         updateRestockBadge();
-      } else if (tabName === "logs") {
+      } else if (safeTab === "logs") {
         renderAuditLogsTable();
       }
     }
@@ -11741,6 +11924,13 @@
       const ordersBadge = document.getElementById("adminOrdersTabBadge");
       if (ordersBadge) ordersBadge.textContent = allOrders.length;
 
+      // User Permissions check from /api/admin/me
+      const currentRole = state.currentUserRole || 'staff';
+      const userPermissions = state.currentUserPermissions || {
+        canManageOrders: ['admin', 'manager', 'sales_officer', 'staff'].includes(currentRole)
+      };
+      const canManageOrders = Boolean(userPermissions.canManageOrders);
+
       // Update Filter Category Counters
       const countAll = allOrders.length;
       const countPending = allOrders.filter(o => !o.orderStatus || o.orderStatus === 'pending').length;
@@ -11915,6 +12105,7 @@
                     `}
 
                     <!-- Interactive Dropdown Menu for This Specific Pending Order -->
+                    ${canManageOrders ? `
                     <div style="margin-top: 0.25rem; display: flex; flex-direction: column; gap: 0.35rem;">
                       <div style="display: flex; justify-content: space-between; align-items: center;">
                         <label style="font-size: 0.6875rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
@@ -11964,6 +12155,19 @@
                         </button>
                       </div>
                     </div>
+                    ` : `
+                    <div style="margin-top: 0.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
+                      <span style="font-size: 0.72rem; color: var(--text-muted); background: var(--bg-body); padding: 0.2rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-subtle); font-weight: 600;">👁️ Read-Only Access (Approval Restricted to Manager/Admin)</span>
+                      <div style="display: flex; gap: 0.35rem;">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openOrderInvoiceModal('${po.id}')" style="padding: 0.3rem 0.5rem; font-size: 0.72rem; color: #1E40AF; border-color: #93C5FD; background: #EFF6FF;" title="View Sequential Tax Invoice & Delivery Note (INV-2026-XXXX / DN-2026-XXXX)">
+                          📄 Invoice
+                        </button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openSmsAuditModal('${po.id}')" style="padding: 0.3rem 0.45rem; font-size: 0.72rem; color: #1D4ED8; border-color: #BFDBFE;" title="Preview SMS text">
+                          📱 Preview SMS
+                        </button>
+                      </div>
+                    </div>
+                    `}
                   </div>
                 `).join("")}
               </div>
@@ -12099,6 +12303,7 @@
             <td>${statusPill}</td>
             <td style="white-space: nowrap;">
               <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                ${canManageOrders ? `
                 <!-- Explicit Action Dropdown Menu for this Specific Order -->
                 <select
                   class="admin-order-status-select ${!isApproved && !isDeclined ? 'pending-urgent' : ''}"
@@ -12123,12 +12328,17 @@
                 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminCodeEntryModal('${o.id}')" style="padding: 0.25rem 0.45rem; font-size: 0.6875rem; color: #065F46; border-color: #6EE7B7; background: #ECFDF5;" title="Enter M-Pesa Code &amp; Verify Exact Amount">
                   ✍️ Code
                 </button>
+                ` : `
+                <span style="font-size: 0.72rem; color: var(--text-muted); background: var(--bg-body); padding: 0.2rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-subtle); font-weight: 600;">👁️ Read-Only</span>
+                `}
                 <button type="button" class="btn btn-outline btn-sm" onclick="openOrderInvoiceModal('${o.id}')" style="padding: 0.25rem 0.45rem; font-size: 0.6875rem; color: #1E40AF; border-color: #93C5FD; background: #EFF6FF;" title="View Sequential Tax Invoice & Delivery Note (INV-2026-XXXX / DN-2026-XXXX)">
                   📄 Invoice
                 </button>
+                ${canManageOrders ? `
                 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminQrCameraModal('${o.id}')" style="padding: 0.25rem 0.45rem; font-size: 0.6875rem; color: #0E5A2E; border-color: #6EE7B7;" title="Scan Customer Phone M-Pesa QR with Camera">
                   📷
                 </button>
+                ` : ''}
                 <button type="button" class="btn btn-outline btn-sm" onclick="openSmsAuditModal('${o.id}')" style="padding: 0.25rem 0.45rem; font-size: 0.6875rem; color: #1D4ED8; border-color: #BFDBFE;" title="View SMS Notification Details">
                   📱
                 </button>
@@ -12656,6 +12866,7 @@
     }
 
     function adminApproveOrder(orderId) {
+      if (!guardAdminAction('canManageOrders', 'Approve Order')) return;
       const order = state.orderHistory.find(o => o.id === orderId);
       if (!order) return;
 
@@ -12697,6 +12908,7 @@
     }
 
     function adminDeclineOrder(orderId) {
+      if (!guardAdminAction('canManageOrders', 'Decline Order')) return;
       const order = state.orderHistory.find(o => o.id === orderId);
       if (!order) return;
       if (!confirm(`Are you sure you want to decline Order #${orderId}? Its ${order.trays} trays will be released back to available stock.`)) return;
@@ -15537,19 +15749,37 @@
        ========================================================================== */
     function enforceRbacUi() {
       const role = state.currentUserRole || 'admin';
+      const isApproved = state.currentUserIsApproved !== false;
+      const permissions = state.currentUserPermissions || {
+        canManageStaff: role === 'admin' && isApproved,
+        canManageSettings: role === 'admin' && isApproved,
+        canViewAuditLogs: role === 'admin' && isApproved,
+        canReceiveStock: (role === 'admin' || role === 'manager') && isApproved,
+        canUploadPhotos: (role === 'admin' || role === 'manager') && isApproved,
+        canViewReports: (role === 'admin' || role === 'manager') && isApproved,
+        canManageOrders: ['admin', 'manager', 'sales_officer', 'staff'].includes(role) && isApproved,
+        canUpdateDeliveryStatus: ['admin', 'manager', 'dispatch_officer'].includes(role) && isApproved,
+        canViewManifest: ['admin', 'manager', 'dispatch_officer'].includes(role) && isApproved,
+        canReconcileAccounts: ['admin', 'accounts_officer'].includes(role) && isApproved,
+        canViewSupport: ['admin', 'manager', 'customer_support', 'sales_officer', 'staff'].includes(role) && isApproved,
+        canDeleteOrders: role === 'admin' && isApproved,
+        canEditPrices: role === 'admin' && isApproved
+      };
+
       const roleDisplay = document.getElementById("adminBannerRoleDisplay");
       const userDisplay = document.getElementById("adminBannerUserName");
       const titleDisplay = document.getElementById("adminBannerRoleTitle");
 
       if (roleDisplay) {
         roleDisplay.className = `role-badge role-badge-${role === 'admin' ? 'admin' : (role === 'manager' ? 'manager' : 'staff')}`;
-        roleDisplay.textContent = role.toUpperCase();
+        roleDisplay.textContent = isApproved ? role.toUpperCase() : 'PENDING APPROVAL';
       }
       if (userDisplay) {
         userDisplay.textContent = state.currentUserName || (role === 'admin' ? 'System Administrator' : (role === 'manager' ? 'Operations Manager' : 'Authorized Staff'));
       }
       if (titleDisplay) {
-        if (role === 'admin') titleDisplay.textContent = 'Administrator: Full System & Infrastructure Governance';
+        if (!isApproved) titleDisplay.textContent = 'Account Status: Pending Administrator Approval & Verification';
+        else if (role === 'admin') titleDisplay.textContent = 'Administrator: Full System & Infrastructure Governance';
         else if (role === 'manager') titleDisplay.textContent = 'Manager: Orders, Stock, Schedule & Sales Reports';
         else if (role === 'sales_officer') titleDisplay.textContent = 'Sales Officer: Order Creation & Customer Inquiries';
         else if (role === 'dispatch_officer') titleDisplay.textContent = 'Dispatch Officer: Delivery Manifest & Route Notes';
@@ -15573,17 +15803,13 @@
         logsBtn: document.getElementById("adminTabLogsBtn"),
       };
 
-      const allowedTabs = {
-        admin: ['inventory', 'orders', 'dispatch', 'accounts', 'support', 'staff', 'reports', 'photos', 'restock', 'settings', 'logs'],
-        manager: ['inventory', 'orders', 'dispatch', 'reports', 'support', 'photos', 'restock'],
-        sales_officer: ['orders', 'support'],
-        dispatch_officer: ['dispatch'],
-        accounts_officer: ['accounts'],
-        customer_support: ['support'],
-        staff: ['orders', 'support']
-      };
-
-      const myAllowed = allowedTabs[role] || ['orders'];
+      // Allowed tabs from server /api/admin/me or fallback matrix
+      const myAllowed = isApproved 
+        ? (state.currentUserAllowedTabs && state.currentUserAllowedTabs.length > 0 
+            ? state.currentUserAllowedTabs 
+            : (ROLE_ALLOWED_TABS[role] || ['orders']))
+        : [];
+      const defaultTab = state.currentUserDefaultTab || ROLE_DEFAULT_TABS[role] || myAllowed[0] || 'orders';
 
       if (tabMap.invBtn) tabMap.invBtn.style.display = myAllowed.includes('inventory') ? 'inline-flex' : 'none';
       if (tabMap.ordBtn) tabMap.ordBtn.style.display = myAllowed.includes('orders') ? 'inline-flex' : 'none';
@@ -15597,9 +15823,102 @@
       if (tabMap.settingsBtn) tabMap.settingsBtn.style.display = myAllowed.includes('settings') ? 'inline-flex' : 'none';
       if (tabMap.logsBtn) tabMap.logsBtn.style.display = myAllowed.includes('logs') ? 'inline-flex' : 'none';
 
-      // Switch to the first allowed tab if current is forbidden
-      if (!myAllowed.includes(state.adminActiveTab)) {
-        switchAdminTab(myAllowed[0]);
+      // Explicitly Hide or Show Specific Operational Buttons & Control Panels based on role permissions
+      // 1. Goods Received Intake Form (Admin & Manager only)
+      const goodsFormBox = document.querySelector("#adminTabInventoryPane .admin-inventory-form-box");
+      if (goodsFormBox) {
+        goodsFormBox.style.display = permissions.canReceiveStock ? "block" : "none";
+      }
+
+      // 2. Inventory CSV Download (Admin & Manager only)
+      const invCsvBtn = document.querySelector("#adminTabInventoryPane button[onclick*='downloadInventoryCsv']");
+      if (invCsvBtn) {
+        invCsvBtn.style.display = (role === 'admin' || role === 'manager') ? "inline-flex" : "none";
+      }
+
+      // 3. Daily Photo Upload Form (Admin & Manager only)
+      const photoFormBox = document.querySelector("#adminTabPhotosPane .admin-inventory-form-box");
+      if (photoFormBox) {
+        photoFormBox.style.display = permissions.canUploadPhotos ? "block" : "none";
+      }
+
+      // 4. Orders Bulk Action Controls (Hidden for Read-Only roles like Dispatch, Accounts, Support)
+      const bulkActionBar = document.getElementById("adminOrdersBulkActionsBar");
+      if (bulkActionBar) {
+        bulkActionBar.style.display = permissions.canManageOrders ? "flex" : "none";
+      }
+      const bulkApproveBtn = document.getElementById("adminBulkApproveBtn");
+      if (bulkApproveBtn) {
+        bulkApproveBtn.style.display = permissions.canManageOrders ? "inline-flex" : "none";
+      }
+      const bulkDeclineBtn = document.getElementById("adminBulkDeclineBtn");
+      if (bulkDeclineBtn) {
+        bulkDeclineBtn.style.display = permissions.canManageOrders ? "inline-flex" : "none";
+      }
+      const bulkRepromptBtn = document.getElementById("adminBulkRepromptBtn");
+      if (bulkRepromptBtn) {
+        bulkRepromptBtn.style.display = permissions.canManageOrders ? "inline-flex" : "none";
+      }
+
+      // 5. Settings Save & API Key Controls (Admin only)
+      const settingsSaveBtn = document.querySelector("#adminTabSettingsPane button[type='submit']");
+      if (settingsSaveBtn) {
+        settingsSaveBtn.style.display = permissions.canManageSettings ? "inline-flex" : "none";
+      }
+
+      // 6. Audit Log Action Controls (Admin only)
+      const auditClearBtn = document.querySelector("#adminTabLogsPane button[onclick*='clearStaffAuditLogs']");
+      if (auditClearBtn) auditClearBtn.style.display = permissions.canViewAuditLogs ? "inline-flex" : "none";
+      const auditTestBtn = document.querySelector("#adminTabLogsPane button[onclick*='triggerSimulatedStaffLog']");
+      if (auditTestBtn) auditTestBtn.style.display = permissions.canViewAuditLogs ? "inline-flex" : "none";
+
+      // 7. Staff Management Actions (Admin only)
+      const staffActionBtns = document.querySelectorAll("#adminTabStaffPane button:not([onclick*='switchAdminTab'])");
+      staffActionBtns.forEach(btn => {
+        btn.style.display = permissions.canManageStaff ? "inline-flex" : "none";
+      });
+
+      // 8. Reports Pane Action Controls (Admin & Manager only)
+      const reportActionBtns = document.querySelectorAll("#adminTabReportsPane button");
+      reportActionBtns.forEach(btn => {
+        btn.style.display = permissions.canViewReports ? "inline-flex" : "none";
+      });
+
+      // 9. Restock Alert Action Controls (Admin & Manager only)
+      const restockActionBtns = document.querySelectorAll("#adminTabRestockPane button[onclick*='triggerRestockAlerts']");
+      restockActionBtns.forEach(btn => {
+        btn.style.display = (role === 'admin' || role === 'manager') ? "inline-flex" : "none";
+      });
+
+      // 10. Handle Account Pending Approval State
+      const pendingBanner = document.getElementById("adminPendingApprovalNotice");
+      if (!isApproved) {
+        if (!pendingBanner) {
+          const manageContainer = document.getElementById("adminManageScreen");
+          if (manageContainer) {
+            const notice = document.createElement("div");
+            notice.id = "adminPendingApprovalNotice";
+            notice.style.cssText = "background: #FEF3C7; border: 1.5px solid #F59E0B; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; color: #92400E; text-align: center;";
+            notice.innerHTML = `
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">⏳</div>
+              <h3 style="font-size: 1.125rem; font-weight: 800; margin-bottom: 0.5rem; color: #78350F;">Staff Account Pending Administrator Approval</h3>
+              <p style="font-size: 0.875rem; max-width: 500px; margin: 0 auto 1rem; line-height: 1.5;">
+                Your registration was received. Per Section 1 &amp; 2 of the Lymbo Ventures Security Design, all staff accounts must be confirmed and assigned a role by the System Administrator before operational tabs can be accessed.
+              </p>
+              <div style="font-size: 0.75rem; color: #B45309;">Requested Position: <strong>${escapeHtml(state.currentUserRole || 'Staff')}</strong> · Status: <strong>Pending Approval</strong></div>
+            `;
+            manageContainer.prepend(notice);
+          }
+        } else {
+          pendingBanner.style.display = "block";
+        }
+      } else if (pendingBanner) {
+        pendingBanner.style.display = "none";
+      }
+
+      // Switch to the default allowed tab if current is forbidden
+      if (myAllowed.length > 0 && !myAllowed.includes(state.adminActiveTab)) {
+        switchAdminTab(defaultTab);
       }
     }
 
