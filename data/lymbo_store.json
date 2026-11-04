@@ -7,7 +7,7 @@
       "name": "System Administrator",
       "role": "admin",
       "status": "active",
-      "passwordHash": "$2b$12$SC07h4gEAH9koZBR.GSspuOyVudF1EBCCFh.IKwNqBaYeK/zCFGUG",
+      "passwordHash": "$2b$12$oHfyBwaawLiPCAg/Z0w5Yuo8XEZRJCvfiw4Liuxyx63BS6.8JmhWa",
       "mfaRequired": true,
       "mfaSecret": "OFGOF3HHJV2CXE37J6PW",
       "mfaBackupCodes": [
@@ -27,7 +27,7 @@
       "name": "Operations Manager",
       "role": "manager",
       "status": "active",
-      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
+      "passwordHash": "$2b$12$IS1V4OV2TWcPPZJIWvT8p.mrZ5mQtCieAh/Lhp6r/gFy0Gvks2VAu",
       "mfaRequired": true,
       "mfaSecret": "3IEBASYG3R52LY44XQS4",
       "mfaBackupCodes": [
@@ -47,7 +47,7 @@
       "name": "Junior Sales Staff",
       "role": "sales_officer",
       "status": "active",
-      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
+      "passwordHash": "$2b$12$IS1V4OV2TWcPPZJIWvT8p.mrZ5mQtCieAh/Lhp6r/gFy0Gvks2VAu",
       "mfaRequired": false,
       "mfaSecret": "57LPDG7YXDCYIH5JDP5X",
       "mfaBackupCodes": [
@@ -145,7 +145,7 @@
       "role": "dispatch_officer",
       "requestedPosition": "dispatch_officer",
       "status": "active",
-      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
+      "passwordHash": "$2b$12$IS1V4OV2TWcPPZJIWvT8p.mrZ5mQtCieAh/Lhp6r/gFy0Gvks2VAu",
       "consentGiven": true,
       "mfaRequired": false,
       "mfaSecret": "XIBUKQCT4BD6N7TTCZKJ",
@@ -171,7 +171,7 @@
       "role": "accounts_officer",
       "requestedPosition": "accounts_officer",
       "status": "active",
-      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
+      "passwordHash": "$2b$12$IS1V4OV2TWcPPZJIWvT8p.mrZ5mQtCieAh/Lhp6r/gFy0Gvks2VAu",
       "consentGiven": true,
       "mfaRequired": false,
       "mfaSecret": "VNNHKRCV7DCQEIUIWGLO",
@@ -197,7 +197,7 @@
       "role": "customer_support",
       "requestedPosition": "customer_support",
       "status": "active",
-      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
+      "passwordHash": "$2b$12$IS1V4OV2TWcPPZJIWvT8p.mrZ5mQtCieAh/Lhp6r/gFy0Gvks2VAu",
       "consentGiven": true,
       "mfaRequired": false,
       "mfaSecret": "TRXUWDHZXQGBSMTYB7I7",
@@ -223,7 +223,7 @@
       "role": null,
       "requestedPosition": "dispatch_officer",
       "status": "active",
-      "passwordHash": "$2b$12$AMleax51kJQlnScizUGMhu6aZmjU3oWZ/mCdBNfXoemGM.Kr66Cay",
+      "passwordHash": "$2b$12$IS1V4OV2TWcPPZJIWvT8p.mrZ5mQtCieAh/Lhp6r/gFy0Gvks2VAu",
       "consentGiven": true,
       "mfaRequired": false,
       "mfaSecret": "RUZPYDOJDWIPDPWZJ4YQ",
@@ -377,6 +377,16 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "AUDIT-1793804731085-488",
+      "timestamp": "2026-11-04T15:05:31.085Z",
+      "userId": "usr_admin_root",
+      "userEmail": "lymboventures0@gmail.com",
+      "userRole": "admin",
+      "clientIp": "127.0.0.1",
+      "action": "MFA_VERIFIED",
+      "details": "User lymboventures0@gmail.com completed MFA verification."
+    },
     {
       "id": "AUDIT-1793727457413-567",
       "timestamp": "2026-11-03T17:37:37.413Z",
@@ -716,7 +726,7 @@
   "nextOrderSeq": 1004,
   "nextInvoiceSeq": 4,
   "nextDeliveryNoteSeq": 4,
-  "lastUpdated": "2026-11-03T17:38:20.139Z",
+  "lastUpdated": "2026-11-04T15:05:31.085Z",
   "emailVerifications": [
     {
       "id": "VER-1793621965253-196",

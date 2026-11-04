@@ -4452,9 +4452,15 @@
             <strong style="font-size: 0.9375rem; color: var(--text-main);">Recent Orders on this Device</strong>
             <div style="font-size: 0.75rem; color: var(--text-muted);" id="orderHistoryCountDisplay">0 orders</div>
           </div>
-          <button type="button" class="btn btn-outline btn-sm" id="clearHistoryBtn" onclick="clearOrderHistory()" style="font-size: 0.6875rem; padding: 0.2rem 0.5rem; color: var(--text-muted);" title="Clear order history on this browser">
-            Clear History
-          </button>
+          <div style="display: flex; gap: 0.4rem; align-items: center;">
+            <button type="button" class="btn btn-outline btn-sm" id="downloadOrderHistoryBtn" onclick="downloadCustomerOrderHistoryCsv()" style="font-size: 0.6875rem; padding: 0.2rem 0.55rem; color: #0E5A2E; border-color: #6EE7B7; background: #ECFDF5; display: inline-flex; align-items: center; gap: 0.3rem; font-weight: 600;" title="Download CSV report of your past orders on this device">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Download CSV</span>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="clearHistoryBtn" onclick="clearOrderHistory()" style="font-size: 0.6875rem; padding: 0.2rem 0.5rem; color: var(--text-muted);" title="Clear order history on this browser">
+              Clear History
+            </button>
+          </div>
         </div>
 
         <!-- Customer Date Range Filter Control Card -->
@@ -4556,6 +4562,12 @@
 
       <!-- History Footer Pane -->
       <div id="drawerHistoryFooter" style="display: none;">
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.65rem;">
+          <button type="button" class="btn btn-outline btn-sm" id="drawerDownloadHistoryFooterBtn" onclick="downloadCustomerOrderHistoryCsv()" style="flex: 1; font-size: 0.8125rem; padding: 0.5rem 0.75rem; color: #0E5A2E; border-color: #6EE7B7; background: #ECFDF5; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; font-weight: 700;" title="Download complete CSV report of past orders on this device">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Download Order History (CSV Report)</span>
+          </button>
+        </div>
         <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-bottom: 0.75rem;">
           🔒 Saved privately in your browser's local storage for easy reordering and tracking.
         </div>
@@ -8930,6 +8942,33 @@
           countDisplay.textContent = `${filtered.length} of ${allOrders.length} orders`;
         }
       }
+
+      // Synchronize CSV download button tooltips and labels with currently active filter
+      const downloadBtn = document.getElementById("downloadOrderHistoryBtn");
+      const footerDownloadBtn = document.getElementById("drawerDownloadHistoryFooterBtn");
+      const filterLabel = typeof getFilterDateSummaryLabel === 'function' ? getFilterDateSummaryLabel() : filter;
+
+      if (downloadBtn) {
+        if (filter === 'all') {
+          downloadBtn.title = `Download CSV report of all ${allOrders.length} past orders on this device`;
+        } else {
+          downloadBtn.title = `Download CSV report of ${filtered.length} filtered order(s) (${filterLabel})`;
+        }
+      }
+
+      if (footerDownloadBtn) {
+        if (filter === 'all') {
+          footerDownloadBtn.innerHTML = `
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Download All Orders (CSV · ${allOrders.length})</span>
+          `;
+        } else {
+          footerDownloadBtn.innerHTML = `
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Download Filtered Orders (CSV · ${filtered.length} · ${escapeHtml(filterLabel)})</span>
+          `;
+        }
+      }
     }
 
     /* Render Order History List */
@@ -8937,12 +8976,21 @@
       const container = document.getElementById("orderHistoryList");
       const countDisplay = document.getElementById("orderHistoryCountDisplay");
       const clearBtn = document.getElementById("clearHistoryBtn");
+      const downloadBtn = document.getElementById("downloadOrderHistoryBtn");
+      const footerDownloadBtn = document.getElementById("drawerDownloadHistoryFooterBtn");
       const filterCard = document.getElementById("customerOrderDateFilterCard");
       if (!container) return;
 
       const allOrders = state.orderHistory || [];
+      const hasOrders = allOrders.length > 0;
       if (clearBtn) {
-        clearBtn.style.display = allOrders.length > 0 ? "inline-flex" : "none";
+        clearBtn.style.display = hasOrders ? "inline-flex" : "none";
+      }
+      if (downloadBtn) {
+        downloadBtn.style.display = hasOrders ? "inline-flex" : "none";
+      }
+      if (footerDownloadBtn) {
+        footerDownloadBtn.style.display = hasOrders ? "inline-flex" : "none";
       }
 
       if (allOrders.length === 0) {
@@ -9571,6 +9619,140 @@
       renderOrderHistory();
       updateOrderHistoryBadge();
       showToast("Order history cleared from this device.");
+    }
+
+    /* ==========================================================================
+       CUSTOMER CART DRAWER: DOWNLOAD ORDER HISTORY (CSV REPORT)
+       ========================================================================== */
+    function downloadCustomerOrderHistoryCsv() {
+      const allOrders = state.orderHistory || [];
+      if (allOrders.length === 0) {
+        showToast("No past orders recorded on this device to export.");
+        return;
+      }
+
+      // Strictly respect the currently selected date-range filter
+      const activeFilter = state.customerOrderDateFilter || 'all';
+      const dateRangeLabel = typeof getFilterDateSummaryLabel === 'function' ? getFilterDateSummaryLabel() : activeFilter;
+      const ordersToExport = typeof getFilteredCustomerOrders === 'function' ? getFilteredCustomerOrders() : allOrders;
+
+      if (!ordersToExport || ordersToExport.length === 0) {
+        showToast(`No past orders found for the selected date range (${dateRangeLabel}) to export.`);
+        return;
+      }
+
+      const headers = [
+        "Order Reference",
+        "Order Date",
+        "Customer Name",
+        "Phone Number",
+        "Email Address",
+        "Egg Trays (30 Eggs/Tray)",
+        "Total Fresh Eggs",
+        "Price per Tray (KES)",
+        "Egg Subtotal (KES)",
+        "Delivery Area",
+        "Delivery Address / Landmark",
+        "Scheduled Delivery Date",
+        "Delivery Time Slot",
+        "Gate / Instructions",
+        "Delivery Fee (KES)",
+        "Loyalty Discount (KES)",
+        "Grand Total (KES)",
+        "Payment Method",
+        "M-Pesa Transaction Code",
+        "Order Status",
+        "Tax Invoice No.",
+        "Delivery Note No."
+      ];
+
+      const escapeCsvCell = (val) => {
+        if (val === null || val === undefined) return '""';
+        const str = String(val);
+        return `"${str.replace(/"/g, '""')}"`;
+      };
+
+      const rows = ordersToExport.map(o => {
+        const trays = Number(o.trays) || 1;
+        const totalEggs = Number(o.totalEggs) || (trays * (CONFIG.eggTrayCount || 30));
+        const pricePerTray = Number(o.eggPricePerTray) || CONFIG.eggPricePerTray || 500;
+        const subtotal = Number(o.subtotal) || (trays * pricePerTray);
+        const fee = Number(o.deliveryFee) || 0;
+        const discount = Number(o.loyaltyDiscountApplied) || 0;
+        const grandTotal = Number(o.grandTotal) || (subtotal + fee - discount);
+
+        let statusLabel = "Pending Verification";
+        if (o.orderStatus === "approved") {
+          statusLabel = "Approved / Confirmed";
+        } else if (o.orderStatus === "declined" || o.orderStatus === "cancelled") {
+          statusLabel = "Declined / Cancelled";
+        }
+
+        return [
+          escapeCsvCell(`#${o.id}`),
+          escapeCsvCell(o.formattedDate || (o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-KE') : 'Recent')),
+          escapeCsvCell(o.customerName || 'Valued Customer'),
+          escapeCsvCell(o.customerPhone || ''),
+          escapeCsvCell(o.customerEmail || ''),
+          trays,
+          totalEggs,
+          pricePerTray,
+          subtotal,
+          escapeCsvCell(o.deliveryArea || 'Mombasa'),
+          escapeCsvCell(o.landmarkAddress || ''),
+          escapeCsvCell(o.formattedDeliveryDate || o.deliveryDate || 'Today'),
+          escapeCsvCell(o.deliveryTime || 'ASAP'),
+          escapeCsvCell(o.deliveryInstructions || ''),
+          fee,
+          discount,
+          grandTotal,
+          escapeCsvCell(o.paymentMethod || 'M-Pesa (Buy Goods Till)'),
+          escapeCsvCell(o.mpesaCode || (o.mpesaVerified ? 'Verified' : 'Pending')),
+          escapeCsvCell(statusLabel),
+          escapeCsvCell(o.invoiceNumber || `INV-${new Date().getFullYear()}-${o.id}`),
+          escapeCsvCell(o.deliveryNoteNumber || `DN-${new Date().getFullYear()}-${o.id}`)
+        ].join(",");
+      });
+
+      // Format filename slug to reflect the selected date range
+      const todayStr = new Date().toISOString().slice(0, 10);
+      let filenameSlug = 'all_time';
+      if (activeFilter === 'today') {
+        filenameSlug = 'today';
+      } else if (activeFilter === '7days') {
+        filenameSlug = 'past_7_days';
+      } else if (activeFilter === '30days') {
+        filenameSlug = 'past_30_days';
+      } else if (activeFilter === 'custom') {
+        const s = state.customerOrderDateStart || 'start';
+        const e = state.customerOrderDateEnd || 'end';
+        filenameSlug = `custom_${s}_to_${e}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+      }
+
+      // Add UTF-8 BOM (\uFEFF) for Excel & Sheets character/currency encoding compatibility
+      const csvString = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+      const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `lymbo_orders_${filenameSlug}_${todayStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+      const filterNotice = activeFilter !== 'all' ? ` (${dateRangeLabel})` : '';
+      showToast(`✓ Downloaded CSV report with ${ordersToExport.length} order${ordersToExport.length === 1 ? '' : 's'}${filterNotice}!`);
+
+      if (typeof recordStaffAuditLog === 'function') {
+        recordStaffAuditLog(
+          "CUSTOMER_ORDER_HISTORY_CSV_DOWNLOADED",
+          `Customer exported ${ordersToExport.length} filtered order history records (${dateRangeLabel}) to CSV on this device.`,
+          "order",
+          "info",
+          { orderCount: ordersToExport.length, filter: activeFilter, dateRange: dateRangeLabel }
+        );
+      }
     }
 
     /* ==========================================================================
