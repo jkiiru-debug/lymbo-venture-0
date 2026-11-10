@@ -1234,8 +1234,9 @@
       box-shadow: 0 0 0 3px var(--primary-light);
     }
 
-    .form-input.is-invalid {
-      border-color: #DC2626;
+    .form-input.is-invalid, .form-textarea.is-invalid {
+      border-color: #DC2626 !important;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
     }
 
     .input-error-msg {
@@ -1714,6 +1715,105 @@
       align-items: center;
       padding-bottom: 0.5rem;
       border-bottom: 1px dashed var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* Live Refresh Toggle Switch */
+    .live-refresh-toggle-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      padding: 0.15rem 0.4rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      transition: all 0.2s ease;
+    }
+
+    .live-refresh-toggle-wrapper:hover {
+      border-color: var(--primary);
+    }
+
+    .live-refresh-toggle-wrapper.active {
+      color: var(--primary);
+      border-color: rgba(31, 122, 77, 0.4);
+      background: rgba(31, 122, 77, 0.08);
+    }
+
+    .toggle-switch-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .toggle-switch-track {
+      position: relative;
+      display: inline-block;
+      width: 28px;
+      height: 16px;
+      background-color: var(--border-subtle, #D1D5DB);
+      border-radius: 9999px;
+      transition: background-color 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      background-color: #FFFFFF;
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease;
+    }
+
+    .toggle-switch-input:checked + .toggle-switch-track {
+      background-color: var(--primary, #1F7A4D);
+    }
+
+    .toggle-switch-input:checked + .toggle-switch-track .toggle-switch-thumb {
+      transform: translateX(12px);
+    }
+
+    .live-pulse-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #9CA3AF;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .live-refresh-toggle-wrapper.active .live-pulse-dot {
+      background-color: #10B981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: livePulse 2s infinite;
+    }
+
+    @keyframes livePulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 5px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
     }
 
     .order-history-card {
@@ -2073,6 +2173,110 @@
       color: var(--text-muted);
       font-size: 0.875rem;
       margin-bottom: 1.25rem;
+    }
+
+    /* Modal Order Summary Section & Final Notes Textarea */
+    .modal-order-summary-card {
+      background-color: var(--bg-body);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.875rem 1rem;
+      margin-bottom: 1.125rem;
+      text-align: left;
+    }
+
+    .modal-order-summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .modal-order-summary-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.8125rem;
+    }
+
+    .modal-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .modal-summary-row .summary-label {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .modal-summary-row .summary-val {
+      text-align: right;
+      max-width: 65%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .modal-summary-grand-total {
+      padding-top: 0.35rem;
+      margin-top: 0.15rem;
+      font-size: 0.9375rem;
+    }
+
+    .modal-final-notes-container {
+      margin-top: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px dashed var(--border-subtle);
+    }
+
+    .modal-final-notes-container .form-textarea:focus {
+      border-color: #00A859;
+      box-shadow: 0 0 0 3px rgba(0, 168, 89, 0.15);
+      outline: none;
+    }
+
+    .char-counter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background-color: var(--bg-surface-elevated, #F3F4F6);
+      color: var(--text-muted, #6B7280);
+      border: 1px solid var(--border-subtle, #E5E7EB);
+      transition: all 0.2s ease;
+    }
+
+    .char-counter-pill.approaching {
+      background-color: #FEF3C7;
+      color: #B45309;
+      border-color: #FCD34D;
+    }
+
+    .char-counter-pill.exceeded {
+      background-color: #FEE2E2;
+      color: #B91C1C;
+      border-color: #FCA5A5;
+      font-weight: 700;
+      animation: pulseWarning 1.5s infinite;
+    }
+
+    @keyframes pulseWarning {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .btn.disabled, .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed !important;
+      pointer-events: none;
     }
 
     /* M-Pesa Interactive Card */
@@ -2571,6 +2775,64 @@
       border-radius: var(--radius-md);
       padding: 0.875rem 1rem;
       margin-bottom: 0.875rem;
+    }
+
+    /* Batch Update Status Dropdown Menu */
+    .admin-batch-dropdown-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .admin-batch-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      z-index: 1050;
+      background: var(--bg-surface, #FFFFFF);
+      border: 1.5px solid var(--border-subtle, #E5E7EB);
+      border-radius: var(--radius-sm, 6px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      min-width: 210px;
+      padding: 0.35rem 0;
+      display: none;
+      flex-direction: column;
+      animation: fadeInDown 0.15s ease-out;
+    }
+
+    .admin-batch-menu.open {
+      display: flex;
+    }
+
+    .admin-batch-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.78125rem;
+      font-weight: 600;
+      color: var(--text-main, #1F2937);
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .admin-batch-menu-item:hover {
+      background: rgba(31, 122, 77, 0.08);
+      color: var(--primary, #1F7A4D);
+    }
+
+    .admin-batch-menu-item.decline:hover {
+      background: rgba(220, 38, 38, 0.08);
+      color: #DC2626;
+    }
+
+    .admin-batch-menu-divider {
+      height: 1px;
+      background: var(--border-subtle, #E5E7EB);
+      margin: 0.3rem 0;
     }
     [data-theme="dark"] .pending-verification-deck {
       background: rgba(245, 158, 11, 0.08);
@@ -3743,6 +4005,62 @@
       background: #1F2833;
       color: #9CA3AF;
     }
+
+    /* Print styling for Single and Bulk Tax Invoices (PDF Output) */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #bulkInvoicesPrintContainer,
+      #bulkInvoicesPrintContainer *,
+      #orderInvoiceModalBackdrop.active #invoicePaperPrintable,
+      #orderInvoiceModalBackdrop.active #invoicePaperPrintable * {
+        visibility: visible !important;
+      }
+      #bulkInvoicesPrintContainer {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #FFFFFF !important;
+        display: block !important;
+        z-index: 999999 !important;
+      }
+      #orderInvoiceModalBackdrop.active #invoicePaperPrintable {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 1.5rem !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: #FFFFFF !important;
+        z-index: 999999 !important;
+      }
+      .bulk-invoice-sheet {
+        page-break-after: always !important;
+        break-after: page !important;
+        padding: 2rem 2.5rem !important;
+        background: #FFFFFF !important;
+        color: #191E24 !important;
+        min-height: 98vh;
+        box-sizing: border-box;
+      }
+      .bulk-invoice-sheet:last-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 10mm 12mm;
+      }
+    }
   </style>
 </head>
 <body>
@@ -4452,11 +4770,20 @@
             <strong style="font-size: 0.9375rem; color: var(--text-main);">Recent Orders on this Device</strong>
             <div style="font-size: 0.75rem; color: var(--text-muted);" id="orderHistoryCountDisplay">0 orders</div>
           </div>
-          <div style="display: flex; gap: 0.4rem; align-items: center;">
+          <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
             <button type="button" class="btn btn-outline btn-sm" id="downloadOrderHistoryBtn" onclick="downloadCustomerOrderHistoryCsv()" style="font-size: 0.6875rem; padding: 0.2rem 0.55rem; color: #0E5A2E; border-color: #6EE7B7; background: #ECFDF5; display: inline-flex; align-items: center; gap: 0.3rem; font-weight: 600;" title="Download CSV report of your past orders on this device">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span>Download CSV</span>
             </button>
+            <!-- Live Refresh Toggle Switch -->
+            <label class="live-refresh-toggle-wrapper" id="orderHistoryLiveRefreshLabel" title="Toggle automatic polling of order history storage every 30 seconds">
+              <span class="live-pulse-dot" id="liveRefreshPulseDot"></span>
+              <input type="checkbox" id="orderHistoryLiveRefreshToggle" class="toggle-switch-input" onchange="toggleOrderHistoryLivePolling(this.checked)" aria-label="Toggle Live Refresh every 30 seconds" />
+              <span class="toggle-switch-track">
+                <span class="toggle-switch-thumb"></span>
+              </span>
+              <span id="orderHistoryLiveRefreshText">Live Refresh</span>
+            </label>
             <button type="button" class="btn btn-outline btn-sm" id="clearHistoryBtn" onclick="clearOrderHistory()" style="font-size: 0.6875rem; padding: 0.2rem 0.5rem; color: var(--text-muted);" title="Clear order history on this browser">
               Clear History
             </button>
@@ -4556,7 +4883,7 @@
           <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
           </svg>
-          <span>Place Order via WhatsApp</span>
+          <span id="placeOrderBtnText">Review &amp; Place Order</span>
         </button>
       </div>
 
@@ -4740,19 +5067,127 @@
        ========================================================================== -->
   <div class="modal-backdrop" id="confirmModalBackdrop">
     <div class="confirm-modal-box">
+      <!-- Modal Close Corner -->
+      <button type="button" class="modal-close-corner" onclick="closeConfirmModal()" aria-label="Close modal">✕</button>
+
       <!-- Branded Logo Header in Confirmation Modal -->
       <div class="confirm-header-brand">
         <img class="confirm-brand-img" src="/src/assets/images/lymbo_logo.svg" alt="Lymbo Ventures Logo" />
         <div>
           <strong style="display: block; font-size: 1.125rem; color: #0E5A2E; line-height: 1.1;">LYMBO VENTURES</strong>
-          <span style="font-size: 0.6875rem; color: var(--accent-hover); font-weight: 600; text-transform: uppercase;">Mombasa Order Received</span>
+          <span style="font-size: 0.6875rem; color: var(--accent-hover); font-weight: 600; text-transform: uppercase;" id="confirmModalBrandTag">Mombasa Order Review</span>
         </div>
       </div>
 
-      <h3 class="confirm-title">Order Received!</h3>
-      <p class="confirm-subtitle">
-        Your order details are confirmed. WhatsApp is opening now with your summary sent to <strong>0727811266</strong> (Alt: 0704967655).
+      <h3 class="confirm-title" id="confirmModalTitle">Confirm Your Order</h3>
+      <p class="confirm-subtitle" id="confirmModalSubtitle">
+        Please review your order summary below and add any final notes or instructions before submitting.
       </p>
+
+      <!-- ======================================================================
+           ORDER SUMMARY SECTION & FINAL NOTES TEXTAREA
+           ====================================================================== -->
+      <div class="modal-order-summary-card" id="modalOrderSummarySection">
+        <div class="modal-order-summary-header">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.05rem;">📋</span>
+            <strong style="font-size: 0.9375rem; color: var(--text-main);">Order Summary</strong>
+          </div>
+          <span class="badge" id="modalSummaryItemBadge" style="background: #E6F7EF; color: #065F46; font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 9999px; font-weight: 700; border: 1px solid #A7F3D0;">
+            1 Tray (30 Eggs)
+          </span>
+        </div>
+
+        <div class="modal-order-summary-body">
+          <div class="modal-summary-row">
+            <span class="summary-label">Items:</span>
+            <span class="summary-val font-semibold" id="modalSummaryItemsText">Eggs (Tray of 30) × 1</span>
+          </div>
+          <div class="modal-summary-row">
+            <span class="summary-label">Customer:</span>
+            <span class="summary-val" id="modalSummaryCustomerText">—</span>
+          </div>
+          <div class="modal-summary-row">
+            <span class="summary-label">Delivery Zone:</span>
+            <span class="summary-val" id="modalSummaryAreaText">—</span>
+          </div>
+          <div class="modal-summary-row">
+            <span class="summary-label">Street / Landmark:</span>
+            <span class="summary-val" id="modalSummaryAddressText">—</span>
+          </div>
+          <div class="modal-summary-row">
+            <span class="summary-label">Delivery Schedule:</span>
+            <span class="summary-val" id="modalSummaryScheduleText" style="color: var(--primary); font-weight: 600;">Today · ASAP Rider</span>
+          </div>
+          <div class="modal-summary-row">
+            <span class="summary-label">Payment Method:</span>
+            <span class="summary-val" id="modalSummaryPaymentMethodText">Lipa na M-Pesa (Paybill 625625)</span>
+          </div>
+
+          <div style="margin: 0.5rem 0; border-top: 1px dashed var(--border-subtle);"></div>
+
+          <div class="modal-summary-row" style="font-size: 0.78125rem;">
+            <span class="summary-label">Subtotal:</span>
+            <span id="modalSummarySubtotalText" class="tabular-nums font-semibold">KES 0</span>
+          </div>
+          <div class="modal-summary-row" style="font-size: 0.78125rem;">
+            <span class="summary-label">Delivery Fee:</span>
+            <span id="modalSummaryDeliveryFeeText" class="tabular-nums font-semibold">KES 0</span>
+          </div>
+          <div class="modal-summary-row" id="modalSummaryLoyaltyRow" style="font-size: 0.78125rem; color: #15803D; display: none;">
+            <span class="summary-label">⭐ Loyalty Discount:</span>
+            <span id="modalSummaryLoyaltyDiscountText" class="tabular-nums font-semibold">-KES 0</span>
+          </div>
+          <div class="modal-summary-row modal-summary-grand-total">
+            <span style="font-weight: 700; color: var(--text-main);">Grand Total:</span>
+            <strong id="modalSummaryGrandTotalText" class="tabular-nums" style="color: var(--primary); font-size: 1.0625rem;">KES 0</strong>
+          </div>
+        </div>
+
+        <!-- TEXT AREA FOR FINAL NOTES IN ORDER SUMMARY SECTION WITH 400-CHAR LIMIT & COUNTER -->
+        <div class="modal-final-notes-container" id="modalFinalNotesContainer">
+          <label for="modalOrderFinalNotes" class="form-label" style="font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; font-size: 0.8125rem;">
+            <span style="display: flex; align-items: center; gap: 0.35rem; color: var(--text-main);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <span>Final Notes / Delivery Instructions</span>
+            </span>
+            <span style="font-size: 0.6875rem; color: var(--text-muted); font-weight: normal;">(Max 400 chars)</span>
+          </label>
+          <textarea
+            id="modalOrderFinalNotes"
+            class="form-textarea"
+            rows="2"
+            placeholder="Add any final notes, gate codes, delivery landmarks, or special instructions before submitting your order..."
+            style="width: 100%; resize: vertical; min-height: 60px; font-size: 0.8125rem; line-height: 1.45; padding: 0.5rem 0.65rem;"
+          ></textarea>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.35rem; font-size: 0.6875rem; gap: 0.5rem; flex-wrap: wrap;">
+            <span id="modalFinalNotesRemaining" style="color: var(--text-muted);">400 characters remaining</span>
+            <span id="modalFinalNotesCounter" class="char-counter-pill">0 / 400</span>
+          </div>
+          <div id="modalFinalNotesErrorMsg" class="input-error-msg" style="margin-top: 0.35rem; font-weight: 600; display: none;">
+            ⚠️ Final notes cannot exceed 400 characters. Please shorten your instructions before submitting.
+          </div>
+          <!-- Optional save note button when viewing an existing pending order -->
+          <div id="modalSaveNoteActionRow" style="display: none; justify-content: flex-end; margin-top: 0.4rem;">
+            <button type="button" class="btn btn-outline btn-sm" id="modalSaveExistingNoteBtn" onclick="saveCustomerOrderFinalNote()" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; color: #0E5A2E; border-color: #6EE7B7; display: inline-flex; align-items: center; gap: 0.35rem;">
+              💾 <span>Save Updated Note</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pre-Submission Action Buttons (Visible Before Submitting the Order) -->
+      <div id="modalPreSubmitActions" style="display: none; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+        <button type="button" class="btn btn-whatsapp" id="modalConfirmSubmitBtn" onclick="executeFinalOrderSubmission()" style="width: 100%; font-size: 0.9375rem; padding: 0.75rem 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+          </svg>
+          <span id="modalConfirmSubmitBtnText">Submit Order via WhatsApp</span>
+        </button>
+        <button type="button" class="btn btn-outline" id="modalBackToDrawerBtn" onclick="backToDrawerFromConfirmModal()" style="width: 100%; font-size: 0.8125rem;">
+          <span>← Back to Edit Cart Details</span>
+        </button>
+      </div>
 
       <!-- Dynamic Order Verification & Approval Status Banner -->
       <div id="modalStatusBanner" class="modal-status-banner pending">
@@ -4978,7 +5413,8 @@
         </div>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <!-- Post-Submission Action Buttons (Visible After Submitting the Order) -->
+      <div id="modalPostSubmitActions" style="display: flex; flex-direction: column; gap: 0.75rem;">
         <a href="#" class="btn btn-whatsapp" id="modalWhatsappReopenBtn" target="_blank" rel="noopener noreferrer">
           <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
@@ -5935,6 +6371,38 @@
 
             <!-- Button Group -->
             <div class="admin-bulk-btn-group" style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
+              <!-- Dedicated Batch Update Status Dropdown Button -->
+              <div class="admin-batch-dropdown-container" id="adminBatchStatusDropdownContainer">
+                <button
+                  type="button"
+                  id="adminBatchUpdateStatusBtn"
+                  class="btn btn-primary btn-sm"
+                  onclick="toggleAdminBatchStatusMenu(event)"
+                  disabled
+                  style="padding: 0.35rem 0.75rem; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;"
+                  title="Batch change status of all selected orders to Approved or Declined in one click"
+                >
+                  <span>⚡ Batch Update Status</span>
+                  <span id="adminBatchUpdateCountBadge" style="background: rgba(255,255,255,0.25); padding: 0.05rem 0.35rem; border-radius: 9999px; font-size: 0.6875rem; display: none;">0</span>
+                  <span style="font-size: 0.65rem; margin-left: 0.1rem;">▾</span>
+                </button>
+                <div class="admin-batch-menu" id="adminBatchStatusMenu" role="menu" aria-label="Batch Update Status Options">
+                  <button type="button" class="admin-batch-menu-item" onclick="adminExecuteBatchUpdateStatus('approved')" role="menuitem">
+                    <span style="color: #059669; font-weight: 800; font-size: 0.95rem;">✓</span>
+                    <div>
+                      <div style="font-weight: 700; color: #065F46;">Mark as Approved</div>
+                      <div style="font-size: 0.6875rem; color: var(--text-muted); font-weight: normal;">Confirm orders & dispatch customer SMS</div>
+                    </div>
+                  </button>
+                  <button type="button" class="admin-batch-menu-item decline" onclick="adminExecuteBatchUpdateStatus('declined')" role="menuitem">
+                    <span style="color: #DC2626; font-weight: 800; font-size: 0.95rem;">✕</span>
+                    <div>
+                      <div style="font-weight: 700; color: #991B1B;">Mark as Declined</div>
+                      <div style="font-size: 0.6875rem; color: var(--text-muted); font-weight: normal;">Release reserved egg trays back to stock</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
               <button
                 type="button"
                 id="adminBulkApproveBtn"
@@ -5971,6 +6439,19 @@
                 title="Re-send M-Pesa STK push prompt to selected orders awaiting payment"
               >
                 <span>📲 Re-prompt M-Pesa</span>
+              </button>
+
+              <button
+                type="button"
+                id="adminBulkPrintInvoicesBtn"
+                class="btn btn-outline btn-sm"
+                onclick="adminBulkPrintSelectedInvoices()"
+                disabled
+                style="padding: 0.35rem 0.75rem; font-size: 0.75rem; font-weight: 700; color: #1E40AF; border-color: #93C5FD; background: #EFF6FF; display: inline-flex; align-items: center; gap: 0.35rem;"
+                title="Print all sequential tax invoices and delivery notes for selected orders in a single consolidated PDF document"
+              >
+                <span>🖨️ Print Invoices (PDF)</span>
+                <span id="adminBulkPrintInvoicesCountBadge" style="background: rgba(30, 64, 175, 0.15); padding: 0.05rem 0.35rem; border-radius: 9999px; font-size: 0.6875rem; display: none;">0</span>
               </button>
 
               <div style="height: 18px; width: 1px; background: var(--border-subtle); margin: 0 0.15rem;"></div>
@@ -7136,6 +7617,50 @@
       </div>
     </div>
   </div>
+
+  <!-- ==========================================================================
+       BULK TAX INVOICES VIEWER & SINGLE PDF DOCUMENT GENERATOR
+       ========================================================================== -->
+  <div class="modal-backdrop" id="adminBulkInvoicesModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="bulkInvoicesModalTitle" style="z-index: 99999;">
+    <div class="invoice-modal-box" style="max-width: 860px; max-height: 92vh;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.625rem;">
+          <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(30, 64, 175, 0.12); color: #1E40AF; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            🖨️
+          </div>
+          <div>
+            <h3 id="bulkInvoicesModalTitle" style="font-size: 1.125rem; font-weight: 800; line-height: 1.2; margin: 0; color: var(--text-main);">
+              Bulk Sequential Tax Invoices
+            </h3>
+            <span id="bulkInvoicesSubtitle" style="font-size: 0.72rem; color: var(--text-muted);">
+              Consolidated PDF document for 0 orders · Sequential KRA/VAT trade compliance
+            </span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="triggerBulkInvoicesPrint()" style="font-size: 0.78125rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.85rem;">
+            🖨️ Print / Save as PDF
+          </button>
+          <button type="button" class="drawer-close-btn" onclick="closeAdminBulkInvoicesModal()" aria-label="Close bulk invoice viewer">✕</button>
+        </div>
+      </div>
+
+      <!-- Preview summary ribbon -->
+      <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 6px; padding: 0.5rem 0.85rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #1E40AF; flex-wrap: wrap; gap: 0.5rem;">
+        <span>ℹ️ <strong>Print Preview Ready:</strong> Each tax invoice starts on a fresh page with full sequential invoice numbers, itemized breakdown, and M-Pesa receipt verification.</span>
+        <span id="bulkInvoicesTotalValueBadge" style="font-weight: 700; background: #DBEAFE; padding: 0.15rem 0.5rem; border-radius: 4px;">Total Value: KES 0</span>
+      </div>
+
+      <!-- Scrollable Preview Container in Modal -->
+      <div id="bulkInvoicesModalContent" style="display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto; padding: 0.25rem;">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated Offscreen Printable Container for Single PDF Document Output -->
+  <div id="bulkInvoicesPrintContainer" style="display: none;"></div>
+
   <div class="modal-backdrop" id="adminQrScannerModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="qrScannerModalTitle">
     <div class="camera-scanner-modal-box">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;">
@@ -7936,6 +8461,16 @@
 
       // Load staff audit logs from browser local storage
       loadStaffAuditLogs();
+
+      // Restore customer order history live refresh polling preference
+      try {
+        const livePref = localStorage.getItem("lymbo_live_refresh_pref");
+        if (livePref === "true") {
+          setTimeout(() => {
+            toggleOrderHistoryLivePolling(true);
+          }, 500);
+        }
+      } catch (e) {}
     }
 
     function saveRestockSubscribers() {
@@ -8977,6 +9512,7 @@
       const countDisplay = document.getElementById("orderHistoryCountDisplay");
       const clearBtn = document.getElementById("clearHistoryBtn");
       const downloadBtn = document.getElementById("downloadOrderHistoryBtn");
+      const liveRefreshLabel = document.getElementById("orderHistoryLiveRefreshLabel");
       const footerDownloadBtn = document.getElementById("drawerDownloadHistoryFooterBtn");
       const filterCard = document.getElementById("customerOrderDateFilterCard");
       if (!container) return;
@@ -8988,6 +9524,9 @@
       }
       if (downloadBtn) {
         downloadBtn.style.display = hasOrders ? "inline-flex" : "none";
+      }
+      if (liveRefreshLabel) {
+        liveRefreshLabel.style.display = hasOrders ? "inline-flex" : "none";
       }
       if (footerDownloadBtn) {
         footerDownloadBtn.style.display = hasOrders ? "inline-flex" : "none";
@@ -9155,6 +9694,12 @@
             <div class="order-card-detail-row" style="align-items: flex-start;">
               <span>Gate / Instructions:</span>
               <span style="max-width: 65%; text-align: right; color: var(--text-main); font-size: 0.75rem; word-break: break-word;">${escapeHtml(order.deliveryInstructions)}</span>
+            </div>
+            ` : ''}
+            ${(order.finalNotes || order.notes) ? `
+            <div class="order-card-detail-row" style="align-items: flex-start;">
+              <span>Final Notes:</span>
+              <span style="max-width: 65%; text-align: right; color: #065F46; font-weight: 600; font-size: 0.75rem; word-break: break-word;">${escapeHtml(order.finalNotes || order.notes)}</span>
             </div>
             ` : ''}
             <div class="order-card-detail-row">
@@ -9619,6 +10164,93 @@
       renderOrderHistory();
       updateOrderHistoryBadge();
       showToast("Order history cleared from this device.");
+    }
+
+    /* ==========================================================================
+       CUSTOMER CART DRAWER: LIVE REFRESH POLLING ENGINE (EVERY 30 SECONDS)
+       ========================================================================== */
+    let orderHistoryPollingTimer = null;
+    const ORDER_HISTORY_POLL_INTERVAL_MS = 30000; // 30 seconds
+
+    function toggleOrderHistoryLivePolling(isEnabled) {
+      state.orderHistoryLiveRefreshEnabled = !!isEnabled;
+      const label = document.getElementById("orderHistoryLiveRefreshLabel");
+      const toggle = document.getElementById("orderHistoryLiveRefreshToggle");
+      const text = document.getElementById("orderHistoryLiveRefreshText");
+
+      if (toggle) toggle.checked = state.orderHistoryLiveRefreshEnabled;
+
+      if (state.orderHistoryLiveRefreshEnabled) {
+        if (label) label.classList.add("active");
+        if (text) text.textContent = "Live (30s)";
+        startOrderHistoryLivePolling();
+        showToast("✓ Live Refresh enabled: Order history will auto-check every 30s.");
+      } else {
+        if (label) label.classList.remove("active");
+        if (text) text.textContent = "Live Refresh";
+        stopOrderHistoryLivePolling();
+        showToast("Live Refresh paused.");
+      }
+
+      // Persist user preference
+      try {
+        localStorage.setItem("lymbo_live_refresh_pref", state.orderHistoryLiveRefreshEnabled ? "true" : "false");
+      } catch (e) {}
+    }
+
+    function startOrderHistoryLivePolling() {
+      stopOrderHistoryLivePolling();
+      // Schedule repeated polling every 30 seconds
+      orderHistoryPollingTimer = setInterval(() => {
+        pollOrderHistoryStorage();
+      }, ORDER_HISTORY_POLL_INTERVAL_MS);
+    }
+
+    function stopOrderHistoryLivePolling() {
+      if (orderHistoryPollingTimer) {
+        clearInterval(orderHistoryPollingTimer);
+        orderHistoryPollingTimer = null;
+      }
+    }
+
+    function pollOrderHistoryStorage() {
+      try {
+        const raw = localStorage.getItem(ORDER_HISTORY_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return;
+
+        // Detect if anything changed (length, statuses, or modification times)
+        const currentOrders = state.orderHistory || [];
+        const hasLengthChange = currentOrders.length !== parsed.length;
+        let hasContentChange = false;
+
+        if (!hasLengthChange) {
+          for (let i = 0; i < parsed.length; i++) {
+            const p = parsed[i];
+            const c = currentOrders[i];
+            if (!c || p.id !== c.id || p.orderStatus !== c.orderStatus || p.paymentStatus !== c.paymentStatus || p.notes !== c.notes || p.mpesaCode !== c.mpesaCode) {
+              hasContentChange = true;
+              break;
+            }
+          }
+        }
+
+        if (hasLengthChange || hasContentChange) {
+          state.orderHistory = parsed;
+          renderOrderHistory();
+          updateOrderHistoryBadge();
+
+          // Flash subtle pulse indicator
+          const dot = document.getElementById("liveRefreshPulseDot");
+          if (dot) {
+            dot.style.transform = "scale(1.5)";
+            setTimeout(() => { if (dot) dot.style.transform = ""; }, 400);
+          }
+        }
+      } catch (err) {
+        console.warn("Live refresh polling error:", err);
+      }
     }
 
     /* ==========================================================================
@@ -11556,15 +12188,23 @@
       const countEl = document.getElementById("adminBulkSelectedCount");
       const badgeEl = document.getElementById("adminBulkSelectionBadge");
       const hintEl = document.getElementById("adminBulkHelpHint");
+      const batchUpdateBtn = document.getElementById("adminBatchUpdateStatusBtn");
+      const batchUpdateBadge = document.getElementById("adminBatchUpdateCountBadge");
       const approveBtn = document.getElementById("adminBulkApproveBtn");
       const declineBtn = document.getElementById("adminBulkDeclineBtn");
       const repromptBtn = document.getElementById("adminBulkRepromptBtn");
+      const printInvoicesBtn = document.getElementById("adminBulkPrintInvoicesBtn");
       const clearBtn = document.getElementById("adminBulkClearBtn");
       const approveBadge = document.getElementById("adminBulkApproveCountBadge");
       const declineBadge = document.getElementById("adminBulkDeclineCountBadge");
+      const printInvoicesBadge = document.getElementById("adminBulkPrintInvoicesCountBadge");
       const headerCb = document.getElementById("adminOrderSelectAllCb");
 
       if (countEl) countEl.textContent = count;
+      if (batchUpdateBadge) {
+        batchUpdateBadge.textContent = count;
+        batchUpdateBadge.style.display = count > 0 ? "inline-block" : "none";
+      }
       if (approveBadge) {
         approveBadge.textContent = count;
         approveBadge.style.display = count > 0 ? "inline-block" : "none";
@@ -11573,11 +12213,22 @@
         declineBadge.textContent = count;
         declineBadge.style.display = count > 0 ? "inline-block" : "none";
       }
+      if (printInvoicesBadge) {
+        printInvoicesBadge.textContent = count;
+        printInvoicesBadge.style.display = count > 0 ? "inline-block" : "none";
+      }
 
+      if (batchUpdateBtn) batchUpdateBtn.disabled = count === 0;
       if (approveBtn) approveBtn.disabled = count === 0;
       if (declineBtn) declineBtn.disabled = count === 0;
       if (repromptBtn) repromptBtn.disabled = count === 0;
+      if (printInvoicesBtn) printInvoicesBtn.disabled = count === 0;
       if (clearBtn) clearBtn.disabled = count === 0;
+
+      // Close open batch status menu if count reaches 0
+      if (count === 0) {
+        closeAdminBatchStatusMenu();
+      }
 
       if (bar) {
         if (count > 0) {
@@ -11597,7 +12248,7 @@
 
       if (hintEl) {
         if (count > 0) {
-          hintEl.innerHTML = `<strong>${count}</strong> order${count === 1 ? '' : 's'} ready for bulk approval, decline, or M-Pesa push`;
+          hintEl.innerHTML = `<strong>${count}</strong> order${count === 1 ? '' : 's'} ready for bulk approval, decline, M-Pesa push, or PDF print`;
           hintEl.style.color = "var(--primary)";
         } else {
           hintEl.textContent = "Select orders using the checkboxes below to perform batch approvals or declines";
@@ -11625,6 +12276,39 @@
             headerCb.indeterminate = false;
           }
         }
+      }
+    }
+
+    /* ==========================================================================
+       BATCH UPDATE STATUS ACTIONS (ONE-CLICK APPROVE OR DECLINE MULTIPLE ORDERS)
+       ========================================================================== */
+    function toggleAdminBatchStatusMenu(event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      const menu = document.getElementById("adminBatchStatusMenu");
+      const selected = state.adminSelectedOrderIds || [];
+      if (!menu) return;
+
+      if (selected.length === 0) {
+        showToast("Please select one or more orders first.");
+        return;
+      }
+
+      menu.classList.toggle("open");
+    }
+
+    function closeAdminBatchStatusMenu() {
+      const menu = document.getElementById("adminBatchStatusMenu");
+      if (menu) menu.classList.remove("open");
+    }
+
+    async function adminExecuteBatchUpdateStatus(targetStatus) {
+      closeAdminBatchStatusMenu();
+      if (targetStatus === 'approved') {
+        await adminBulkApproveSelected();
+      } else if (targetStatus === 'declined') {
+        await adminBulkDeclineSelected();
       }
     }
 
@@ -12046,6 +12730,64 @@
           submitBtn.textContent = "✓ Confirm Payment & Approve Order";
         }
       }
+    function copyAdminOrderSummary(orderId) {
+      if (!orderId) return;
+      const order = (state.orderHistory || []).find(o => o.id === orderId);
+      if (!order) {
+        showToast("Order record not found.");
+        return;
+      }
+
+      const ref = `#${order.id}`;
+      const customer = order.customerName || "Customer";
+      const phone = order.customerPhone || "N/A";
+      const amount = `KES ${(order.grandTotal || 0).toLocaleString()}`;
+      const trays = `${order.trays || order.eggTrays || 1} Tray${(order.trays || order.eggTrays || 1) > 1 ? 's' : ''}`;
+      const area = order.deliveryArea || "Mombasa";
+      const landmark = order.landmarkAddress || order.deliveryAddress || "";
+      const destination = landmark ? `${area} (${landmark})` : area;
+      const schedule = `${order.formattedDeliveryDate || order.deliveryDate || 'Today'} · ${order.deliveryTime || order.deliveryTimeSlot || 'Morning'}`;
+      const status = (order.orderStatus || 'pending').toUpperCase();
+      const payment = order.paymentMethod || 'M-Pesa';
+      const mpesa = order.mpesaCode ? ` · Code: ${order.mpesaCode}` : '';
+
+      const summaryText = 
+`📦 ORDER SUMMARY
+Ref: ${ref}
+Customer: ${customer}
+Phone: ${phone}
+Amount: ${amount}
+Items: ${trays}
+Delivery: ${destination}
+Schedule: ${schedule}
+Payment: ${payment} (${status})${mpesa}`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(summaryText).then(() => {
+          showToast(`✓ Order ${ref} summary copied for driver!`);
+        }).catch(() => {
+          fallbackClipboardCopy(summaryText, `✓ Order ${ref} summary copied for driver!`);
+        });
+      } else {
+        fallbackClipboardCopy(summaryText, `✓ Order ${ref} summary copied for driver!`);
+      }
+    }
+
+    function fallbackClipboardCopy(text, successMsg) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        showToast(successMsg || "✓ Copied to clipboard!");
+      } catch (err) {
+        showToast("Summary generated: " + text.slice(0, 80) + "...");
+      }
+      document.body.removeChild(textarea);
     }
 
     function handleAdminOrderStatusDropdownChange(orderId, action, selectEl) {
@@ -12085,6 +12827,8 @@
         openAdminQrCameraModal(orderId);
       } else if (action === "invoice") {
         openOrderInvoiceModal(orderId);
+      } else if (action === "copy_order") {
+        copyAdminOrderSummary(orderId);
       }
 
       // Always reset select element back to placeholder
@@ -12332,6 +13076,9 @@
                         <button type="button" class="btn btn-outline btn-sm" onclick="openAdminQrCameraModal('${po.id}')" style="padding: 0.3rem 0.5rem; font-size: 0.72rem; color: #0E5A2E; border-color: #6EE7B7;" title="Scan Customer Phone QR">
                           📷
                         </button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="copyAdminOrderSummary('${po.id}')" style="padding: 0.3rem 0.5rem; font-size: 0.72rem; color: #0E5A2E; border-color: #6EE7B7; background: #F0FDF4; font-weight: 700;" title="Copy Order Data (Ref, Customer, Phone, Amount) for quick sharing with drivers">
+                          📋 Copy
+                        </button>
                         <button type="button" class="btn btn-outline btn-sm" onclick="openSmsAuditModal('${po.id}')" style="padding: 0.3rem 0.45rem; font-size: 0.72rem; color: #1D4ED8; border-color: #BFDBFE;" title="Preview SMS text">
                           📱
                         </button>
@@ -12341,6 +13088,9 @@
                     <div style="margin-top: 0.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
                       <span style="font-size: 0.72rem; color: var(--text-muted); background: var(--bg-body); padding: 0.2rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-subtle); font-weight: 600;">👁️ Read-Only Access (Approval Restricted to Manager/Admin)</span>
                       <div style="display: flex; gap: 0.35rem;">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="copyAdminOrderSummary('${po.id}')" style="padding: 0.3rem 0.5rem; font-size: 0.72rem; color: #0E5A2E; border-color: #6EE7B7; background: #F0FDF4; font-weight: 700;" title="Copy Order Data for quick sharing with drivers">
+                          📋 Copy
+                        </button>
                         <button type="button" class="btn btn-outline btn-sm" onclick="openOrderInvoiceModal('${po.id}')" style="padding: 0.3rem 0.5rem; font-size: 0.72rem; color: #1E40AF; border-color: #93C5FD; background: #EFF6FF;" title="View Sequential Tax Invoice & Delivery Note (INV-2026-XXXX / DN-2026-XXXX)">
                           📄 Invoice
                         </button>
@@ -12504,6 +13254,7 @@
                   <option value="invoice" style="color: #1E40AF; font-weight: 700;">📄 Sequential Tax Invoice &amp; Delivery Note</option>
                   ${isApproved || isDeclined ? '<option value="resend_sms">📱 Resend Redundant SMS</option>' : ''}
                   ${isApproved || isDeclined ? '<option value="reset" style="color: #92400E;">↺ Reset to Pending</option>' : ''}
+                  <option value="copy_order">📋 Copy Order Summary (Driver Dispatch)</option>
                   <option value="receipt">📧 View Receipt</option>
                 </select>
 
@@ -12513,6 +13264,9 @@
                 ` : `
                 <span style="font-size: 0.72rem; color: var(--text-muted); background: var(--bg-body); padding: 0.2rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-subtle); font-weight: 600;">👁️ Read-Only</span>
                 `}
+                <button type="button" class="btn btn-outline btn-sm" onclick="copyAdminOrderSummary('${o.id}')" style="padding: 0.25rem 0.5rem; font-size: 0.6875rem; color: #0E5A2E; border-color: #6EE7B7; background: #F0FDF4; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;" title="Copy Order Data (Ref, Customer, Phone, Amount) to clipboard for quick driver sharing">
+                  📋 <span>Copy Data</span>
+                </button>
                 <button type="button" class="btn btn-outline btn-sm" onclick="openOrderInvoiceModal('${o.id}')" style="padding: 0.25rem 0.45rem; font-size: 0.6875rem; color: #1E40AF; border-color: #93C5FD; background: #EFF6FF;" title="View Sequential Tax Invoice & Delivery Note (INV-2026-XXXX / DN-2026-XXXX)">
                   📄 Invoice
                 </button>
@@ -14269,6 +15023,587 @@
       panel.classList.remove("open");
     }
 
+    /* Order Summary & Final Notes Modal Engine */
+    function renderOrderSummaryInModal(order, trays, subtotal, fee, grandTotal) {
+      if (!order) return;
+      const countBadge = document.getElementById("modalSummaryItemBadge");
+      const itemsText = document.getElementById("modalSummaryItemsText");
+      const customerText = document.getElementById("modalSummaryCustomerText");
+      const areaText = document.getElementById("modalSummaryAreaText");
+      const addressText = document.getElementById("modalSummaryAddressText");
+      const scheduleText = document.getElementById("modalSummaryScheduleText");
+      const paymentMethodText = document.getElementById("modalSummaryPaymentMethodText");
+      const subtotalText = document.getElementById("modalSummarySubtotalText");
+      const feeText = document.getElementById("modalSummaryDeliveryFeeText");
+      const loyaltyRow = document.getElementById("modalSummaryLoyaltyRow");
+      const loyaltyDiscountText = document.getElementById("modalSummaryLoyaltyDiscountText");
+      const grandTotalText = document.getElementById("modalSummaryGrandTotalText");
+
+      const t = trays || order.trays || (state.cart ? state.cart.eggTrays : 1) || 1;
+      const totalEggs = order.totalEggs || (t * (CONFIG.eggTrayCount || 30));
+
+      if (countBadge) countBadge.textContent = `${t} Tray${t > 1 ? 's' : ''} (${totalEggs} Eggs)`;
+      if (itemsText) itemsText.textContent = `Eggs (Tray of 30) × ${t} tray${t > 1 ? 's' : ''}`;
+      if (customerText) customerText.textContent = `${order.customerName || 'Customer'} (${order.customerPhone || ''})`;
+      if (areaText) areaText.textContent = `${order.deliveryArea || 'Mombasa'}`;
+      if (addressText) addressText.textContent = `${order.landmarkAddress || order.deliveryAddress || '—'}`;
+      if (scheduleText) {
+        const dateDisp = order.formattedDeliveryDate || order.deliveryDate || 'Today';
+        const timeDisp = order.deliveryTime || order.deliveryTimeSlot || 'ASAP';
+        scheduleText.textContent = `📅 ${dateDisp} (${timeDisp})`;
+      }
+      if (paymentMethodText) {
+        paymentMethodText.textContent = order.paymentMethod || 'Lipa na M-Pesa (Paybill 625625)';
+      }
+      if (subtotalText) subtotalText.textContent = `KES ${(subtotal || order.subtotal || 0).toLocaleString()}`;
+      if (feeText) feeText.textContent = `KES ${(fee || order.deliveryFee || 0).toLocaleString()}`;
+      
+      const discount = order.loyaltyDiscount || order.loyaltyDiscountApplied || 0;
+      if (loyaltyRow && loyaltyDiscountText) {
+        if (discount > 0) {
+          loyaltyRow.style.display = "flex";
+          loyaltyDiscountText.textContent = `-KES ${Number(discount).toLocaleString()}`;
+        } else {
+          loyaltyRow.style.display = "none";
+        }
+      }
+      if (grandTotalText) grandTotalText.textContent = `KES ${(grandTotal || order.grandTotal || 0).toLocaleString()}`;
+    }
+
+    function updateFinalNotesCounter(length) {
+      const MAX_LENGTH = 400;
+      const counter = document.getElementById("modalFinalNotesCounter");
+      const remainingLabel = document.getElementById("modalFinalNotesRemaining");
+      const errorMsg = document.getElementById("modalFinalNotesErrorMsg");
+      const textarea = document.getElementById("modalOrderFinalNotes");
+      const submitBtn = document.getElementById("modalConfirmSubmitBtn");
+      const saveBtn = document.getElementById("modalSaveExistingNoteBtn");
+
+      const isExceeded = length > MAX_LENGTH;
+      const isApproaching = length >= 350 && !isExceeded;
+      const remaining = MAX_LENGTH - length;
+
+      if (counter) {
+        if (isExceeded) {
+          counter.textContent = `${length} / ${MAX_LENGTH} (Exceeded by ${length - MAX_LENGTH})`;
+          counter.className = "char-counter-pill exceeded";
+        } else if (isApproaching) {
+          counter.textContent = `${length} / ${MAX_LENGTH}`;
+          counter.className = "char-counter-pill approaching";
+        } else {
+          counter.textContent = `${length} / ${MAX_LENGTH}`;
+          counter.className = "char-counter-pill";
+        }
+      }
+
+      if (remainingLabel) {
+        if (isExceeded) {
+          const over = length - MAX_LENGTH;
+          remainingLabel.textContent = `${over} character${over > 1 ? 's' : ''} over limit`;
+          remainingLabel.style.color = "#DC2626";
+          remainingLabel.style.fontWeight = "600";
+        } else {
+          remainingLabel.textContent = `${remaining} character${remaining === 1 ? '' : 's'} remaining`;
+          remainingLabel.style.color = isApproaching ? "#B45309" : "var(--text-muted)";
+          remainingLabel.style.fontWeight = isApproaching ? "600" : "normal";
+        }
+      }
+
+      if (textarea) {
+        if (isExceeded) {
+          textarea.classList.add("is-invalid");
+          textarea.setAttribute("aria-invalid", "true");
+        } else {
+          textarea.classList.remove("is-invalid");
+          textarea.removeAttribute("aria-invalid");
+        }
+      }
+
+      if (errorMsg) {
+        if (isExceeded) {
+          errorMsg.style.display = "block";
+          errorMsg.classList.add("visible");
+        } else {
+          errorMsg.style.display = "none";
+          errorMsg.classList.remove("visible");
+        }
+      }
+
+      if (submitBtn) {
+        if (isExceeded) {
+          submitBtn.setAttribute("disabled", "true");
+          submitBtn.classList.add("disabled");
+          submitBtn.title = "Final notes exceed 400 characters. Please shorten them to proceed.";
+        } else {
+          submitBtn.removeAttribute("disabled");
+          submitBtn.classList.remove("disabled");
+          submitBtn.title = "";
+        }
+      }
+
+      if (saveBtn) {
+        if (isExceeded) {
+          saveBtn.setAttribute("disabled", "true");
+          saveBtn.classList.add("disabled");
+        } else {
+          saveBtn.removeAttribute("disabled");
+          saveBtn.classList.remove("disabled");
+        }
+      }
+    }
+
+    function saveCustomerOrderFinalNote() {
+      const orderId = state.currentModalOrderId;
+      if (!orderId) return;
+      const order = state.orderHistory ? state.orderHistory.find(o => o.id === orderId) : null;
+      if (!order) return;
+
+      const textarea = document.getElementById("modalOrderFinalNotes");
+      const rawNote = textarea ? textarea.value : "";
+      if (rawNote.length > 400) {
+        showToast("⚠️ Final notes exceed the 400-character limit. Please shorten before saving.");
+        updateFinalNotesCounter(rawNote.length);
+        if (textarea) textarea.focus();
+        return;
+      }
+      const newNote = rawNote.trim();
+      order.notes = newNote;
+      order.finalNotes = newNote;
+
+      saveOrderHistory();
+      renderOrderHistory();
+
+      // Sync to backend persistent store
+      fetch(`/api/orders/${orderId}/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes: newNote })
+      }).then(res => {
+        if (!res.ok) {
+          return res.json().then(data => { throw new Error(data.error || 'Server error'); });
+        }
+        showToast(`✓ Final notes saved for Order #${orderId}`);
+      }).catch(err => {
+        console.warn("Failed to persist updated note to server:", err);
+        showToast(`⚠️ ${err.message || "Failed to update note on server."}`);
+      });
+    }
+
+    function backToDrawerFromConfirmModal() {
+      // Sync any edited final notes back to drawer input
+      const finalNotesInput = document.getElementById("modalOrderFinalNotes");
+      const drawerNotes = document.getElementById("custNotes");
+      if (finalNotesInput && drawerNotes && finalNotesInput.value.trim()) {
+        drawerNotes.value = finalNotesInput.value.trim();
+      }
+      closeConfirmModal();
+      openCartDrawer('basket');
+    }
+
+    function validateCheckoutFormData() {
+      const trays = state.cart ? state.cart.eggTrays : 1;
+      if (trays < 1) {
+        showToast("Please add at least 1 tray to your basket first.");
+        return null;
+      }
+
+      const nameInput = document.getElementById("custName");
+      const phoneInput = document.getElementById("custPhone");
+      const emailInput = document.getElementById("custEmail");
+      const areaSelect = document.getElementById("custArea");
+      const addressInput = document.getElementById("custAddress");
+      const deliveryInstructionsInput = document.getElementById("custDeliveryInstructions");
+      const dateInput = document.getElementById("custDate");
+      const timeSelect = document.getElementById("custTime");
+      const notesInput = document.getElementById("custNotes");
+      const payRadio = document.querySelector('input[name="paymentMethod"]:checked');
+
+      if (!nameInput || !phoneInput || !emailInput || !areaSelect || !addressInput) {
+        return null;
+      }
+
+      let isValid = true;
+      if (!nameInput.value.trim()) {
+        nameInput.classList.add("is-invalid");
+        document.getElementById("custNameError")?.classList.add("visible");
+        isValid = false;
+      } else {
+        nameInput.classList.remove("is-invalid");
+        document.getElementById("custNameError")?.classList.remove("visible");
+      }
+
+      if (!validateKenyanPhone(phoneInput.value.trim())) {
+        phoneInput.classList.add("is-invalid");
+        document.getElementById("custPhoneError")?.classList.add("visible");
+        isValid = false;
+      } else {
+        phoneInput.classList.remove("is-invalid");
+        document.getElementById("custPhoneError")?.classList.remove("visible");
+      }
+
+      const customerEmail = emailInput.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!customerEmail || !emailRegex.test(customerEmail)) {
+        emailInput.classList.add("is-invalid");
+        document.getElementById("custEmailError")?.classList.add("visible");
+        isValid = false;
+      } else {
+        emailInput.classList.remove("is-invalid");
+        document.getElementById("custEmailError")?.classList.remove("visible");
+      }
+
+      if (!areaSelect.value) {
+        areaSelect.classList.add("is-invalid");
+        document.getElementById("custAreaError")?.classList.add("visible");
+        isValid = false;
+      } else {
+        areaSelect.classList.remove("is-invalid");
+        document.getElementById("custAreaError")?.classList.remove("visible");
+      }
+
+      if (!addressInput.value.trim()) {
+        addressInput.classList.add("is-invalid");
+        document.getElementById("custAddressError")?.classList.add("visible");
+        isValid = false;
+      } else {
+        addressInput.classList.remove("is-invalid");
+        document.getElementById("custAddressError")?.classList.remove("visible");
+      }
+
+      const rawDeliveryDate = dateInput ? dateInput.value.trim() : "";
+      const todayStr = getTodayDateString();
+      if (!rawDeliveryDate || rawDeliveryDate < todayStr) {
+        if (dateInput) dateInput.classList.add("is-invalid");
+        const dateErr = document.getElementById("custDateError");
+        if (dateErr) {
+          dateErr.textContent = "Please select today or a future delivery date.";
+          dateErr.classList.add("visible");
+        }
+        isValid = false;
+      } else {
+        if (dateInput) dateInput.classList.remove("is-invalid");
+        document.getElementById("custDateError")?.classList.remove("visible");
+      }
+
+      if (!isValid) {
+        showToast("Please complete the required delivery & contact fields.");
+        return null;
+      }
+
+      const customerName = nameInput.value.trim();
+      const customerPhone = phoneInput.value.trim();
+      const deliveryArea = areaSelect.value;
+      const landmarkAddress = addressInput.value.trim();
+      const deliveryInstructions = deliveryInstructionsInput ? deliveryInstructionsInput.value.trim() : "";
+      const deliveryDate = rawDeliveryDate || todayStr;
+      const formattedDeliveryDate = formatDeliveryDateDisplay(deliveryDate);
+      const deliveryTime = timeSelect ? timeSelect.value : "ASAP / Next Available Rider";
+      const notes = notesInput ? notesInput.value.trim() : "";
+      const paymentMethod = payRadio ? payRadio.value : "M-Pesa (Buy Goods Till)";
+
+      const subtotal = trays * CONFIG.eggPricePerTray;
+      const deliveryFee = CONFIG.deliveryFees[deliveryArea] || 0;
+      const pointsToEarn = trays * (CONFIG.loyaltyPointsPerTray || 10);
+      const redeemedPoints = state.loyalty ? (state.loyalty.appliedDiscountPoints || 0) : 0;
+      const loyaltyDiscount = Math.min(redeemedPoints * (CONFIG.loyaltyPointValueKes || 1), subtotal);
+      const grandTotal = Math.max(0, subtotal + deliveryFee - loyaltyDiscount);
+      const totalEggs = trays * CONFIG.eggTrayCount;
+
+      return {
+        customerName,
+        customerPhone,
+        customerEmail,
+        deliveryArea,
+        landmarkAddress,
+        deliveryInstructions,
+        deliveryDate,
+        formattedDeliveryDate,
+        deliveryTime,
+        notes,
+        paymentMethod,
+        trays,
+        subtotal,
+        deliveryFee,
+        pointsToEarn,
+        redeemedPoints,
+        loyaltyDiscount,
+        grandTotal,
+        totalEggs
+      };
+    }
+
+    function openConfirmModalPreSubmit() {
+      const draft = validateCheckoutFormData();
+      if (!draft) return;
+
+      state.pendingDraftOrder = draft;
+
+      // Close cart drawer
+      closeCartDrawer();
+
+      // Configure Modal Titles
+      const title = document.getElementById("confirmModalTitle");
+      const subtitle = document.getElementById("confirmModalSubtitle");
+      const brandTag = document.getElementById("confirmModalBrandTag");
+      if (title) title.textContent = "Confirm Your Order";
+      if (subtitle) subtitle.textContent = "Please review your order summary below and add any final notes or instructions before submitting.";
+      if (brandTag) brandTag.textContent = "Mombasa Order Review";
+
+      // Populate Order Summary Section
+      renderOrderSummaryInModal(draft, draft.trays, draft.subtotal, draft.deliveryFee, draft.grandTotal);
+
+      // Pre-fill Final Notes Text Area with any notes previously entered
+      const finalNotesInput = document.getElementById("modalOrderFinalNotes");
+      const initialNotes = draft.notes || draft.deliveryInstructions || "";
+      if (finalNotesInput) {
+        finalNotesInput.value = initialNotes;
+        updateFinalNotesCounter(initialNotes.length);
+      }
+
+      // Show Pre-Submit Action Row & Hide Post-Submit Elements
+      const preActions = document.getElementById("modalPreSubmitActions");
+      const postActions = document.getElementById("modalPostSubmitActions");
+      const statusBanner = document.getElementById("modalStatusBanner");
+      const orderRefBadge = document.getElementById("modalOrderRefBadge");
+      const stkCard = document.getElementById("modalMpesaStkPushCard");
+      const mpesaInstructionBox = document.getElementById("mpesaInstructionBox");
+      const mpesaCodeSection = document.getElementById("modalMpesaCodeSection");
+      const saveNoteRow = document.getElementById("modalSaveNoteActionRow");
+
+      if (preActions) preActions.style.display = "flex";
+      if (postActions) postActions.style.display = "none";
+      if (statusBanner) statusBanner.style.display = "none";
+      if (orderRefBadge) orderRefBadge.style.display = "none";
+      if (stkCard) stkCard.style.display = "none";
+      if (mpesaInstructionBox) mpesaInstructionBox.style.display = "none";
+      if (mpesaCodeSection) mpesaCodeSection.style.display = "none";
+      if (saveNoteRow) saveNoteRow.style.display = "none";
+
+      // Open Modal
+      document.getElementById("confirmModalBackdrop").classList.add("active");
+
+      // Auto-focus final notes textarea for customer convenience
+      setTimeout(() => {
+        if (finalNotesInput) finalNotesInput.focus();
+      }, 100);
+    }
+
+    function executeFinalOrderSubmission() {
+      let draft = state.pendingDraftOrder || validateCheckoutFormData();
+      if (!draft) return;
+
+      const finalNotesInput = document.getElementById("modalOrderFinalNotes");
+      const rawNotes = finalNotesInput ? finalNotesInput.value : (draft.notes || "");
+
+      // Enforce 400-character limit
+      if (rawNotes.length > 400) {
+        updateFinalNotesCounter(rawNotes.length);
+        showToast("⚠️ Final notes exceed 400 characters limit. Please shorten before submitting.");
+        if (finalNotesInput) {
+          finalNotesInput.focus();
+        }
+        return;
+      }
+
+      const finalNotes = rawNotes.trim();
+
+      // Update draft with final notes
+      draft.finalNotes = finalNotes;
+      draft.notes = finalNotes || draft.notes || "";
+
+      // Sync back to drawer inputs
+      const drawerNotes = document.getElementById("custNotes");
+      if (drawerNotes) drawerNotes.value = finalNotes;
+
+      const {
+        customerName,
+        customerPhone,
+        customerEmail,
+        deliveryArea,
+        landmarkAddress,
+        deliveryInstructions,
+        deliveryDate,
+        formattedDeliveryDate,
+        deliveryTime,
+        paymentMethod,
+        trays,
+        subtotal,
+        deliveryFee,
+        pointsToEarn,
+        redeemedPoints,
+        loyaltyDiscount,
+        grandTotal,
+        totalEggs
+      } = draft;
+
+      // Construct WhatsApp Message to 0704967655
+      const waLines = [
+        `📦 *NEW ORDER - ${CONFIG.businessName.toUpperCase()}*`,
+        `──────────────────────────────`,
+        `👤 *Customer Name:* ${customerName}`,
+        `📞 *Customer Phone:* ${customerPhone}`,
+        `📧 *Customer Email:* ${customerEmail}`,
+        `📍 *Delivery Area:* ${deliveryArea}`,
+        `🏠 *Street / Landmark:* ${landmarkAddress}`,
+        ...(deliveryInstructions ? [`🚪 *Delivery Instructions / Gate Code:* ${deliveryInstructions}`] : []),
+        `📅 *Delivery Date:* ${formattedDeliveryDate}`,
+        `⏰ *Preferred Time Slot:* ${deliveryTime}`,
+        `💳 *Payment Method:* ${paymentMethod}`,
+        ``,
+        `📋 *Items Ordered:*`,
+        `• Eggs (Tray of 30) &times; ${trays} tray${trays > 1 ? 's' : ''} = KES ${subtotal.toLocaleString()} (${totalEggs} fresh eggs)`,
+        ``,
+        `💰 *Pricing Summary:*`,
+        `• Subtotal: KES ${subtotal.toLocaleString()}`,
+        `• Delivery Fee (${deliveryArea}): KES ${deliveryFee.toLocaleString()}`,
+        ...(loyaltyDiscount > 0 ? [`• ⭐ *Loyalty Reward Discount:* -KES ${loyaltyDiscount.toLocaleString()} (${redeemedPoints} pts redeemed)`] : []),
+        `• *Grand Total: KES ${grandTotal.toLocaleString()}*`,
+        ``,
+        `⭐ *Farm Loyalty Rewards:*`,
+        `• Points Earned On This Order: *+${pointsToEarn} pts* (10 pts/tray)`,
+        `• New Points Balance: *${((state.loyalty ? state.loyalty.pointsBalance : 0) - redeemedPoints + pointsToEarn).toLocaleString()} pts*`
+      ];
+
+      if (finalNotes) {
+        waLines.push(``, `📝 *Final Notes & Instructions:* ${finalNotes}`);
+      } else if (draft.notes) {
+        waLines.push(``, `📝 *Special Instructions:* ${draft.notes}`);
+      }
+
+      waLines.push(
+        `──────────────────────────────`,
+        `_Generated via ${CONFIG.businessName} Online Portal (${CONFIG.phone}, Alt: ${CONFIG.phoneAlt})_`
+      );
+
+      const encodedMessage = encodeURIComponent(waLines.join("\n"));
+      const cleanWaNum = CONFIG.whatsappNumber.replace(/[^0-9]/g, '');
+      const waUrl = `https://wa.me/${cleanWaNum}?text=${encodedMessage}`;
+
+      // Create and save Order History Record
+      const orderRecord = {
+        id: "LV-" + Math.floor(100000 + Math.random() * 900000),
+        createdAt: new Date().toISOString(),
+        formattedDate: new Intl.DateTimeFormat('en-GB', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }).format(new Date()),
+        customerName,
+        customerPhone,
+        customerEmail,
+        deliveryArea,
+        landmarkAddress,
+        deliveryInstructions,
+        deliveryDate,
+        formattedDeliveryDate,
+        deliveryTime,
+        paymentMethod,
+        notes: finalNotes || draft.notes || "",
+        finalNotes: finalNotes || "",
+        trays,
+        eggPricePerTray: CONFIG.eggPricePerTray,
+        subtotal,
+        deliveryFee,
+        loyaltyDiscountApplied: loyaltyDiscount,
+        loyaltyPointsEarned: pointsToEarn,
+        loyaltyPointsRedeemed: redeemedPoints,
+        grandTotal,
+        totalEggs,
+        paybill: CONFIG.mpesaPaybill,
+        account: CONFIG.mpesaAccount,
+        tillNumber: CONFIG.mpesaPaybill,
+        mpesaCode: "",
+        paymentStatus: paymentMethod.includes("Cash") ? "Cash on Delivery" : "Pending Payment",
+        orderStatus: "pending",
+        verifiedBy: "",
+        verifiedAt: "",
+        receiptSentAt: "",
+        waUrl
+      };
+
+      // Credit Loyalty Points and record transaction
+      if (!state.loyalty) {
+        state.loyalty = { pointsBalance: 0, lifetimeEarned: 0, lifetimeRedeemed: 0, appliedDiscountPoints: 0, history: [] };
+      }
+      state.loyalty.pointsBalance = Math.max(0, state.loyalty.pointsBalance - redeemedPoints) + pointsToEarn;
+      state.loyalty.lifetimeEarned = (state.loyalty.lifetimeEarned || 0) + pointsToEarn;
+      state.loyalty.lifetimeRedeemed = (state.loyalty.lifetimeRedeemed || 0) + redeemedPoints;
+      state.loyalty.appliedDiscountPoints = 0; // Reset applied discount
+      if (!Array.isArray(state.loyalty.history)) state.loyalty.history = [];
+      state.loyalty.history.unshift({
+        id: "LP-" + Date.now(),
+        date: new Date().toISOString(),
+        orderId: orderRecord.id,
+        trays,
+        pointsEarned: pointsToEarn,
+        pointsRedeemed: redeemedPoints,
+        discountKes: loyaltyDiscount,
+        newBalance: state.loyalty.pointsBalance,
+        desc: `Earned +${pointsToEarn} pts on Order #${orderRecord.id}${redeemedPoints > 0 ? ` (Redeemed ${redeemedPoints} pts)` : ''}`
+      });
+      saveLoyaltyData();
+      renderDrawerLoyaltyUI();
+      updateLoyaltyHeaderBadges();
+
+      state.orderHistory.unshift(orderRecord);
+      if (state.orderHistory.length > 50) {
+        state.orderHistory = state.orderHistory.slice(0, 50);
+      }
+      saveOrderHistory();
+      renderOrderHistory();
+      updateOrderHistoryBadge();
+      updateCustomerStockUI();
+
+      // Real-time server database persistence & sequential tax invoice generation
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName,
+          customerPhone,
+          customerEmail: customerEmail || "",
+          deliveryArea,
+          deliveryAddress: landmarkAddress,
+          deliveryDate,
+          deliveryTimeSlot: deliveryTime,
+          eggTrays: trays,
+          deliveryFee,
+          grandTotal,
+          paymentMethod: paymentMethod.includes("Cash") ? "Cash on Delivery" : "M-Pesa",
+          notes: finalNotes || deliveryInstructions || draft.notes || ""
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success && data.order) {
+          orderRecord.id = data.order.id;
+          orderRecord.invoiceNumber = data.invoiceNumber;
+          orderRecord.deliveryNoteNumber = data.deliveryNoteNumber;
+          saveOrderHistory();
+          renderOrderHistory();
+        }
+      })
+      .catch(err => {
+        console.warn("Server order persistence warning:", err);
+      });
+
+      // Open WhatsApp
+      window.open(waUrl, "_blank");
+
+      // Switch confirmation modal to post-submission confirmed state
+      openConfirmModal(waUrl, orderRecord);
+
+      // Automate M-Pesa Pop-up prompt to client phone
+      if (!paymentMethod.includes("Cash")) {
+        initiateMpesaStkPush(orderRecord);
+      }
+
+      state.pendingDraftOrder = null;
+      showToast(`✓ Order #${orderRecord.id} placed! WhatsApp opened with your summary & notes.`);
+    }
+
     /* Confirmation Modal Controls */
     function openConfirmModal(waUrl, orderData) {
       document.getElementById("confirmModalBackdrop").classList.add("active");
@@ -14291,6 +15626,40 @@
       const isApproved = orderStatus === "approved";
       const isDeclined = orderStatus === "declined" || orderStatus === "cancelled";
       const customerEmail = fullOrder ? (fullOrder.customerEmail || "") : "";
+
+      // Ensure Pre-submit is hidden and post-submit actions are shown
+      const preActions = document.getElementById("modalPreSubmitActions");
+      const postActions = document.getElementById("modalPostSubmitActions");
+      if (preActions) preActions.style.display = "none";
+      if (postActions) postActions.style.display = "flex";
+
+      // Configure Modal Titles
+      const modalTitle = document.getElementById("confirmModalTitle");
+      const modalSubtitle = document.getElementById("confirmModalSubtitle");
+      const brandTag = document.getElementById("confirmModalBrandTag");
+      if (modalTitle) modalTitle.textContent = isApproved ? "Order Approved & Verified!" : (isDeclined ? "Order Declined" : "Order Received!");
+      if (modalSubtitle) modalSubtitle.innerHTML = `Your order details are confirmed. WhatsApp is opening now with your summary sent to <strong>0727811266</strong> (Alt: 0704967655).`;
+      if (brandTag) brandTag.textContent = "Mombasa Order Confirmed";
+
+      // Render Order Summary Section
+      renderOrderSummaryInModal(fullOrder, trays, subtotal, fee, grandTotal);
+
+      // Populate Final Notes in Modal
+      const finalNotesInput = document.getElementById("modalOrderFinalNotes");
+      if (finalNotesInput && fullOrder) {
+        const orderNotes = fullOrder.finalNotes || fullOrder.notes || "";
+        finalNotesInput.value = orderNotes;
+        updateFinalNotesCounter(orderNotes.length);
+      }
+
+      // Show Save Button for pending order notes
+      const saveNoteRow = document.getElementById("modalSaveNoteActionRow");
+      if (saveNoteRow) {
+        saveNoteRow.style.display = (orderStatus === "pending") ? "flex" : "none";
+      }
+
+      const statusBannerEl = document.getElementById("modalStatusBanner");
+      if (statusBannerEl) statusBannerEl.style.display = "block";
 
       // Update Order Ref Badge in Modal
       const modalOrderRefBadge = document.getElementById("modalOrderRefBadge");
@@ -15170,278 +16539,10 @@
       return regex.test(cleaned);
     }
 
-    /* Order Submission & WhatsApp Message Construction */
+    /* Order Submission & Confirmation Modal Invocation */
     function handleOrderSubmission(e) {
-      if (e) e.preventDefault();
-
-      const trays = state.cart.eggTrays;
-      if (trays < 1) {
-        showToast("Please add at least 1 tray to your basket first.");
-        return;
-      }
-
-      // Validate Fields
-      const nameInput = document.getElementById("custName");
-      const phoneInput = document.getElementById("custPhone");
-      const emailInput = document.getElementById("custEmail");
-      const areaSelect = document.getElementById("custArea");
-      const addressInput = document.getElementById("custAddress");
-      const deliveryInstructionsInput = document.getElementById("custDeliveryInstructions");
-      const dateInput = document.getElementById("custDate");
-      const timeSelect = document.getElementById("custTime");
-      const notesInput = document.getElementById("custNotes");
-      const payRadio = document.querySelector('input[name="paymentMethod"]:checked');
-
-      let isValid = true;
-
-      if (!nameInput.value.trim()) {
-        nameInput.classList.add("is-invalid");
-        document.getElementById("custNameError").classList.add("visible");
-        isValid = false;
-      } else {
-        nameInput.classList.remove("is-invalid");
-        document.getElementById("custNameError").classList.remove("visible");
-      }
-
-      if (!validateKenyanPhone(phoneInput.value.trim())) {
-        phoneInput.classList.add("is-invalid");
-        document.getElementById("custPhoneError").classList.add("visible");
-        isValid = false;
-      } else {
-        phoneInput.classList.remove("is-invalid");
-        document.getElementById("custPhoneError").classList.remove("visible");
-      }
-
-      const customerEmail = emailInput ? emailInput.value.trim() : "";
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!customerEmail || !emailRegex.test(customerEmail)) {
-        if (emailInput) emailInput.classList.add("is-invalid");
-        document.getElementById("custEmailError")?.classList.add("visible");
-        isValid = false;
-      } else {
-        if (emailInput) emailInput.classList.remove("is-invalid");
-        document.getElementById("custEmailError")?.classList.remove("visible");
-      }
-
-      if (!areaSelect.value) {
-        areaSelect.classList.add("is-invalid");
-        document.getElementById("custAreaError").classList.add("visible");
-        isValid = false;
-      } else {
-        areaSelect.classList.remove("is-invalid");
-        document.getElementById("custAreaError").classList.remove("visible");
-      }
-
-      if (!addressInput.value.trim()) {
-        addressInput.classList.add("is-invalid");
-        document.getElementById("custAddressError").classList.add("visible");
-        isValid = false;
-      } else {
-        addressInput.classList.remove("is-invalid");
-        document.getElementById("custAddressError").classList.remove("visible");
-      }
-
-      // Validate Delivery Date (Must be today or future date)
-      const rawDeliveryDate = dateInput ? dateInput.value.trim() : "";
-      const todayStr = getTodayDateString();
-      if (!rawDeliveryDate || rawDeliveryDate < todayStr) {
-        if (dateInput) dateInput.classList.add("is-invalid");
-        const dateErr = document.getElementById("custDateError");
-        if (dateErr) {
-          dateErr.textContent = "Please select today or a future delivery date.";
-          dateErr.classList.add("visible");
-        }
-        isValid = false;
-      } else {
-        if (dateInput) dateInput.classList.remove("is-invalid");
-        document.getElementById("custDateError")?.classList.remove("visible");
-      }
-
-      if (!isValid) {
-        showToast("Please complete the required delivery & contact fields.");
-        return;
-      }
-
-      const customerName = nameInput.value.trim();
-      const customerPhone = phoneInput.value.trim();
-      const deliveryArea = areaSelect.value;
-      const landmarkAddress = addressInput.value.trim();
-      const deliveryInstructions = deliveryInstructionsInput ? deliveryInstructionsInput.value.trim() : "";
-      const deliveryDate = rawDeliveryDate || todayStr;
-      const formattedDeliveryDate = formatDeliveryDateDisplay(deliveryDate);
-      const deliveryTime = timeSelect ? timeSelect.value : "ASAP / Next Available Rider";
-      const notes = notesInput ? notesInput.value.trim() : "";
-      const paymentMethod = payRadio ? payRadio.value : "M-Pesa (Buy Goods Till)";
-
-      const subtotal = trays * CONFIG.eggPricePerTray;
-      const deliveryFee = CONFIG.deliveryFees[deliveryArea] || 0;
-      const pointsToEarn = trays * (CONFIG.loyaltyPointsPerTray || 10);
-      const redeemedPoints = state.loyalty ? (state.loyalty.appliedDiscountPoints || 0) : 0;
-      const loyaltyDiscount = Math.min(redeemedPoints * (CONFIG.loyaltyPointValueKes || 1), subtotal);
-      const grandTotal = Math.max(0, subtotal + deliveryFee - loyaltyDiscount);
-      const totalEggs = trays * CONFIG.eggTrayCount;
-
-      // Construct WhatsApp Message to 0704967655
-      const waLines = [
-        `📦 *NEW ORDER - ${CONFIG.businessName.toUpperCase()}*`,
-        `──────────────────────────────`,
-        `👤 *Customer Name:* ${customerName}`,
-        `📞 *Customer Phone:* ${customerPhone}`,
-        `📧 *Customer Email:* ${customerEmail}`,
-        `📍 *Delivery Area:* ${deliveryArea}`,
-        `🏠 *Street / Landmark:* ${landmarkAddress}`,
-        ...(deliveryInstructions ? [`🚪 *Delivery Instructions / Gate Code:* ${deliveryInstructions}`] : []),
-        `📅 *Delivery Date:* ${formattedDeliveryDate}`,
-        `⏰ *Preferred Time Slot:* ${deliveryTime}`,
-        `💳 *Payment Method:* ${paymentMethod}`,
-        ``,
-        `📋 *Items Ordered:*`,
-        `• Eggs (Tray of 30) &times; ${trays} tray${trays > 1 ? 's' : ''} = KES ${subtotal.toLocaleString()} (${totalEggs} fresh eggs)`,
-        ``,
-        `💰 *Pricing Summary:*`,
-        `• Subtotal: KES ${subtotal.toLocaleString()}`,
-        `• Delivery Fee (${deliveryArea}): KES ${deliveryFee.toLocaleString()}`,
-        ...(loyaltyDiscount > 0 ? [`• ⭐ *Loyalty Reward Discount:* -KES ${loyaltyDiscount.toLocaleString()} (${redeemedPoints} pts redeemed)`] : []),
-        `• *Grand Total: KES ${grandTotal.toLocaleString()}*`,
-        ``,
-        `⭐ *Farm Loyalty Rewards:*`,
-        `• Points Earned On This Order: *+${pointsToEarn} pts* (10 pts/tray)`,
-        `• New Points Balance: *${((state.loyalty ? state.loyalty.pointsBalance : 0) - redeemedPoints + pointsToEarn).toLocaleString()} pts*`
-      ];
-
-      if (notes) {
-        waLines.push(``, `📝 *Special Instructions:* ${notes}`);
-      }
-
-      waLines.push(
-        `──────────────────────────────`,
-        `_Generated via ${CONFIG.businessName} Online Portal (${CONFIG.phone}, Alt: ${CONFIG.phoneAlt})_`
-      );
-
-      const encodedMessage = encodeURIComponent(waLines.join("\n"));
-      const cleanWaNum = CONFIG.whatsappNumber.replace(/[^0-9]/g, '');
-      const waUrl = `https://wa.me/${cleanWaNum}?text=${encodedMessage}`;
-
-      // Create and save Order History Record
-      const orderRecord = {
-        id: "LV-" + Math.floor(100000 + Math.random() * 900000),
-        createdAt: new Date().toISOString(),
-        formattedDate: new Intl.DateTimeFormat('en-GB', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }).format(new Date()),
-        customerName,
-        customerPhone,
-        customerEmail,
-        deliveryArea,
-        landmarkAddress,
-        deliveryInstructions,
-        deliveryDate,
-        formattedDeliveryDate,
-        deliveryTime,
-        paymentMethod,
-        notes,
-        trays,
-        eggPricePerTray: CONFIG.eggPricePerTray,
-        subtotal,
-        deliveryFee,
-        loyaltyDiscountApplied: loyaltyDiscount,
-        loyaltyPointsEarned: pointsToEarn,
-        loyaltyPointsRedeemed: redeemedPoints,
-        grandTotal,
-        totalEggs,
-        paybill: CONFIG.mpesaPaybill,
-        account: CONFIG.mpesaAccount,
-        tillNumber: CONFIG.mpesaPaybill,
-        mpesaCode: "",
-        paymentStatus: paymentMethod.includes("Cash") ? "Cash on Delivery" : "Pending Payment",
-        orderStatus: "pending",
-        verifiedBy: "",
-        verifiedAt: "",
-        receiptSentAt: "",
-        waUrl
-      };
-
-      // Credit Loyalty Points and record transaction
-      if (!state.loyalty) {
-        state.loyalty = { pointsBalance: 0, lifetimeEarned: 0, lifetimeRedeemed: 0, appliedDiscountPoints: 0, history: [] };
-      }
-      state.loyalty.pointsBalance = Math.max(0, state.loyalty.pointsBalance - redeemedPoints) + pointsToEarn;
-      state.loyalty.lifetimeEarned = (state.loyalty.lifetimeEarned || 0) + pointsToEarn;
-      state.loyalty.lifetimeRedeemed = (state.loyalty.lifetimeRedeemed || 0) + redeemedPoints;
-      state.loyalty.appliedDiscountPoints = 0; // Reset applied discount
-      if (!Array.isArray(state.loyalty.history)) state.loyalty.history = [];
-      state.loyalty.history.unshift({
-        id: "LP-" + Date.now(),
-        date: new Date().toISOString(),
-        orderId: orderRecord.id,
-        trays,
-        pointsEarned: pointsToEarn,
-        pointsRedeemed: redeemedPoints,
-        discountKes: loyaltyDiscount,
-        newBalance: state.loyalty.pointsBalance,
-        desc: `Earned +${pointsToEarn} pts on Order #${orderRecord.id}${redeemedPoints > 0 ? ` (Redeemed ${redeemedPoints} pts)` : ''}`
-      });
-      saveLoyaltyData();
-      renderDrawerLoyaltyUI();
-      updateLoyaltyHeaderBadges();
-
-      state.orderHistory.unshift(orderRecord);
-      if (state.orderHistory.length > 50) {
-        state.orderHistory = state.orderHistory.slice(0, 50);
-      }
-      saveOrderHistory();
-      renderOrderHistory();
-      updateOrderHistoryBadge();
-      updateCustomerStockUI();
-
-      // Real-time server database persistence & sequential tax invoice generation
-      fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerName,
-          customerPhone,
-          customerEmail: customerEmail || "",
-          deliveryArea,
-          deliveryAddress: landmarkAddress,
-          deliveryDate,
-          deliveryTimeSlot: deliveryTime,
-          eggTrays: trays,
-          deliveryFee,
-          grandTotal,
-          paymentMethod: paymentMethod.includes("Cash") ? "Cash on Delivery" : "M-Pesa",
-          notes: deliveryInstructions || notes || ""
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.success && data.order) {
-          orderRecord.id = data.order.id;
-          orderRecord.invoiceNumber = data.invoiceNumber;
-          orderRecord.deliveryNoteNumber = data.deliveryNoteNumber;
-          saveOrderHistory();
-          renderOrderHistory();
-        }
-      })
-      .catch(err => {
-        console.warn("Server order persistence warning:", err);
-      });
-
-      // Open WhatsApp
-      window.open(waUrl, "_blank");
-
-      // Close Cart Drawer and Open Confirmation Modal with Pending Verification status
-      closeCartDrawer();
-      openConfirmModal(waUrl, orderRecord);
-
-      // Automate M-Pesa Pop-up prompt to client phone
-      if (!paymentMethod.includes("Cash")) {
-        initiateMpesaStkPush(orderRecord);
-      }
+      if (e && e.preventDefault) e.preventDefault();
+      openConfirmModalPreSubmit();
     }
 
     /* ==========================================================================
@@ -15737,8 +16838,28 @@
       // Place Order Button
       document.getElementById("placeOrderBtn")?.addEventListener("click", handleOrderSubmission);
 
-      // Modal Close Button
+      // Modal Close Button & Backdrop Dismiss
       document.getElementById("confirmModalCloseBtn")?.addEventListener("click", closeConfirmModal);
+      document.getElementById("confirmModalBackdrop")?.addEventListener("click", (e) => {
+        if (e.target.id === "confirmModalBackdrop") {
+          closeConfirmModal();
+        }
+      });
+
+      // Final Notes Text Area Real-Time Character Counter
+      const modalFinalNotesInput = document.getElementById("modalOrderFinalNotes");
+      if (modalFinalNotesInput) {
+        const handleNotesInput = (e) => {
+          updateFinalNotesCounter(e.target.value.length);
+        };
+        modalFinalNotesInput.addEventListener("input", handleNotesInput);
+        modalFinalNotesInput.addEventListener("keyup", handleNotesInput);
+        modalFinalNotesInput.addEventListener("paste", (e) => {
+          setTimeout(() => {
+            updateFinalNotesCounter(modalFinalNotesInput.value.length);
+          }, 0);
+        });
+      }
 
       // Download QR Code Button
       document.getElementById("downloadQrBtn")?.addEventListener("click", () => {
@@ -15793,6 +16914,17 @@
       });
       document.getElementById("orderInvoiceModalBackdrop")?.addEventListener("click", (e) => {
         if (e.target.id === "orderInvoiceModalBackdrop") closeOrderInvoiceModal();
+      });
+      document.getElementById("adminBulkInvoicesModalBackdrop")?.addEventListener("click", (e) => {
+        if (e.target.id === "adminBulkInvoicesModalBackdrop") closeAdminBulkInvoicesModal();
+      });
+
+      // Dismiss Batch Update Status dropdown menu when clicking outside
+      document.addEventListener("click", (e) => {
+        const container = document.getElementById("adminBatchStatusDropdownContainer");
+        if (container && !container.contains(e.target)) {
+          closeAdminBatchStatusMenu();
+        }
       });
     });
 
@@ -16029,6 +17161,10 @@
       if (bulkActionBar) {
         bulkActionBar.style.display = permissions.canManageOrders ? "flex" : "none";
       }
+      const bulkBatchUpdateBtn = document.getElementById("adminBatchStatusDropdownContainer");
+      if (bulkBatchUpdateBtn) {
+        bulkBatchUpdateBtn.style.display = permissions.canManageOrders ? "inline-block" : "none";
+      }
       const bulkApproveBtn = document.getElementById("adminBulkApproveBtn");
       if (bulkApproveBtn) {
         bulkApproveBtn.style.display = permissions.canManageOrders ? "inline-flex" : "none";
@@ -16040,6 +17176,10 @@
       const bulkRepromptBtn = document.getElementById("adminBulkRepromptBtn");
       if (bulkRepromptBtn) {
         bulkRepromptBtn.style.display = permissions.canManageOrders ? "inline-flex" : "none";
+      }
+      const bulkPrintBtn = document.getElementById("adminBulkPrintInvoicesBtn");
+      if (bulkPrintBtn) {
+        bulkPrintBtn.style.display = (permissions.canManageOrders || permissions.canAccessAccounts) ? "inline-flex" : "none";
       }
 
       // 5. Settings Save & API Key Controls (Admin only)
@@ -16786,6 +17926,210 @@
       const modal = document.getElementById("orderInvoiceModalBackdrop");
       if (modal) modal.classList.remove("active");
       document.body.style.overflow = "";
+    }
+
+    /* Helper: Generate standardized Sequential Tax Invoice HTML for Single or Bulk Printing */
+    function generateSingleInvoiceHtml(order, index, totalCount) {
+      if (!order) return "";
+      const invNumber = order.invoiceNumber || `INV-${order.id}`;
+      const dnNumber = order.deliveryNoteNumber || `DN-${order.id}`;
+      const orderDate = order.formattedDate || (order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB'));
+      const customerName = escapeHtml(order.customerName || "Valued Customer");
+      const customerPhone = escapeHtml(order.customerPhone || "+254 700 000 000");
+      const deliveryArea = escapeHtml(order.deliveryArea || "Mombasa");
+      const address = escapeHtml(order.landmarkAddress || order.deliveryAddress || "Mombasa Doorstep");
+      const deliverySchedule = `${escapeHtml(order.deliveryDate || 'Today')} · ${escapeHtml(order.deliveryTime || order.deliveryTimeSlot || 'Morning')}`;
+      const paymentMethod = escapeHtml(order.paymentMethod || "M-Pesa Paybill");
+      const isPaid = (order.paymentStatus || '').toLowerCase().includes('paid');
+      const mpesaCode = escapeHtml(order.mpesaCode || order.mpesaTransactionCode || (isPaid ? "Verified Paybill 625625" : "Pending Verification"));
+      const trays = order.trays || order.eggTrays || 1;
+      const subtotal = order.subtotal || (trays * (CONFIG.eggPricePerTray || 500));
+      const deliveryFee = order.deliveryFee || 0;
+      const grandTotal = order.grandTotal || (subtotal + deliveryFee);
+
+      return `
+        <div class="bulk-invoice-sheet invoice-paper" data-order-id="${escapeHtml(order.id)}" style="background: #FFFFFF; color: #191E24; border: 1.5px solid #E5E7EB; border-radius: 8px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+          <!-- Header Banner -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1F7A4D; padding-bottom: 1.25rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.35rem;">
+                <img src="/src/assets/images/lymbo_logo.svg" alt="Lymbo Logo" style="width: 44px; height: 44px; object-fit: contain;" />
+                <div>
+                  <h2 style="font-size: 1.35rem; font-weight: 800; color: #0E5A2E; margin: 0; line-height: 1.1;">LYMBO VENTURES</h2>
+                  <span style="font-size: 0.75rem; font-weight: 700; color: #DC9F00; text-transform: uppercase; letter-spacing: 0.05em;">Quality General Supplies &amp; Fresh Farm Eggs</span>
+                </div>
+              </div>
+              <p style="font-size: 0.75rem; color: #4B5563; margin: 0; line-height: 1.4;">
+                Mombasa Island &amp; North Coast Delivery Hub<br />
+                Direct / WhatsApp: <strong>+254 727 811 266</strong> · Alt: <strong>+254 704 967 655</strong><br />
+                Email: <strong>lymboventures0@gmail.com</strong>
+              </p>
+            </div>
+            <div style="text-align: right;">
+              <div style="background: #EBF7F0; color: #0E5A2E; padding: 0.35rem 0.75rem; border-radius: 6px; font-weight: 800; font-size: 0.9375rem; display: inline-block; margin-bottom: 0.35rem;">
+                TAX INVOICE &amp; DELIVERY NOTE
+              </div>
+              <div style="font-size: 0.8125rem; color: #1F2937;">
+                Invoice No: <strong style="font-family: monospace; color: #0E5A2E; font-size: 0.95rem;">${escapeHtml(invNumber)}</strong><br />
+                Delivery Note: <strong style="font-family: monospace; color: #1F2937;">${escapeHtml(dnNumber)}</strong><br />
+                Order Ref: <strong style="font-family: monospace; color: #4B5563;">${escapeHtml(order.id)}</strong><br />
+                Date: <span>${orderDate}</span>
+                ${totalCount ? `<div style="font-size: 0.7rem; color: #6B7280; margin-top: 0.2rem;">Doc ${index + 1} of ${totalCount}</div>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <!-- Bill To / Deliver To Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; font-size: 0.8125rem;">
+            <div style="background: #F9FAFB; padding: 0.875rem; border-radius: 6px; border: 1px solid #E5E7EB;">
+              <strong style="color: #111827; display: block; margin-bottom: 0.25rem;">DELIVER TO / CUSTOMER:</strong>
+              <div style="font-weight: 700; font-size: 0.9375rem; color: #0E5A2E;">${customerName}</div>
+              <div style="font-family: monospace; color: #4B5563;">${customerPhone}</div>
+              <div style="font-weight: 600; margin-top: 0.25rem; color: #1F2937;">${deliveryArea}, Kenya</div>
+              <div style="font-size: 0.75rem; color: #6B7280;">${address}</div>
+            </div>
+            <div style="background: #F9FAFB; padding: 0.875rem; border-radius: 6px; border: 1px solid #E5E7EB;">
+              <strong style="color: #111827; display: block; margin-bottom: 0.25rem;">DISPATCH &amp; PAYMENT DETAILS:</strong>
+              <div style="color: #1F2937;">Scheduled Delivery: <strong>${deliverySchedule}</strong></div>
+              <div style="color: #1F2937;">Payment Channel: <strong>${paymentMethod}</strong></div>
+              <div style="margin-top: 0.15rem;">Payment Status: <span class="status-badge ${isPaid ? 'status-paid' : 'status-pending'}" style="font-size: 0.65rem; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700; ${isPaid ? 'background: #D1FAE5; color: #065F46;' : 'background: #FEF3C7; color: #92400E;'}">${isPaid ? 'PAID' : 'PENDING'}</span></div>
+              <div style="margin-top: 0.15rem; color: #1F2937;">M-Pesa Code: <strong style="font-family: monospace; color: #00A859;">${mpesaCode}</strong></div>
+            </div>
+          </div>
+
+          <!-- Items Table -->
+          <table class="invoice-table" style="width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.8125rem;">
+            <thead>
+              <tr style="background: #F3F4F6;">
+                <th style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: left; font-weight: 700; color: #4B5563; font-size: 0.75rem; text-transform: uppercase;">Item Description</th>
+                <th style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: center; font-weight: 700; color: #4B5563; font-size: 0.75rem; text-transform: uppercase;">Qty (Trays)</th>
+                <th style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: right; font-weight: 700; color: #4B5563; font-size: 0.75rem; text-transform: uppercase;">Unit Price (KES)</th>
+                <th style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: right; font-weight: 700; color: #4B5563; font-size: 0.75rem; text-transform: uppercase;">Subtotal (KES)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; color: #1F2937;">
+                  <strong>Farm-Fresh Eggs (Tray of 30)</strong><br />
+                  <span style="font-size: 0.71875rem; color: #6B7280;">Grade A Large table eggs, unbroken crates, coastal poultry delivery</span>
+                </td>
+                <td style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: center; font-weight: 700; color: #111827;">${trays}</td>
+                <td style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: right; font-family: monospace; color: #1F2937;">KES ${CONFIG.eggPricePerTray || 500}</td>
+                <td style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: right; font-family: monospace; font-weight: 700; color: #111827;">KES ${Number(subtotal).toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; color: #1F2937;">
+                  <strong>Doorstep Logistics &amp; Delivery Fee</strong><br />
+                  <span style="font-size: 0.71875rem; color: #6B7280;">Delivery Area: ${deliveryArea}</span>
+                </td>
+                <td style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: center; color: #111827;">1</td>
+                <td style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: right; font-family: monospace; color: #1F2937;">KES ${Number(deliveryFee).toLocaleString()}</td>
+                <td style="padding: 0.65rem; border-bottom: 1px solid #E5E7EB; text-align: right; font-family: monospace; font-weight: 700; color: #111827;">KES ${Number(deliveryFee).toLocaleString()}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr style="border-top: 2px solid #D1D5DB;">
+                <td colspan="3" style="padding: 0.75rem 0.65rem; text-align: right; font-weight: 800; font-size: 1rem; color: #111827;">
+                  GRAND TOTAL PAYABLE:
+                </td>
+                <td style="padding: 0.75rem 0.65rem; text-align: right; font-weight: 800; font-size: 1.125rem; color: #0E5A2E; font-family: monospace;">
+                  KES ${Number(grandTotal).toLocaleString()}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <!-- Official Footer with Paybill & Receipt Sign-off -->
+          <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #D1D5DB; display: grid; grid-template-columns: 1.4fr 1fr; gap: 1rem; font-size: 0.75rem; color: #374151;">
+            <div>
+              <strong style="color: #0E5A2E; display: block; margin-bottom: 0.25rem;">OFFICIAL PAYMENT INSTRUCTIONS:</strong>
+              Lipa na M-Pesa Paybill: <strong>625625</strong> · Account No: <strong>20159160</strong><br />
+              Business Name: <strong>LYMBO VENTURES</strong><br />
+              Goods received in clean, sound and unbroken condition. Driven by market poultry supply.
+            </div>
+            <div style="text-align: right;">
+              <div style="border-bottom: 1px solid #9CA3AF; height: 35px; margin-bottom: 0.25rem;"></div>
+              <span>Authorized Dispatch Signature &amp; Stamp</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* Bulk Tax Invoice Action Engine */
+    function adminBulkPrintSelectedInvoices() {
+      const selected = state.adminSelectedOrderIds || [];
+      if (selected.length === 0) {
+        showToast("Please select one or more orders to print invoices.");
+        return;
+      }
+
+      // Retrieve full order objects from orderHistory
+      const orders = (state.orderHistory || []).filter(o => selected.includes(o.id));
+      if (orders.length === 0) {
+        showToast("No valid order records found for the selected orders.");
+        return;
+      }
+
+      // Sort sequentially by invoiceNumber or id
+      orders.sort((a, b) => {
+        const invA = a.invoiceNumber || a.id || '';
+        const invB = b.invoiceNumber || b.id || '';
+        return invA.localeCompare(invB);
+      });
+
+      renderBulkInvoicesModalContent(orders);
+
+      const modal = document.getElementById("adminBulkInvoicesModalBackdrop");
+      if (modal) {
+        modal.classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+    }
+
+    function renderBulkInvoicesModalContent(orders) {
+      const container = document.getElementById("bulkInvoicesModalContent");
+      const subtitle = document.getElementById("bulkInvoicesSubtitle");
+      const totalBadge = document.getElementById("bulkInvoicesTotalValueBadge");
+      const printContainer = document.getElementById("bulkInvoicesPrintContainer");
+
+      const totalVal = orders.reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+      const totalTrays = orders.reduce((sum, o) => sum + (o.trays || o.eggTrays || 0), 0);
+
+      if (subtitle) {
+        subtitle.textContent = `Consolidated PDF document for ${orders.length} order${orders.length > 1 ? 's' : ''} (${totalTrays} Trays) · Sequential KRA/VAT trade compliance`;
+      }
+      if (totalBadge) {
+        totalBadge.textContent = `Total Value: KES ${totalVal.toLocaleString()}`;
+      }
+
+      const htmlSheets = orders.map((o, idx) => generateSingleInvoiceHtml(o, idx, orders.length)).join("");
+
+      if (container) {
+        container.innerHTML = htmlSheets;
+      }
+      if (printContainer) {
+        printContainer.innerHTML = htmlSheets;
+      }
+    }
+
+    function triggerBulkInvoicesPrint() {
+      const printContainer = document.getElementById("bulkInvoicesPrintContainer");
+      if (printContainer) {
+        printContainer.style.display = "block";
+      }
+      window.print();
+      setTimeout(() => {
+        if (printContainer) printContainer.style.display = "none";
+      }, 500);
+    }
+
+    function closeAdminBulkInvoicesModal() {
+      const modal = document.getElementById("adminBulkInvoicesModalBackdrop");
+      if (modal) modal.classList.remove("active");
+      document.body.style.overflow = "";
+      const printContainer = document.getElementById("bulkInvoicesPrintContainer");
+      if (printContainer) printContainer.style.display = "none";
     }
 
     /* ==========================================================================

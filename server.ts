@@ -1048,7 +1048,7 @@ const OrderSchema = z.object({
   deliveryFee: z.number().min(0),
   grandTotal: z.number().min(500),
   paymentMethod: z.enum(['M-Pesa', 'Cash on Delivery']),
-  notes: z.string().optional(),
+  notes: z.string().max(400, 'Final notes cannot exceed 400 characters').optional(),
   transactionCode: z.string().optional()
 });
 
@@ -1192,6 +1192,36 @@ app.post('/api/orders/:id/status', requireRole('sales_officer', 'dispatch_office
     success: true,
     order: updated,
     message: `Order #${id} status updated to ${status}.`
+  });
+});
+
+// POST /api/orders/:id/notes - Update Customer Final Notes on an Order
+app.post('/api/orders/:id/notes', (req, res) => {
+  const { id } = req.params;
+  const { notes } = req.body;
+  if (typeof notes !== 'string') {
+    return res.status(400).json({ success: false, error: 'Notes must be a string.' });
+  }
+  if (notes.length > 400) {
+    return res.status(400).json({ success: false, error: 'Final notes cannot exceed 400 characters.' });
+  }
+
+  const db = loadDatabase();
+  const order = db.orders.find(o => o.id === id);
+  if (!order) {
+    return res.status(404).json({ success: false, error: 'Order not found.' });
+  }
+
+  order.notes = notes.trim();
+  order.updatedAt = new Date().toISOString();
+  saveDatabase();
+
+  broadcastSyncEvent('order_updated', order);
+
+  return res.json({
+    success: true,
+    order,
+    message: `Final notes updated for Order #${id}.`
   });
 });
 
